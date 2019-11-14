@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
   Renderer renderer;
   igl::opengl::glfw::Viewer viewer;
   //viewer.load_mesh_from_file("C:/Dev/EngineIGLnew/tutorial/data/sphere.obj");
-  viewer.load_mesh_from_file("C:/Dev/EngineIGLnew/tutorial/data/cube.obj");
-  viewer.load_mesh_from_file("C:/Dev/EngineIGLnew/tutorial/data/bunny.off");
+  viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/cube.obj");
+  viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/bunny.off");
   Init(*disp);
   renderer.init(&viewer);
   disp->SetRenderer(&renderer);

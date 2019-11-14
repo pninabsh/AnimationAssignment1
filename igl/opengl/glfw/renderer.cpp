@@ -97,14 +97,13 @@ void Renderer::UpdatePosition(double xpos, double ypos)
 void Renderer::MouseProcessing(int button)
 {
 	
-	if (button == 1)
+	if (button == 1) //right
 	{
 
 		scn->data().MyTranslate(Eigen::Vector3f(-xrel / 2000.0f, 0, 0));
 		scn->data().MyTranslate(Eigen::Vector3f(0,yrel / 2000.0f,0));
-		
 	}
-	else
+	else //left
 	{
 		scn->data().MyRotate(Eigen::Vector3f(1,0,0),xrel / 180.0f);
 		scn->data().MyRotate(Eigen::Vector3f(0, 0,1),yrel / 180.0f);
