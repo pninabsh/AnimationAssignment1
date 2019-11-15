@@ -1,6 +1,17 @@
 #pragma once
 #include "igl/opengl/glfw/Display.h"
 
+static std::string mapIndexToMeshName(int index) {
+	switch (index) {
+		//case 0: return "sphere";
+		//case 1: return "cube";
+		//case 2:
+		case 0: return "cube";
+		case 1: 
+		default: return "rabbit";
+	}
+}
+
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
@@ -11,22 +22,25 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 	  double x2, y2;
 	  glfwGetCursorPos(window, &x2, &y2);
 	  igl::opengl::glfw::Viewer* scn = rndr->GetScene();
-	  bool found = false;
+	  hitObject hitObjectCurrent;
+	  hitObjectCurrent.found = false;
 	  int i = 0, savedIndx = scn->selected_data_index;
-	  
-	  for (; i < scn->data_list.size() && !found;i++)
+	  std::string meshName;
+	  for (; i < scn->data_list.size() && !hitObjectCurrent.found ;i++)
 	  { 
+		  meshName = mapIndexToMeshName(i);
 		  scn->selected_data_index = i;
-		  found = rndr->Picking(x2, y2);
+		  hitObjectCurrent = rndr->Picking(x2, y2);
 	  }
-	  
-	  if(!found)
+	 
+	  if(!hitObjectCurrent.found)
 	  {
-		  std::cout << "not found " << std::endl;
+		  std::cout << meshName << ": not found" << std::endl;
 		  scn->selected_data_index = savedIndx;
 	  }
-	  else
-		  std::cout << "found " << i - 1 << std::endl;
+	  else {
+		  std::cout << meshName << ": found " << hitObjectCurrent.distance << std::endl;
+	  }
 	  rndr->UpdatePosition(x2, y2);
 	 
   }

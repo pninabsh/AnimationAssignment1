@@ -7,6 +7,11 @@
 
 struct GLFWwindow;
 
+struct hitObject {
+	bool found;
+	float distance;
+};
+
 class Renderer 
 {
 public:
@@ -79,9 +84,8 @@ public:
 	// Change selected_core_index to the viewport containing the mouse
 	// (current_mouse_x, current_mouse_y)
 	// IGL_INLINE void select_hovered_core();
-
 	// Callbacks
-	 bool Picking(double x, double y);
+	hitObject Picking(double x, double y);
 	IGL_INLINE bool key_pressed(unsigned int unicode_key, int modifier);
 	IGL_INLINE void resize(GLFWwindow* window,int w, int h); // explicitly set window size
 	IGL_INLINE void post_resize(GLFWwindow* window, int w, int h); // external resize due to user interaction
