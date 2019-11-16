@@ -131,6 +131,23 @@ hitObject Renderer::Picking(double newx, double newy)
 	if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view,
 								 core().proj, core().viewport, scn->data().V, scn->data().F, fid, bc))
 	{
+		//find vertexes - watch igl::ray_mesh_intersect to see how the verixes vere found there and replace f with fid
+		Eigen::RowVector3d v0 = scn->data().V.row(scn->data().F(fid, 0)).template cast<double>();
+		Eigen::RowVector3d v1 = scn->data().V.row(scn->data().F(fid, 1)).template cast<double>();
+		Eigen::RowVector3d v2 = scn->data().V.row(scn->data().F(fid, 2)).template cast<double>();
+		// p = alpha1 * p1 + alpha2 * p2 + alpha3 * p3
+		Eigen::Vector3f alpha0MultiplyV0(bc(0) * v0(0), bc(0) * v0(1), bc(0) * v0(2));
+		Eigen::Vector3f alpha1MultiplyV1(bc(1) * v1(0), bc(1) * v1(1), bc(1) * v1(2));
+		Eigen::Vector3f alpha2MultiplyV2(bc(2) * v2(0), bc(2) * v2(1), bc(2) * v2(2));
+		Eigen::Vector3f p(alpha0MultiplyV0(0) + alpha1MultiplyV1(0) + alpha2MultiplyV2(0),
+			alpha0MultiplyV0(1) + alpha1MultiplyV1(1) + alpha2MultiplyV2(1),
+			alpha0MultiplyV0(2) + alpha1MultiplyV1(2) + alpha2MultiplyV2(2));
+		//perform transformatiom on P point
+		Eigen::Matrix<float, 4, 1> pPointIn4dMatrix = { p(0), p(1), p(2), 1};
+		//multiply view * pPointIn4dMatrix in order to get the transformed p point
+		Eigen::Matrix<float, 4, 1> resultMatrix = view * pPointIn4dMatrix;
+		Eigen::Vector3f resultVector(resultMatrix(0), resultMatrix(1), resultMatrix(2));
+		hitObjectCurrent.distance = resultVector.norm();
 		hitObjectCurrent.found = true;
 		return hitObjectCurrent;
 	}
