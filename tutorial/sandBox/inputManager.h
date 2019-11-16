@@ -6,44 +6,61 @@ static std::string mapIndexToMeshName(int index) {
 		//case 0: return "sphere";
 		//case 1: return "cube";
 		//case 2:
-		case 0: return "cube";
-		case 1: 
-		default: return "rabbit";
+	case 0: return "cube";
+	case 1:
+	default: return "rabbit";
 	}
 }
+
+static int numberOfClicks = 0;
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
-  Renderer* rndr = (Renderer*) glfwGetWindowUserPointer(window);
-  
-  if (action == GLFW_PRESS)
-  {
-	  double x2, y2;
-	  glfwGetCursorPos(window, &x2, &y2);
-	  igl::opengl::glfw::Viewer* scn = rndr->GetScene();
-	  hitObject hitObjectCurrent;
-	  hitObjectCurrent.found = false;
-	  int i = 0, savedIndx = scn->selected_data_index;
-	  std::string meshName;
-	  for (; i < scn->data_list.size() && !hitObjectCurrent.found ;i++)
-	  { 
-		  meshName = mapIndexToMeshName(i);
-		  scn->selected_data_index = i;
-		  hitObjectCurrent = rndr->Picking(x2, y2);
-	  }
-	 
-	  if(!hitObjectCurrent.found)
-	  {
-		  std::cout << meshName << ": not found" << std::endl;
-		  scn->selected_data_index = savedIndx;
-	  }
-	  else {
-		  std::cout << meshName << ": found " << hitObjectCurrent.distance << std::endl;
-	  }
-	  rndr->UpdatePosition(x2, y2);
-	 
-  }
+	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+
+	if (action == GLFW_PRESS)
+	{
+		double x2, y2;
+		glfwGetCursorPos(window, &x2, &y2);
+		igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+
+		hitObject closetHitObject;
+		closetHitObject.found = false;
+		closetHitObject.distance = std::numeric_limits<float>::max();
+
+		int i = 0, savedIndx = scn->selected_data_index;
+
+		std::string meshName = mapIndexToMeshName(i);
+
+		numberOfClicks++;
+		std::cout << std::endl;
+		std::cout << "Click Number : "<< numberOfClicks << std::endl;
+		std::cout << "--------------------------------------------------------" << std::endl;
+
+		for (; i < scn->data_list.size(); i++)
+		{
+			scn->selected_data_index = i;
+			hitObject hitObjectCurrent = rndr->Picking(x2, y2);
+
+			if (hitObjectCurrent.found && hitObjectCurrent.distance < closetHitObject.distance) {
+				savedIndx = i;
+				closetHitObject = hitObjectCurrent;
+			}
+
+			meshName = mapIndexToMeshName(i);
+			if (!hitObjectCurrent.found)
+			{
+				std::cout << meshName << ": not found" << std::endl;
+			}
+			else {
+				std::cout << meshName << ": found " << hitObjectCurrent.distance << std::endl;
+			}
+		}
+		scn->selected_data_index = savedIndx;
+		rndr->UpdatePosition(x2, y2);
+
+	}
 }
 
 
@@ -52,24 +69,24 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 //  __viewer->key_pressed(codepoint, modifier);
 //}
 
- void glfw_mouse_move(GLFWwindow* window, double x, double y)
+void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-	 Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-	 rndr->UpdatePosition(x, y);
-	 if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
-	 {
-		 rndr->MouseProcessing(GLFW_MOUSE_BUTTON_RIGHT);
-	 }
-	 else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-	 {
-		 rndr->MouseProcessing(GLFW_MOUSE_BUTTON_LEFT);
-	 }
+	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+	rndr->UpdatePosition(x, y);
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	{
+		rndr->MouseProcessing(GLFW_MOUSE_BUTTON_RIGHT);
+	}
+	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	{
+		rndr->MouseProcessing(GLFW_MOUSE_BUTTON_LEFT);
+	}
 }
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 {
 	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-	rndr->GetScene()->data().MyScale(Eigen::Vector3f(1 + y * 0.01,1 + y * 0.01,1+y*0.01));
+	rndr->GetScene()->data().MyScale(Eigen::Vector3f(1 + y * 0.01, 1 + y * 0.01, 1 + y * 0.01));
 
 }
 
@@ -78,7 +95,7 @@ void glfw_window_size(GLFWwindow* window, int width, int height)
 	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
 	//igl::opengl::glfw::Viewer* scn = rndr->GetScene();
 
-    rndr->post_resize(window,width, height);
+	rndr->post_resize(window, width, height);
 
 }
 
@@ -94,12 +111,12 @@ void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
-	Renderer* rndr = (Renderer*) glfwGetWindowUserPointer(window);
+	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
 	igl::opengl::glfw::Viewer* scn = rndr->GetScene();
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	else if(action == GLFW_PRESS || action == GLFW_REPEAT)
+	else if (action == GLFW_PRESS || action == GLFW_REPEAT)
 		switch (key)
 		{
 		case 'A':
