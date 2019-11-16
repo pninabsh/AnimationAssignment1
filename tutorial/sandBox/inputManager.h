@@ -3,12 +3,10 @@
 
 static std::string mapIndexToMeshName(int index) {
 	switch (index) {
-		//case 0: return "sphere";
-		//case 1: return "cube";
-		//case 2:
-	case 0: return "cube";
-	case 1:
-	default: return "rabbit";
+		case 0: return "sphere";
+		case 1: return "cube";
+		case 2:
+		default: return "rabbit";
 	}
 }
 

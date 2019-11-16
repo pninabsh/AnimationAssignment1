@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
   igl::opengl::glfw::Viewer viewer;
  // viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/cube.obj");
  // viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/bunny.off");
-  //viewer.load_mesh_from_file("C:/Dev/EngineIGLnew/tutorial/data/sphere.obj");
+  viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/sphere.obj");
   viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/cube.obj");
   viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/bunny.off");
   Init(*disp);
