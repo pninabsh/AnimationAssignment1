@@ -1,7 +1,7 @@
 
 #include "igl/opengl/glfw/renderer.h"
 #include "tutorial/sandBox/inputManager.h"
-#include "tutorial/sandBox/MyViewer.h"
+#include "MyViewer.h"
 
 int main(int argc, char *argv[])
 {
