@@ -2,6 +2,5 @@
 #include "igl/opengl/glfw/Viewer.h"
 
 class MyViewer : public igl::opengl::glfw::Viewer {
-	public:
-		void load_configuration();
+	void load_configuration();
 };
