@@ -1,0 +1,3 @@
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/sphere.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/cube.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/bunny.off
