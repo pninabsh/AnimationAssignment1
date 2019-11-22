@@ -9,7 +9,7 @@
 typedef std::set<std::pair<double, int> > PriorityQueue;
 
 struct SimplifyDataObject {
-	Eigen::MatrixXi V;
+	Eigen::MatrixXd V;
 	Eigen::MatrixXi F;
 	Eigen::MatrixXi  E;
 	Eigen::VectorXi  EMAP;
@@ -53,7 +53,8 @@ static void do_simplify(igl::opengl::glfw::Viewer *viewer) {
 		
 		return simplifyDataObjectsList;
 	};
-
+	
+	
 	const auto simplify = [&viewer, &selectedSimplifyDataObject](double number_of_edges) -> void {
 		std::cout << number_of_edges << std::endl;
 
@@ -80,13 +81,14 @@ static void do_simplify(igl::opengl::glfw::Viewer *viewer) {
 			viewer->data().set_face_based(true);
 		}
 	};
+	
 
 	simplifyDataObjectsList = get_simplify_data_structures_list(viewer->data_list);
 	selectedSimplifyDataObject = simplifyDataObjectsList[viewer->selected_data_index];
-	double rounded_up_five_percent_edges = std::ceil(0.05 * simplifyDataObject.E.rows());
+	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.E.rows());
 	simplify(rounded_up_five_percent_edges);
 }
-
+/*
 static std::vector<SimplifyDataObject> get_simplify_data_structures_list(std::vector<igl::opengl::ViewerData>  data_list) {
 	std::vector<SimplifyDataObject> simplifyDataObjectsList;
 
@@ -118,3 +120,4 @@ static std::vector<SimplifyDataObject> get_simplify_data_structures_list(std::ve
 static void simplify(double number_of_edges) {
 	std::cout << number_of_edges << std::endl;
 }
+*/
