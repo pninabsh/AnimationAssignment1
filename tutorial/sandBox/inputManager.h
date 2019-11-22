@@ -176,10 +176,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 
 		case ' ': {
-			std::vector<SimplifyDataObject> simplifyDataObjectsList = get_simplify_data_structures_list(scn->data_list);
-			SimplifyDataObject simplifyDataObject = simplifyDataObjectsList[scn->selected_data_index];
-			double rounded_up_five_percent_edges = std::ceil(0.05 * simplifyDataObject.E.rows());
-			simplify(rounded_up_five_percent_edges);
+			do_simplify(scn);
 			break;
 		}
 		default: break;//do nothing
