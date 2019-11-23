@@ -22,16 +22,14 @@ struct SimplifyDataObject
 
 Eigen::Matrix<double, 4, 1> calculate_new_contraction_vertex_position(Eigen::Matrix4d q_matrix) {
 	Eigen::Matrix<double, 4, 1> helping_vector = { 0, 0, 0, 1 };
-	/*return q_matrix.adjoint() * helping_vector;*/
 	return helping_vector;
 }
 
-Eigen::Matrix4d calculateKp(int f, igl::opengl::glfw::Viewer* viewer, Eigen::RowVector3d v) {
-	//calculate a,b,c,d such that a*x + b*y + c*z + d = 0 and a^2 + b^2 + c^2 = 1
-	const auto face_normal = viewer->data().F_normals.row(f).normalized();
-	const auto a = face_normal(0);
-	const auto b = face_normal(1);
-	const auto c = face_normal(2);
+//calculate a,b,c,d such that a*x + b*y + c*z + d = 0 and a^2 + b^2 + c^2 = 1
+Eigen::Matrix4d calculateKp(Eigen::RowVectorXd plane_normal, Eigen::RowVector3d v) {
+	const auto a = plane_normal(0);
+	const auto b = plane_normal(1);
+	const auto c = plane_normal(2);
 	//calculaye d such that d = -a*x-b*y-c*z
 	const auto d = -v(0) * a + -v(1) * b + -v(2) * c;
 	Eigen::Matrix4d result;
@@ -42,48 +40,44 @@ Eigen::Matrix4d calculateKp(int f, igl::opengl::glfw::Viewer* viewer, Eigen::Row
 	return result;
 }
 
-bool is_face_partof_vertex(Eigen::RowVector3d v, int f, SimplifyDataObject simplifyDataObject) {
-	int number_faces = simplifyDataObject.EMAP.size() / 3;
-	bool isMemberOfFace = false;
-
-
-	for (int i = 0; i < 3 && !isMemberOfFace; i++) {
-		int index_edge_i = simplifyDataObject.EMAP(i * number_faces + f);
-
-		int v0Index = simplifyDataObject.E(index_edge_i, 0);
-		int v1Index = simplifyDataObject.E(index_edge_i, 1);
-
-		Eigen::RowVector3d v0 = simplifyDataObject.V.row(v0Index);
-		Eigen::RowVector3d v1 = simplifyDataObject.V.row(v1Index);
-
-		const auto& isVerticeEqual = [](Eigen::RowVector3d a, Eigen::RowVector3d b) -> bool {
-			return (a(0) == b(0) && a(1) == b(1) && a(2) == b(2));
-		};
-	
-		if (isVerticeEqual(v0, v) || isVerticeEqual(v1, v)) {
-			isMemberOfFace = true;
-		}
-	}
-
-	return isMemberOfFace;
-
+bool is_face_partof_vertex(int v_id, int f_id, SimplifyDataObject simplifyDataObject) {
+	return simplifyDataObject.F(f_id, 0) == v_id || simplifyDataObject.F(f_id, 1) == v_id || simplifyDataObject.F(f_id, 2) == v_id;
 }
 
-Eigen::Matrix4d calculate_Qmatrix(igl::opengl::glfw::Viewer* viewer, SimplifyDataObject simplifyDataObject, Eigen::RowVector3d v) {
+Eigen::Matrix4d do_sum_planes(igl::opengl::glfw::Viewer* viewer, Eigen::RowVector3d v_coordinates, std::vector<int> vertex_planes) {
+	//go over all the planes and calculate: delta(v) = v^T * (sum of all Kp of each such plane) * v
+	Eigen::Matrix4d sumOfAllPlanes = Eigen::Matrix4d::Zero();
+	for (int plane_id : vertex_planes) {
+		Eigen::RowVectorXd plane_normal = viewer->data().F_normals.row(plane_id);
+		sumOfAllPlanes += calculateKp(plane_normal, v_coordinates);
+	}
+
+	return sumOfAllPlanes;
+}
+
+Eigen::Matrix4d calculate_Qmatrix(igl::opengl::glfw::Viewer* viewer, SimplifyDataObject simplifyDataObject, int v_id) {
 	std::vector<int> vertex_planes;
 	//find all planes that belong to this vertex v
-	int number_faces = simplifyDataObject.EMAP.size() / 3;
+	int number_faces = simplifyDataObject.F.rows();
+
 	for (int f = 0; f < number_faces; f++) {
-		if (is_face_partof_vertex(v, f, simplifyDataObject)) {
+		if (is_face_partof_vertex(v_id, f, simplifyDataObject)) {
 			vertex_planes.push_back(f);
 		}
 	}
-	//go over all the planes and calculate: delta(v) = v^T * (sum of all Kp of each such plane) * v
-	Eigen::Matrix4d sumOfAllPlanes = Eigen::Matrix4d::Zero();
-	for (int i = 0; i < vertex_planes.size(); i++) {
-		sumOfAllPlanes += calculateKp(vertex_planes[i], viewer, v);
-	}
-	return sumOfAllPlanes;
+
+	return do_sum_planes(viewer, simplifyDataObject.V.row(v_id), vertex_planes);
+}
+
+Eigen::Matrix4d calculate_midpoint_Qmatrix(igl::opengl::glfw::Viewer* viewer, SimplifyDataObject simplifyDataObject, int e, int v1_id, int v2_id) {
+	int F1 = simplifyDataObject.EF(e, 0);
+	int F2 = simplifyDataObject.EF(e, 1);
+
+	std::vector<int> vertex_planes;
+	vertex_planes.push_back(F1);
+	vertex_planes.push_back(F2);
+
+	return 	do_sum_planes(viewer, (simplifyDataObject.V.row(v1_id) + simplifyDataObject.V.row(v2_id)) / 2, vertex_planes);
 }
 
 double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Matrix4d q_matrix) {
@@ -91,27 +85,30 @@ double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Ma
 	return mulResult(0);
 }
 
-double calculate_edge_cost(SimplifyDataObject simplifyDataObject, igl::opengl::glfw::Viewer* viewer, int e) {
-	int v0Index = simplifyDataObject.E(e, 0);
-	int v1Index = simplifyDataObject.E(e, 1);
-	std::vector<Eigen::Matrix4d> possible_qmatrices;
-	Eigen::RowVector3d v1 = simplifyDataObject.V.row(v0Index);
-	Eigen::RowVector3d v2 = simplifyDataObject.V.row(v1Index);
+double calculate_edge_cost(igl::opengl::glfw::Viewer* viewer, SimplifyDataObject simplifyDataObject, int e) {
+	int v1 = simplifyDataObject.E(e, 0);
+	int v2 = simplifyDataObject.E(e, 1);
+
 	Eigen::Matrix4d q_matrix_v1 = calculate_Qmatrix(viewer, simplifyDataObject, v1);
 	Eigen::Matrix4d q_matrix_v2 = calculate_Qmatrix(viewer, simplifyDataObject, v2);
+	Eigen::Matrix4d q_matrix_midpoint = calculate_midpoint_Qmatrix(viewer, simplifyDataObject, e, v1, v2);
+
+	std::vector<Eigen::Matrix4d> possible_qmatrices;
 	possible_qmatrices.push_back(q_matrix_v1);
 	possible_qmatrices.push_back(q_matrix_v2);
-	possible_qmatrices.push_back(calculate_Qmatrix(viewer, simplifyDataObject, (v2 + v2) / 2));
+	possible_qmatrices.push_back(q_matrix_midpoint);
+
 	Eigen::Matrix<double, 4, 1> optimal_vertex;
-	double minimal_error = std::numeric_limits<double>::max();
-	for (int i = 0; i < possible_qmatrices.size(); i++) {
-		Eigen::Matrix<double, 4, 1> newVertex = calculate_new_contraction_vertex_position(possible_qmatrices[i]);
-		double error = calculate_vertex_cost(newVertex, possible_qmatrices[i]);
+	double minimal_error = std::numeric_limits<double>::infinity();
+	for (Eigen::Matrix4d possible_qmatrice : possible_qmatrices) {
+		Eigen::Matrix<double, 4, 1> newVertex = calculate_new_contraction_vertex_position(possible_qmatrice);
+		double error = calculate_vertex_cost(newVertex, possible_qmatrice);
 		if (error < minimal_error) {
 			error = minimal_error;
 			optimal_vertex = newVertex;
 		}
 	}
+
 	Eigen::Matrix4d new_qmatrix = q_matrix_v1 + q_matrix_v2;
 	return calculate_vertex_cost(optimal_vertex, new_qmatrix);
 
@@ -134,29 +131,26 @@ static void do_simplify(igl::opengl::glfw::Viewer* viewer)
 			simplifyDataObject.F = data_list[i].F;
 
 			igl::edge_flaps(simplifyDataObject.F, simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF, simplifyDataObject.EI);
-			/*if (i == 0)
-			{
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(0) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(760) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(1520) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(6) << std::endl;
-					std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(2) << std::endl;
-					std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(0) << std::endl;
-			}*/
+
 			simplifyDataObject.C.resize(simplifyDataObject.E.rows(), simplifyDataObject.V.cols());
 
 			simplifyDataObject.Q.clear();
 
-			for (int e = 0; e < 10; e++)
+			// for debug performance
+			/*if (i != 0) {
+				simplifyDataObjectsList.push_back(simplifyDataObject);
+				continue;
+			}*/
+
+			for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 			{
+
+				//Todo: calculate new v' position and put it in C.row(e)
 				Eigen::RowVectorXd p(1, 3);
 				simplifyDataObject.C.row(e) = p;
 
-				double cost = calculate_edge_cost(simplifyDataObject, viewer, e);
-				simplifyDataObject.Q.insert(std::pair<double, int>(0, e));
+				double cost = calculate_edge_cost(viewer, simplifyDataObject, e);
+				simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
 			}
 
 			simplifyDataObjectsList.push_back(simplifyDataObject);
@@ -170,9 +164,6 @@ static void do_simplify(igl::opengl::glfw::Viewer* viewer)
 
 		bool something_collapsed = false;
 		int num_collapsed = 0;
-
-		// TODO: write calculate_edges_cost as part of step 9
-		// selectedSimplifyDataObject.C = calculate_edges_cost(....)
 
 		for (int i = 0; i < number_of_edges; i++)
 		{
