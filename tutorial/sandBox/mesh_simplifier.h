@@ -2,8 +2,6 @@
 
 #include "igl/opengl/ViewerData.h"
 #include "igl/edge_flaps.h"
-#include "igl/shortest_edge_and_midpoint.h"
-#include "igl/collapse_edge.h"
 #include "set"
 
 typedef std::set<std::pair<double, int>> PriorityQueue;
@@ -18,6 +16,148 @@ struct SimplifyDataObject
 	Eigen::MatrixXi EI;
 	PriorityQueue Q;
 	Eigen::MatrixXd C;
+};
+
+
+static std::pair<double, int> get_lowest_cost_and_edge_pair(PriorityQueue Q) {
+	std::pair<double, int> selectedCostAndEdge = std::pair<double, int>(std::numeric_limits<double>::infinity(), -1);
+	for (std::pair<double, int> costAndEdge : Q) {
+		if (selectedCostAndEdge.first > costAndEdge.first) {
+			selectedCostAndEdge = costAndEdge;
+		}
+	}
+
+	return selectedCostAndEdge;
+}
+
+static void erase_face(Eigen::MatrixXi &F, int face_id) {
+	Eigen::MatrixXi new_F;
+
+	int j = 0;
+	for (int i = 0; i < F.rows() && j < F.rows(); i++,j++) {
+		if (j == face_id) {
+			j++;
+		}
+
+		if (j == F.rows()) {
+			break;
+		}
+
+		new_F.row(i) = F.row(j);
+	}
+
+	F = new_F;
+}
+
+static void erase_vertice(Eigen::MatrixXd& V, int vertice_id) {
+	Eigen::MatrixXd new_V;
+
+	int j = 0;
+	for (int i = 0; i < V.rows() && j < V.rows(); i++, j++) {
+		if (j == vertice_id) {
+			j++;
+		}
+
+		if (j == V.rows()) {
+			break;
+		}
+
+		new_V.row(i) = V.row(j);
+	}
+
+	V = new_V;
+}
+
+
+static void replace_vertice_in_all_faces(Eigen::MatrixXi& F, int old_vertice_id, int new_vertice_id) {
+	for (int i = 0; i < F.rows(); i++) {
+		for (int j = 0; j < F.cols(); j++) {
+			if (F(i, j) == old_vertice_id) {
+				F(i, j) = new_vertice_id;
+			}
+		}
+	}
+}
+
+// 1. given: edge with index 'e' and cost value 'cost' with the lowest cost value in Q
+// 2. given: EF(e,0)=F1 and EF(e,1)=F2
+// 3. delete: F.row(F1) and F.row(F2)
+// 4. given: E(e,0)=Vs and E(e,1)=Vd
+// 5. delete: V.row(Vd)
+// 6. do: V.row(Vs)=C.row(e)
+// 7. for each cell in F: if F(i,j) == Vd then F(i,j)= Vs
+// 8. print: "edge ${e}, cost = ${cost}, new v position (${C.row(e,0)},${C.row(e,1)},${C.row(e,2)})"
+// 9. use the modified V and F to re-calculate E,EF,EI,EMAP using edge_flaps
+// 10. then, re-calculate C and Q using 'step 9' method
+
+static bool collapse_edge(SimplifyDataObject &simplifyDataObject) {
+	// 1. given: edge with index 'e' and cost value 'cost' with the lowest cost value in Q
+	std::pair<double, int> selectedCostAndEdge = get_lowest_cost_and_edge_pair(simplifyDataObject.Q);
+
+	if (selectedCostAndEdge.second == -1) {
+		return false;
+	}
+
+	simplifyDataObject.Q.erase(selectedCostAndEdge);
+
+	double cost = selectedCostAndEdge.first;
+	int e = selectedCostAndEdge.second;
+
+	// 2. given: EF(e,0)=F1 and EF(e,1)=F2
+
+	int F1 = simplifyDataObject.EF(e, 0);
+	int F2 = simplifyDataObject.EF(e, 1);
+
+	// 3. delete: F.row(F1) and F.row(F2)
+
+	erase_face(simplifyDataObject.F, F1);
+	erase_face(simplifyDataObject.F, F2);
+
+	// 4. given: E(e,0)=Vs and E(e,1)=Vd
+
+	int Vs = simplifyDataObject.E(e, 0);
+	int Vd = simplifyDataObject.E(e, 1);
+
+	// 5. delete: V.row(Vd)
+
+	erase_vertice(simplifyDataObject.V, Vd);
+
+	// 6. do: V.row(Vs)=C.row(e)
+
+	simplifyDataObject.V.row(Vs) = simplifyDataObject.C.row(e);
+
+	// 7. for each cell in F: if F(i,j) == Vd then F(i,j)= Vs
+
+	replace_vertice_in_all_faces(simplifyDataObject.F, Vd, Vs);
+
+	// 8. print: "edge ${e}, cost = ${cost}, new v position (${C(e,0)},${C(e,1)},${C(e,2)})"
+
+	std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << simplifyDataObject.C(e, 0) << ","
+		<< simplifyDataObject.C(e, 1) << "," << simplifyDataObject.C(e, 2) << ")" << std::endl;
+
+	// 9. use the modified V and F to re-calculate E,EF,EI,EMAP using edge_flaps
+	
+	igl::edge_flaps(simplifyDataObject.F, simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF, simplifyDataObject.EI);
+
+	// 10. then, re-calculate C and Q using 'step 9' method
+
+	//TODO: wait for pnina to finish 'step 9'
+	// for now : bullshit logic
+	simplifyDataObject.C.resize(simplifyDataObject.E.rows(), simplifyDataObject.V.cols());
+
+	simplifyDataObject.Q.clear();
+
+	for (int e = 0; e < simplifyDataObject.E.rows(); e++)
+	{
+		Eigen::RowVectorXd p(1, 3);
+		simplifyDataObject.C.row(e) = p;
+
+		double cost = e;
+		simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
+	}
+
+	return true;
+
 };
 
 static void do_simplify(igl::opengl::glfw::Viewer *viewer)
@@ -36,18 +176,7 @@ static void do_simplify(igl::opengl::glfw::Viewer *viewer)
 			simplifyDataObject.F = data_list[i].F;
 
 			igl::edge_flaps(simplifyDataObject.F, simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF, simplifyDataObject.EI);
-			/*if (i == 0)
-			{
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(0) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(760) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EMAP:\n"
-						  << simplifyDataObject.EMAP.row(1520) << std::endl;
-				std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(6) << std::endl;
-					std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(2) << std::endl;
-					std::cout << "Here is the matrix simplifyDataObject.EF:\n" << simplifyDataObject.EF.row(0) << std::endl;
-			}*/
+
 			simplifyDataObject.C.resize(simplifyDataObject.E.rows(), simplifyDataObject.V.cols());
 
 			simplifyDataObject.Q.clear();
@@ -68,7 +197,7 @@ static void do_simplify(igl::opengl::glfw::Viewer *viewer)
 	};
 
 	const auto simplify = [&viewer, &selectedSimplifyDataObject](double number_of_edges) -> void {
-		//std::cout << number_of_edges << std::endl;
+		std::cout << number_of_edges << std::endl;
 
 		bool something_collapsed = false;
 		int num_collapsed = 0;
@@ -78,11 +207,11 @@ static void do_simplify(igl::opengl::glfw::Viewer *viewer)
 
 		for (int i = 0; i < number_of_edges; i++)
 		{
-			// TODO: write collapse_edge as part of step 10
-			//if (!collapse_edge(..){
-			//		break;
-			//	}
+			// TODO: remove break once 'step 10' done
 			break;
+			if (!collapse_edge(selectedSimplifyDataObject)){
+				break;
+			}
 			something_collapsed = true;
 			num_collapsed++;
 		}
