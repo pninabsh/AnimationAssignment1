@@ -29,3 +29,40 @@ void MyViewer::load_configuration() {
 	cout << "loading done!" << endl;
 	configuration_file.close();
 }
+
+void MyViewer::init_simplify_data_structures_list() {
+	simplifyDataObjectsList = get_simplify_data_structures_list(this);
+}
+
+void MyViewer::simplify() {
+	SimplifyDataObject selectedSimplifyDataObject;
+
+	const auto do_simplify = [this,&selectedSimplifyDataObject](double number_of_edges) -> void {
+		std::cout << number_of_edges << std::endl;
+
+		bool something_collapsed = false;
+		int num_collapsed = 0;
+
+		for (int i = 0; i < number_of_edges; i++)
+		{
+			// TODO: write collapse_edge as part of step 10
+			//if (!collapse_edge(..){
+			//		break;
+			//	}
+			break;
+			something_collapsed = true;
+			num_collapsed++;
+		}
+
+		if (something_collapsed)
+		{
+			data().clear();
+			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
+			data().set_face_based(true);
+		}
+	};
+
+	selectedSimplifyDataObject = simplifyDataObjectsList[selected_data_index];
+	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.E.rows());
+	do_simplify(rounded_up_five_percent_edges);
+}

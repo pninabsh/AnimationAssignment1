@@ -1,6 +1,7 @@
 #pragma once
 #include "igl/opengl/glfw/Display.h"
-#include "mesh_simplifier.h"
+#include "tutorial/sandBox/MyRenderer.h"
+#include "tutorial/sandBox/MyViewer.h"
 
 static std::string mapIndexToMeshName(int index) {
 	switch (index) {
@@ -110,8 +111,8 @@ void glfw_window_size(GLFWwindow* window, int width, int height)
 
 static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int action, int modifier)
 {
-	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-	igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+	MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
+	MyViewer* scn = rndr->GetMyScene();
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
@@ -176,7 +177,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 
 		case ' ': {
-			do_simplify(scn);
+			scn->simplify();
 			break;
 		}
 		default: break;//do nothing
