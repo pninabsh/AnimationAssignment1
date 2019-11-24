@@ -29,7 +29,7 @@ double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e);
 //TODO
 Eigen::RowVector3d calculate_new_vertice_place();
 
-std::vector<SimplifyDataObject> get_simplify_data_structures_list(igl::opengl::glfw::Viewer* viewer);
+SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data);
 
 /*clock_t begin = clock();
 

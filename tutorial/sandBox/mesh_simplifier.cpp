@@ -88,18 +88,12 @@ Eigen::RowVector3d calculate_new_vertice_place() {
 	return p;
 }
 
-std::vector<SimplifyDataObject> get_simplify_data_structures_list(igl::opengl::glfw::Viewer* viewer){
-	std::vector<igl::opengl::ViewerData> data_list = viewer->data_list;
-
-	std::vector<SimplifyDataObject> simplifyDataObjectsList;
-
-	for (int i = 0; i < data_list.size(); i++)
-	{
+SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data){
 		SimplifyDataObject simplifyDataObject;
 
 		// init V,F
-		simplifyDataObject.V = data_list[i].V;
-		simplifyDataObject.F = data_list[i].F;
+		simplifyDataObject.V = viewer_data.V;
+		simplifyDataObject.F = viewer_data.F;
 
 		// init E,EMAP,EF,EI
 		igl::edge_flaps(simplifyDataObject.F, simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF, simplifyDataObject.EI);
@@ -107,7 +101,7 @@ std::vector<SimplifyDataObject> get_simplify_data_structures_list(igl::opengl::g
 		// init F_NORMALS
 		simplifyDataObject.F_NORMALS.resize(simplifyDataObject.F.rows(), 3);
 		for (int j = 0; j < simplifyDataObject.F_NORMALS.rows(); j++) {
-			simplifyDataObject.F_NORMALS.row(j) = viewer->data(i).F_normals.row(j);
+			simplifyDataObject.F_NORMALS.row(j) = viewer_data.F_normals.row(j);
 			std::cout << simplifyDataObject.F_NORMALS.row(j) << std::endl;
 		}
 
@@ -132,10 +126,6 @@ std::vector<SimplifyDataObject> get_simplify_data_structures_list(igl::opengl::g
 			simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject,v));
 		}
 
-		clock_t end = clock();
-		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-
-		std::cout << elapsed_secs << std::endl;
 		
 		// init Q,C
 
@@ -154,13 +144,5 @@ std::vector<SimplifyDataObject> get_simplify_data_structures_list(igl::opengl::g
 			simplifyDataObject.Q.insert(std::pair<double, int>(0, e));
 		}
 
-		simplifyDataObjectsList.push_back(simplifyDataObject);
-
-		clock_t end1 = clock();
-		double elapsed_secs1 = double(end1 - end) / CLOCKS_PER_SEC;
-
-		std::cout << elapsed_secs1 << std::endl;
-	}
-
-	return simplifyDataObjectsList;
+		return simplifyDataObject;
 };

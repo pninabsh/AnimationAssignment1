@@ -31,7 +31,9 @@ void MyViewer::load_configuration() {
 }
 
 void MyViewer::init_simplify_data_structures_list() {
-	simplifyDataObjectsList = get_simplify_data_structures_list(this);
+	for (igl::opengl::ViewerData viewer_data : data_list) {
+		simplifyDataObjectsList.push_back(get_SimplifyDataObject(viewer_data));
+	}
 }
 
 void MyViewer::simplify() {
