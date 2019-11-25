@@ -29,7 +29,13 @@ double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e);
 //TODO
 Eigen::RowVector3d calculate_new_vertice_place();
 
+// init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
+void get_SimplifyDataObject(SimplifyDataObject& simplifyDataObject);
+
+// init V,F,E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
 SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data);
+
+bool collapse_edge(SimplifyDataObject& simplifyDataObject);
 
 /*clock_t begin = clock();
 
