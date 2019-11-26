@@ -40,6 +40,7 @@ void erase_vertice(Eigen::MatrixXd& V, int vertice_id) {
 	Eigen::MatrixXd new_V;
 
 	new_V.resize(V.rows(), 3);
+
 	int j = 0;
 	for (int i = 0; i < V.rows() && j < V.rows(); i++, j++) {
 		if (j == vertice_id) {
@@ -108,11 +109,14 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject) {
 
 	erase_vertice(simplifyDataObject.V, Vd);
 
+	// TODO: now you should update Vs INDEX!!!!
+
 	// 6. do: V.row(Vs)=C.row(e)
 
 	simplifyDataObject.V.row(Vs) = simplifyDataObject.C.row(e);
 
 	// 7. for each cell in F: if F(i,j) == Vd then F(i,j)= Vs
+
 
 	replace_vertice_in_all_faces(simplifyDataObject.F, Vd, Vs);
 
