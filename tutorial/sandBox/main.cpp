@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
   viewer.init_simplify_data_structures_list();
   Init(*disp);
   renderer.init(&viewer);
+  renderer.my_init(&viewer);
   disp->SetRenderer(&renderer);
   disp->launch_rendering(true);
   

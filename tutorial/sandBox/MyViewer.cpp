@@ -32,7 +32,7 @@ void MyViewer::load_configuration() {
 
 void MyViewer::init_simplify_data_structures_list() {
 	for (igl::opengl::ViewerData viewer_data : data_list) {
-		simplifyDataObjectsList.push_back(get_SimplifyDataObject(viewer_data));
+		simplifyDataObjectsList->push_back(get_SimplifyDataObject(viewer_data));
 	}
 }
 
@@ -40,8 +40,6 @@ void MyViewer::simplify() {
 	SimplifyDataObject selectedSimplifyDataObject;
 
 	const auto do_simplify = [this,&selectedSimplifyDataObject](double number_of_edges) -> void {
-		std::cout << number_of_edges << std::endl;
-
 		bool something_collapsed = false;
 		int num_collapsed = 0;
 
@@ -65,7 +63,7 @@ void MyViewer::simplify() {
 		}
 	};
 
-	selectedSimplifyDataObject = simplifyDataObjectsList[selected_data_index];
+	selectedSimplifyDataObject = simplifyDataObjectsList->at(selected_data_index);
 	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.E.rows());
 	do_simplify(rounded_up_five_percent_edges);
 }

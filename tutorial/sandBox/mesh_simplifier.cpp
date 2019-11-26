@@ -15,6 +15,9 @@ void erase_face(Eigen::MatrixXi& F, Eigen::MatrixXd& F_NORMALS, int face_id) {
 	Eigen::MatrixXi new_F;
 	Eigen::MatrixXd new_F_NORMALS;
 
+	new_F.resize(F.rows(), 3);
+	new_F_NORMALS.resize(F_NORMALS.rows(), 3);
+
 	int j = 0;
 	for (int i = 0; i < F.rows() && j < F.rows(); i++, j++) {
 		if (j == face_id) {
@@ -36,6 +39,7 @@ void erase_face(Eigen::MatrixXi& F, Eigen::MatrixXd& F_NORMALS, int face_id) {
 void erase_vertice(Eigen::MatrixXd& V, int vertice_id) {
 	Eigen::MatrixXd new_V;
 
+	new_V.resize(V.rows(), 3);
 	int j = 0;
 	for (int i = 0; i < V.rows() && j < V.rows(); i++, j++) {
 		if (j == vertice_id) {
@@ -124,7 +128,7 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject) {
 
 Eigen::Matrix<double, 4, 1> calculate_new_contraction_vertex_position(Eigen::Matrix4d q_matrix) {
 	Eigen::Matrix<double, 4, 1> helping_vector = { 0, 0, 0, 1 };
-	return helping_vector;
+	return q_matrix.adjoint() * helping_vector;
 }
 
 //calculate a,b,c,d such that a*x + b*y + c*z + d = 0 and a^2 + b^2 + c^2 = 1
@@ -229,7 +233,6 @@ double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e) {
 
 	 simplifyDataObject.V_PLANES = V_PLANES;
 
-	 clock_t begin = clock();
 
 	 // init V_Q_MATRIX
 	 for (int v = 0; v < simplifyDataObject.V.rows(); v++) {
@@ -245,13 +248,12 @@ double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e) {
 
 	 for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 	 {
-
 		 //Todo: calculate new v' position and put it in C.row(e). implement it in 'calculate_new_vertice_place' method
 		 Eigen::RowVectorXd p(1, 3);
 		 simplifyDataObject.C.row(e) = p;
 
 		 double cost = calculate_edge_cost(simplifyDataObject, e);
-		 simplifyDataObject.Q.insert(std::pair<double, int>(0, e));
+		 simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
 	 }
  }
 
@@ -267,7 +269,6 @@ SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data){
 		simplifyDataObject.F_NORMALS.resize(simplifyDataObject.F.rows(), 3);
 		for (int j = 0; j < simplifyDataObject.F_NORMALS.rows(); j++) {
 			simplifyDataObject.F_NORMALS.row(j) = viewer_data.F_normals.row(j);
-			std::cout << simplifyDataObject.F_NORMALS.row(j) << std::endl;
 		}
 
 
