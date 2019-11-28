@@ -148,12 +148,6 @@ bool collapse_edge(SimplifyDataObject &simplifyDataObject)
 	return true;
 };
 
-Eigen::Matrix<double, 4, 1> calculate_new_contraction_vertex_position(Eigen::Matrix4d q_matrix)
-{
-	Eigen::Matrix<double, 4, 1> helping_vector = {0, 0, 0, 1};
-	return q_matrix.adjoint() * helping_vector;
-}
-
 //calculate a,b,c,d such that a*x + b*y + c*z + d = 0 and a^2 + b^2 + c^2 = 1
 Eigen::Matrix4d calculateKp(Eigen::RowVectorXd plane_normal, Eigen::RowVector3d v)
 {
@@ -191,21 +185,6 @@ Eigen::Matrix4d calculate_Qmatrix(SimplifyDataObject simplifyDataObject, int v_i
 	return do_sum_planes(simplifyDataObject, v_coordinates, vertex_planes);
 }
 
-Eigen::Matrix4d calculate_midpoint_Qmatrix(SimplifyDataObject simplifyDataObject, int e, int v1_id, int v2_id)
-{
-	int F1 = simplifyDataObject.EF(e, 0);
-	int F2 = simplifyDataObject.EF(e, 1);
-
-	if (e == 323 && simplifyDataObject.E.rows() == 1492)
-	{
-		int meow = 5;
-	}
-
-	std::vector<int> vertex_planes = {F1, F2};
-	Eigen::RowVector3d midpoint_coordinates = (simplifyDataObject.V.row(v1_id) + simplifyDataObject.V.row(v2_id)) / 2;
-	return do_sum_planes(simplifyDataObject, midpoint_coordinates, vertex_planes);
-}
-
 double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Matrix4d q_matrix)
 {
 	Eigen::Matrix<double, 1, 1> mulResult = vectorMatrix.adjoint() * q_matrix * vectorMatrix;
@@ -214,41 +193,35 @@ double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Ma
 
 double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e)
 {
+	Eigen::RowVectorXd p = simplifyDataObject.C.row(e);
 	int v1 = simplifyDataObject.E(e, 0);
 	int v2 = simplifyDataObject.E(e, 1);
-
 	Eigen::Matrix4d q_matrix_v1 = simplifyDataObject.V_Q_MATRIX[v1];
-
 	Eigen::Matrix4d q_matrix_v2 = simplifyDataObject.V_Q_MATRIX[v2];
-
-	Eigen::Matrix4d q_matrix_midpoint = calculate_midpoint_Qmatrix(simplifyDataObject, e, v1, v2);
-
-	std::vector<Eigen::Matrix4d> possible_qmatrices;
-	possible_qmatrices.push_back(q_matrix_v1);
-	possible_qmatrices.push_back(q_matrix_v2);
-	possible_qmatrices.push_back(q_matrix_midpoint);
-
-	Eigen::Matrix<double, 4, 1> optimal_vertex;
-	double minimal_error = std::numeric_limits<double>::infinity();
-	for (Eigen::Matrix4d possible_qmatrice : possible_qmatrices)
-	{
-		Eigen::Matrix<double, 4, 1> newVertex = calculate_new_contraction_vertex_position(possible_qmatrice);
-		double error = calculate_vertex_cost(newVertex, possible_qmatrice);
-		if (error < minimal_error)
-		{
-			error = minimal_error;
-			optimal_vertex = newVertex;
-		}
-	}
-
-	Eigen::Matrix4d new_qmatrix = q_matrix_v1 + q_matrix_v2;
-	return calculate_vertex_cost(optimal_vertex, new_qmatrix);
+	Eigen::Matrix4d q_matrix = q_matrix_v1 + q_matrix_v2;
+	Eigen::Vector4d vertex(p(0), p(1), p(2), 1);
+	return calculate_vertex_cost(vertex, q_matrix);
 }
 
-Eigen::RowVector3d calculate_new_vertice_place()
+//function that calcutes v' for each edge e
+Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataObject, int e)
 {
-	Eigen::RowVectorXd p(1, 3);
-	return p;
+	Eigen::RowVectorXd p;
+	Eigen::Matrix<double, 4, 1> helping_vector = { 0, 0, 0, 1 };
+	int v1 = simplifyDataObject.E(e, 0);
+	int v2 = simplifyDataObject.E(e, 1);
+	Eigen::RowVector3d midpoint_coordinates = (simplifyDataObject.V.row(v1) + simplifyDataObject.V.row(v2)) / 2;
+	Eigen::Matrix4d q_matrix_v1 = simplifyDataObject.V_Q_MATRIX[v1];
+	Eigen::Matrix4d q_matrix_v2 = simplifyDataObject.V_Q_MATRIX[v2];
+	Eigen::Matrix4d q_matrix_new_vertex = q_matrix_v1 + q_matrix_v2;
+	//check if this matrix is inversible, if so we need to multiply q' with helping vector, otherwise return midpoint
+	if (q_matrix_new_vertex.determinant() != 0) {
+		Eigen::Matrix<double, 4, 1> multiply_result_matrix = q_matrix_new_vertex.inverse() * helping_vector;
+		p << multiply_result_matrix(0, 0), multiply_result_matrix(1, 0), multiply_result_matrix(2, 0);
+		return p;
+	}
+	//otherwise return midpoint coordinates
+	return midpoint_coordinates;
 }
 
 // init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
@@ -288,7 +261,7 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 	for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 	{
 		//Todo: calculate new v' position and put it in C.row(e). implement it in 'calculate_new_vertice_place' method
-		Eigen::RowVectorXd p(1, 3);
+		Eigen::RowVectorXd p = calculate_new_vertice_place(simplifyDataObject, e);
 		simplifyDataObject.C.row(e) = p;
 		std::cout << e << "- start" << std::endl;
 		double cost = calculate_edge_cost(simplifyDataObject, e);

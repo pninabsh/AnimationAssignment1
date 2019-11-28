@@ -27,7 +27,7 @@ struct SimplifyDataObject
 double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e);
 
 //TODO
-Eigen::RowVector3d calculate_new_vertice_place();
+Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataObject, int e);
 
 // init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
 void get_SimplifyDataObject(SimplifyDataObject& simplifyDataObject);
