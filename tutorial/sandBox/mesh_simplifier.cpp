@@ -206,7 +206,7 @@ double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e)
 //function that calcutes v' for each edge e
 Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataObject, int e)
 {
-	Eigen::RowVectorXd p;
+	Eigen::RowVectorXd p(3);
 	Eigen::Matrix<double, 4, 1> helping_vector = { 0, 0, 0, 1 };
 	int v1 = simplifyDataObject.E(e, 0);
 	int v2 = simplifyDataObject.E(e, 1);
@@ -217,7 +217,10 @@ Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataO
 	//check if this matrix is inversible, if so we need to multiply q' with helping vector, otherwise return midpoint
 	if (q_matrix_new_vertex.determinant() != 0) {
 		Eigen::Matrix<double, 4, 1> multiply_result_matrix = q_matrix_new_vertex.inverse() * helping_vector;
-		p << multiply_result_matrix(0, 0), multiply_result_matrix(1, 0), multiply_result_matrix(2, 0);
+		double a = multiply_result_matrix(0, 0);
+		double b = multiply_result_matrix(1, 0);
+		double c = multiply_result_matrix(2, 0);
+		p << a, b, c;
 		return p;
 	}
 	//otherwise return midpoint coordinates
