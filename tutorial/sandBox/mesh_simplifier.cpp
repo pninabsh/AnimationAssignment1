@@ -1,150 +1,17 @@
 #include "mesh_simplifier.h"
 
-std::pair<double, int> get_lowest_cost_and_edge_pair(PriorityQueue Q)
-{
-	std::pair<double, int> selectedCostAndEdge = std::pair<double, int>(std::numeric_limits<double>::infinity(), -1);
-	for (std::pair<double, int> costAndEdge : Q)
-	{
-		if (selectedCostAndEdge.first > costAndEdge.first)
-		{
-			selectedCostAndEdge = costAndEdge;
-		}
-	}
-
-	return selectedCostAndEdge;
-}
-
-void erase_face(Eigen::MatrixXi &F, Eigen::MatrixXd &F_NORMALS, int face_id)
-{
-	Eigen::MatrixXi new_F;
-	Eigen::MatrixXd new_F_NORMALS;
-
-	new_F.resize(F.rows() - 1, 3);
-	new_F_NORMALS.resize(F_NORMALS.rows() - 1, 3);
-
-	int j = 0;
-	for (int i = 0; i < F.rows() - 1 && j < F.rows(); i++, j++)
-	{
-		if (j == face_id)
-		{
-			j++;
-		}
-
-		if (j == F.rows())
-		{
-			break;
-		}
-
-		new_F.row(i) = F.row(j);
-		new_F_NORMALS.row(i) = F_NORMALS.row(j);
-	}
-
-	F = new_F;
-	F_NORMALS = new_F_NORMALS;
-}
-
-void erase_vertice(Eigen::MatrixXd &V, int vertice_id)
-{
-	Eigen::MatrixXd new_V;
-
-	new_V.resize(V.rows() - 1, 3);
-
-	int j = 0;
-	for (int i = 0; i < V.rows() - 1 && j < V.rows(); i++, j++)
-	{
-		if (j == vertice_id)
-		{
-			j++;
-		}
-
-		if (j == V.rows())
-		{
-			break;
-		}
-
-		new_V.row(i) = V.row(j);
-	}
-
-	V = new_V;
-}
-
-void replace_vertice_in_all_faces(Eigen::MatrixXi &F, int old_v, int new_v)
-{
-	for (int i = 0; i < F.rows(); i++)
-	{
-		for (int j = 0; j < F.cols(); j++)
-		{
-			if (F(i, j) == old_v)
-			{
-				F(i, j) = new_v;
-			}
-		}
-	}
-}
-
-// 1. given: edge with index 'e' and cost value 'cost' with the lowest cost value in Q
-// 2. given: EF(e,0)=F1 and EF(e,1)=F2
-// 3. delete: F.row(F1) and F.row(F2)
-// 4. given: E(e,0)=Vs and E(e,1)=Vd
-// 5. do: V.row(Vs)=C.row(e)
-// 6. delete: V.row(Vd)
-// 7. for each cell in F: if F(i,j) == Vd then F(i,j)= Vs
-// 9. print: "edge ${e}, cost = ${cost}, new v position (${C.row(e,0)},${C.row(e,1)},${C.row(e,2)})"
-
 bool collapse_edge(SimplifyDataObject &simplifyDataObject)
 {
-	// 1. given: edge with index 'e' and cost value 'cost' with the lowest cost value in Q
-	std::pair<double, int> selectedCostAndEdge = get_lowest_cost_and_edge_pair(simplifyDataObject.Q);
 
-	if (selectedCostAndEdge.second == -1)
-	{
-		return false;
-	}
+	
+	// send to collapse_edge() with the error function instead of the midpont function;
 
-	simplifyDataObject.Q.erase(selectedCostAndEdge);
+	// re-calculate Qmatrix,Q,C
 
-	double cost = selectedCostAndEdge.first;
-	int e = selectedCostAndEdge.second;
-
-	// 2. given: EF(e,0)=F1 and EF(e,1)=F2
-
-	int F1 = simplifyDataObject.EF(e, 0);
-	int F2 = simplifyDataObject.EF(e, 1);
-
-	// 3. delete: F.row(F1) and F.row(F2)
-
-	erase_face(simplifyDataObject.F, simplifyDataObject.F_NORMALS, F1);
-	erase_face(simplifyDataObject.F, simplifyDataObject.F_NORMALS, F2);
-
-	// 4. given: E(e,0)=Vs and E(e,1)=Vd
-
-	int Vs = simplifyDataObject.E(e, 0);
-	int Vd = simplifyDataObject.E(e, 1);
-
-	// 5. do: V.row(Vs)=C.row(e)
-
-	//simplifyDataObject.V.row(Vs) = simplifyDataObject.C.row(e);
-
-	// 6. for each cell in F: if F(i,j) == Vd then do F(i,j)= Vs
-
-	replace_vertice_in_all_faces(simplifyDataObject.F, Vd, Vs);
-
-	// 7. delete: V.row(Vd)
-
-	erase_vertice(simplifyDataObject.V, Vd);
-
-	// 8. update all vertices that has higher or equal index to Vd(After delete in V) with new_index=old_index - 1 in F
-
-	for (int i = Vd; i < simplifyDataObject.V.rows(); i++)
-	{
-		replace_vertice_in_all_faces(simplifyDataObject.F, i + 1, i);
-	}
-
-	// 9. print: "edge ${e}, cost = ${cost}, new v position (${C(e,0)},${C(e,1)},${C(e,2)})"
-
-	std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << simplifyDataObject.C(e, 0) << ","
+	// print message
+	/*std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << simplifyDataObject.C(e, 0) << ","
 			  << simplifyDataObject.C(e, 1) << "," << simplifyDataObject.C(e, 2) << ")" << std::endl;
-
+			  */
 	return true;
 };
 
@@ -227,7 +94,7 @@ Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataO
 	return midpoint_coordinates;
 }
 
-// init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
+// init E,EMAP,EI,EF,C,Q,Qit, V_PLANES, V_Q_MATRIX
 void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 {
 	// init E,EMAP,EF,EI
@@ -255,11 +122,13 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 		simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject, v));
 	}
 
-	// init Q,C
+	// init Q,Qit,C
 
 	simplifyDataObject.C.resize(simplifyDataObject.E.rows(), simplifyDataObject.V.cols());
 
 	simplifyDataObject.Q.clear();
+
+	simplifyDataObject.Qit.resize(simplifyDataObject.E.rows());
 
 	for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 	{
@@ -268,7 +137,7 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 		simplifyDataObject.C.row(e) = p;
 		std::cout << e << "- start" << std::endl;
 		double cost = calculate_edge_cost(simplifyDataObject, e);
-		simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
+		simplifyDataObject.Qit[e] = simplifyDataObject.Q.insert(std::pair<double, int>(cost, e)).first;
 		std::cout << e << "- end" << std::endl;
 	}
 }
@@ -289,7 +158,7 @@ SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data)
 		simplifyDataObject.F_NORMALS.row(j) = viewer_data.F_normals.row(j);
 	}
 
-	// init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
+	// init E,EMAP,EI,EF,C,Q,Qit, V_PLANES, V_Q_MATRIX
 	get_SimplifyDataObject(simplifyDataObject);
 
 	return simplifyDataObject;

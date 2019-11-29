@@ -60,6 +60,7 @@ void MyViewer::simplify() {
 			data().clear();
 			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
 			data().set_face_based(true);
+			//
 		}
 	};
 

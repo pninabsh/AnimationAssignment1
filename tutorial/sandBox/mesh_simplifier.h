@@ -21,18 +21,20 @@ struct SimplifyDataObject
 	Eigen::MatrixXi EF;
 	Eigen::MatrixXi EI;
 	PriorityQueue Q;
+	std::vector<PriorityQueue::iterator > Qit;
 	Eigen::MatrixXd C;
 };
 
 double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e);
 
-//TODO
 Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataObject, int e);
 
 // init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
 void get_SimplifyDataObject(SimplifyDataObject& simplifyDataObject);
 
-// init V,F,E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
+// init V,F,E,EMAP,EI,EF,C,Q,Qit, V_PLANES, V_Q_MATRIX
 SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data);
 
 bool collapse_edge(SimplifyDataObject& simplifyDataObject);
+
+//Todo : create function to replace midpoint function
