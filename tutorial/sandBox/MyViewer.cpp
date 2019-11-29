@@ -46,11 +46,8 @@ void MyViewer::simplify() {
 		for (int i = 0; i < number_of_edges; i++)
 		{
 			if (!collapse_edge(selectedSimplifyDataObject)) {
-				// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
 				break;
 			}
-			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
-			get_SimplifyDataObject(selectedSimplifyDataObject);
 			something_collapsed = true;
 			num_collapsed++;
 		}
@@ -60,7 +57,8 @@ void MyViewer::simplify() {
 			data().clear();
 			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
 			data().set_face_based(true);
-			//
+			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
+			get_SimplifyDataObject(selectedSimplifyDataObject);
 		}
 	};
 

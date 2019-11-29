@@ -25,9 +25,10 @@ struct SimplifyDataObject
 	Eigen::MatrixXd C;
 };
 
-double calculate_edge_cost(SimplifyDataObject simplifyDataObject, int e);
+double calculate_edge_cost(Eigen::RowVectorXd new_v, Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e);
 
-Eigen::RowVector3d calculate_new_vertice_place(SimplifyDataObject& simplifyDataObject, int e);
+Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixXd V,
+	Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e);
 
 // init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
 void get_SimplifyDataObject(SimplifyDataObject& simplifyDataObject);
