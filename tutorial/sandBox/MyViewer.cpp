@@ -43,9 +43,16 @@ void MyViewer::simplify() {
 		bool something_collapsed = false;
 		int num_collapsed = 0;
 
+		std::vector<PriorityQueue::iterator > Qit;
+		Qit.resize(selectedSimplifyDataObject.E.rows());
+
+		for (auto it = selectedSimplifyDataObject.Q.begin(); it != selectedSimplifyDataObject.Q.end(); ++it) {
+			Qit[it->second] = it;
+		};
+
 		for (int i = 0; i < number_of_edges; i++)
 		{
-			if (!collapse_edge(selectedSimplifyDataObject)) {
+			if (!collapse_edge(selectedSimplifyDataObject, Qit)) {
 				break;
 			}
 			something_collapsed = true;

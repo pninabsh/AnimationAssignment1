@@ -119,8 +119,6 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 
 	simplifyDataObject.Q.clear();
 
-	simplifyDataObject.Qit.resize(simplifyDataObject.E.rows());
-
 	for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 	{
 		Eigen::Matrix4d q_matrix_v1 = simplifyDataObject.V_Q_MATRIX[simplifyDataObject.E(e, 0)];
@@ -131,7 +129,7 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 		int v1 = simplifyDataObject.E(e, 0);
 		int v2 = simplifyDataObject.E(e, 1);
 		double cost = calculate_edge_cost(p, simplifyDataObject.V_Q_MATRIX[v1], simplifyDataObject.V_Q_MATRIX[v2], e);
-		simplifyDataObject.Qit[e] = simplifyDataObject.Q.insert(std::pair<double, int>(cost, e)).first;
+		simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
 	}
 }
 
@@ -157,7 +155,7 @@ SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data)
 	return simplifyDataObject;
 };
 
-bool collapse_edge(SimplifyDataObject& simplifyDataObject)
+bool collapse_edge(SimplifyDataObject& simplifyDataObject, std::vector<PriorityQueue::iterator > &Qit)
 {
 	const auto& cost_and_placement = [&](const int e,
 		const Eigen::MatrixXd& V,
@@ -187,7 +185,7 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject)
 	igl::collapse_edge(
 		cost_and_placement, simplifyDataObject.V, simplifyDataObject.F,
 		simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF,
-		simplifyDataObject.EI, simplifyDataObject.Q, simplifyDataObject.Qit, simplifyDataObject.C);
+		simplifyDataObject.EI, simplifyDataObject.Q, Qit, simplifyDataObject.C);
 
 	std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << new_v_location(0) << ","
 		<< new_v_location(1) << "," << new_v_location(2) << ")" << std::endl;
