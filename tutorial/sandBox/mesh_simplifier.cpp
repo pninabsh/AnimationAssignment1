@@ -63,6 +63,7 @@ double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Ma
 Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixXd V, Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e)
 {
 	Eigen::Matrix4d q_matrix_new_vertex = q_matrix_v1 + q_matrix_v2;
+	q_matrix_new_vertex(3, 0) = 0; q_matrix_new_vertex(3, 1) = 0; q_matrix_new_vertex(3, 2) = 0; q_matrix_new_vertex(3, 3) = 1;
 	//check if this matrix is inversible, if so we need to multiply q' with helping vector, otherwise return midpoint
 	if (q_matrix_new_vertex.determinant() != 0) {
 		Eigen::RowVectorXd p(3);
