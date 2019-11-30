@@ -57,6 +57,7 @@ void MyViewer::simplify() {
 			}
 			something_collapsed = true;
 			num_collapsed++;
+			update_q_matrixes(selectedSimplifyDataObject);
 		}
 
 		if (something_collapsed)

@@ -37,4 +37,5 @@ SimplifyDataObject get_SimplifyDataObject(igl::opengl::ViewerData viewer_data);
 
 bool collapse_edge(SimplifyDataObject& simplifyDataObject, std::vector<PriorityQueue::iterator >& Qit);
 
+void update_q_matrixes(SimplifyDataObject& simplifyDataObject);
 //Todo : create function to replace midpoint function

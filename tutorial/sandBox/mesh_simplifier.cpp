@@ -108,11 +108,15 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 
 	simplifyDataObject.V_PLANES = V_PLANES;
 
+	//simplifyDataObject.V_Q_MATRIX.clear();
+
 	// init V_Q_MATRIX
-	for (int v = 0; v < simplifyDataObject.V.rows(); v++)
+	/*for (int v = 0; v < simplifyDataObject.V.rows(); v++)
 	{
 		simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject.V, simplifyDataObject.V_PLANES[v],simplifyDataObject.F_NORMALS, v));
-	}
+	}*/
+
+	update_q_matrixes(simplifyDataObject);
 
 	// init Q,Qit,C
 
@@ -131,6 +135,14 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 		int v2 = simplifyDataObject.E(e, 1);
 		double cost = calculate_edge_cost(p, simplifyDataObject.V_Q_MATRIX[v1], simplifyDataObject.V_Q_MATRIX[v2], e);
 		simplifyDataObject.Q.insert(std::pair<double, int>(cost, e));
+	}
+}
+
+void update_q_matrixes(SimplifyDataObject& simplifyDataObject) {
+	simplifyDataObject.V_Q_MATRIX.clear();
+	for (int v = 0; v < simplifyDataObject.V.rows(); v++)
+	{
+		simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject.V, simplifyDataObject.V_PLANES[v], simplifyDataObject.F_NORMALS, v));
 	}
 }
 
