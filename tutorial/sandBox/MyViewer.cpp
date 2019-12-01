@@ -57,20 +57,26 @@ void MyViewer::simplify() {
 			}
 			something_collapsed = true;
 			num_collapsed++;
+			update_v_planes(selectedSimplifyDataObject);
 			update_q_matrixes(selectedSimplifyDataObject);
+			update_priority_queue(selectedSimplifyDataObject);
+			for (auto it = selectedSimplifyDataObject.Q.begin(); it != selectedSimplifyDataObject.Q.end(); ++it) {
+				Qit[it->second] = it;
+			};
 		}
 
 		if (something_collapsed)
 		{
+			simplifyDataObjectsList->at(selected_data_index) = selectedSimplifyDataObject;
 			data().clear();
 			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
 			data().set_face_based(true);
-			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
 			get_SimplifyDataObject(selectedSimplifyDataObject);
+			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
 		}
 	};
 
 	selectedSimplifyDataObject = simplifyDataObjectsList->at(selected_data_index);
-	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.E.rows());
+	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.Q.size());
 	do_simplify(rounded_up_five_percent_edges);
 }

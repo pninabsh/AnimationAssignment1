@@ -27,7 +27,7 @@ struct SimplifyDataObject
 double calculate_edge_cost(Eigen::RowVectorXd new_v, Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e);
 
 Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixXd V,
-	Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e);
+	Eigen::Matrix4d& q_matrix_v1, Eigen::Matrix4d& q_matrix_v2, int e);
 
 // init E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
 void get_SimplifyDataObject(SimplifyDataObject& simplifyDataObject);
@@ -39,3 +39,7 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject, std::vector<PriorityQ
 
 void update_q_matrixes(SimplifyDataObject& simplifyDataObject);
 //Todo : create function to replace midpoint function
+
+void update_priority_queue(SimplifyDataObject& simplifyDataObject);
+
+void update_v_planes(SimplifyDataObject& simplifyDataObject);

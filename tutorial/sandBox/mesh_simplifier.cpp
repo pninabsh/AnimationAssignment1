@@ -4,7 +4,7 @@
 std::vector<int> get_v_faces(Eigen::MatrixXi F, int v) {
 	std::vector<int> v_faces = std::vector<int>();
 	for (int f = 0; f < F.rows(); f++) {
-		if (F(f, 0) == IGL_COLLAPSE_EDGE_NULL || F(f, 1) == IGL_COLLAPSE_EDGE_NULL || F(f, 2) == IGL_COLLAPSE_EDGE_NULL) {
+		if (F(f, 0) == IGL_COLLAPSE_EDGE_NULL && F(f, 1) == IGL_COLLAPSE_EDGE_NULL && F(f, 2) == IGL_COLLAPSE_EDGE_NULL) {
 			continue;
 		}
 
@@ -17,7 +17,7 @@ std::vector<int> get_v_faces(Eigen::MatrixXi F, int v) {
 }
 
 //calculate a,b,c,d such that a*x + b*y + c*z + d = 0 and a^2 + b^2 + c^2 = 1
-Eigen::Matrix4d calculateKp(Eigen::RowVectorXd plane_normal, Eigen::RowVector3d v)
+Eigen::Matrix4d calculateKp(Eigen::RowVectorXd& plane_normal, Eigen::RowVector3d& v)
 {
 	const auto a = plane_normal(0);
 	const auto b = plane_normal(1);
@@ -32,7 +32,7 @@ Eigen::Matrix4d calculateKp(Eigen::RowVectorXd plane_normal, Eigen::RowVector3d 
 	return result;
 }
 
-Eigen::Matrix4d do_sum_planes(Eigen::MatrixXd F_NORMALS, Eigen::RowVector3d v_coordinates, std::vector<int> vertex_planes)
+Eigen::Matrix4d do_sum_planes(Eigen::MatrixXd& F_NORMALS, Eigen::RowVector3d& v_coordinates, std::vector<int>& vertex_planes)
 {
 	//go over all the planes and calculate: delta(v) = v^T * (sum of all Kp of each such plane) * v
 	Eigen::Matrix4d sumOfAllPlanes = Eigen::Matrix4d::Zero();
@@ -46,21 +46,21 @@ Eigen::Matrix4d do_sum_planes(Eigen::MatrixXd F_NORMALS, Eigen::RowVector3d v_co
 	return sumOfAllPlanes;
 }
 
-Eigen::Matrix4d calculate_Qmatrix(Eigen::MatrixXd V, std::vector<int> vertice_planes, Eigen::MatrixXd F_NORMALS, int v_id)
+Eigen::Matrix4d calculate_Qmatrix(Eigen::MatrixXd V, std::vector<int>& vertice_planes, Eigen::MatrixXd& F_NORMALS, int v_id)
 {
 	//std::vector<int> vertex_planes = V_PLANES[v_id];
 	Eigen::RowVector3d v_coordinates = V.row(v_id);
 	return do_sum_planes(F_NORMALS, v_coordinates, vertice_planes);
 }
 
-double calculate_vertex_cost(Eigen::Matrix<double, 4, 1> vectorMatrix, Eigen::Matrix4d q_matrix)
+double calculate_vertex_cost(Eigen::Matrix<double, 4, 1>& vectorMatrix, Eigen::Matrix4d& q_matrix)
 {
 	Eigen::Matrix<double, 1, 1> mulResult = vectorMatrix.adjoint() * q_matrix * vectorMatrix;
 	return mulResult(0);
 }
 
 //function that calcutes v' for each edge e
-Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixXd V, Eigen::Matrix4d q_matrix_v1, Eigen::Matrix4d q_matrix_v2, int e)
+Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixXd V, Eigen::Matrix4d& q_matrix_v1, Eigen::Matrix4d& q_matrix_v2, int e)
 {
 	Eigen::Matrix4d q_matrix_new_vertex = q_matrix_v1 + q_matrix_v2;
 	q_matrix_new_vertex(3, 0) = 0; q_matrix_new_vertex(3, 1) = 0; q_matrix_new_vertex(3, 2) = 0; q_matrix_new_vertex(3, 3) = 1;
@@ -68,7 +68,6 @@ Eigen::RowVector3d calculate_new_vertice_place(Eigen::MatrixXi E, Eigen::MatrixX
 	if (q_matrix_new_vertex.determinant() != 0) {
 		Eigen::RowVectorXd p(3);
 		Eigen::Matrix<double, 4, 1> helping_vector = { 0, 0, 0, 1 };
-
 		Eigen::Matrix<double, 4, 1> multiply_result_matrix = q_matrix_new_vertex.inverse() * helping_vector;
 
 		p << multiply_result_matrix(0, 0), multiply_result_matrix(1, 0), multiply_result_matrix(2, 0);
@@ -93,20 +92,7 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 	igl::edge_flaps(simplifyDataObject.F, simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF, simplifyDataObject.EI);
 
 	// init V_PLANES
-	std::vector<std::vector<int>> V_PLANES;
-	for (int j = 0; j < simplifyDataObject.V.rows(); j++)
-	{
-		V_PLANES.push_back(std::vector<int>());
-	}
-
-	for (int f = 0; f < simplifyDataObject.F.rows(); f++)
-	{
-		V_PLANES[simplifyDataObject.F(f, 0)].push_back(f);
-		V_PLANES[simplifyDataObject.F(f, 1)].push_back(f);
-		V_PLANES[simplifyDataObject.F(f, 2)].push_back(f);
-	}
-
-	simplifyDataObject.V_PLANES = V_PLANES;
+	update_v_planes(simplifyDataObject);
 
 	//simplifyDataObject.V_Q_MATRIX.clear();
 
@@ -123,9 +109,11 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 	simplifyDataObject.C.resize(simplifyDataObject.E.rows(), simplifyDataObject.V.cols());
 
 	simplifyDataObject.Q.clear();
-
 	for (int e = 0; e < simplifyDataObject.E.rows(); e++)
 	{
+		if (simplifyDataObject.E(e, 0) == IGL_COLLAPSE_EDGE_NULL && simplifyDataObject.E(e, 1) == IGL_COLLAPSE_EDGE_NULL) {
+			continue;
+		}
 		Eigen::Matrix4d q_matrix_v1 = simplifyDataObject.V_Q_MATRIX[simplifyDataObject.E(e, 0)];
 		Eigen::Matrix4d q_matrix_v2 = simplifyDataObject.V_Q_MATRIX[simplifyDataObject.E(e, 1)];
 		Eigen::RowVectorXd p = calculate_new_vertice_place(simplifyDataObject.E, simplifyDataObject.V, q_matrix_v1, q_matrix_v2, e);
@@ -144,6 +132,52 @@ void update_q_matrixes(SimplifyDataObject& simplifyDataObject) {
 	{
 		simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject.V, simplifyDataObject.V_PLANES[v], simplifyDataObject.F_NORMALS, v));
 	}
+}
+
+void update_priority_queue(SimplifyDataObject& simplifyDataObject) {
+	std::set<std::pair<double, int >>::iterator it;
+	PriorityQueue tmp;
+	PriorityQueue new_priority_queue;
+	for (it = simplifyDataObject.Q.begin(); it != simplifyDataObject.Q.end(); ++it) {
+		int e = it->second;
+		if (it->first == std::numeric_limits<double>::infinity()) {
+			tmp.insert(std::pair<double, int>(it->first, e));
+			continue;
+		}
+		Eigen::Matrix4d q_matrix_v1 = simplifyDataObject.V_Q_MATRIX[simplifyDataObject.E(e, 0)];
+		Eigen::Matrix4d q_matrix_v2 = simplifyDataObject.V_Q_MATRIX[simplifyDataObject.E(e, 1)];
+		Eigen::RowVectorXd p = calculate_new_vertice_place(simplifyDataObject.E, simplifyDataObject.V, q_matrix_v1, q_matrix_v2, e);
+		simplifyDataObject.C.row(e) = p;
+
+		int v1 = simplifyDataObject.E(e, 0);
+		int v2 = simplifyDataObject.E(e, 1);
+		double cost = calculate_edge_cost(p, simplifyDataObject.V_Q_MATRIX[v1], simplifyDataObject.V_Q_MATRIX[v2], e);
+		tmp.insert(std::pair<double, int>(cost, e));
+	}
+	for (it = tmp.begin(); it != tmp.end(); ++it) {
+		new_priority_queue.insert(std::pair<double, int>(it->first, it->second));
+	}
+	simplifyDataObject.Q = new_priority_queue;
+}
+
+void update_v_planes(SimplifyDataObject& simplifyDataObject) {
+	std::vector<std::vector<int>> V_PLANES;
+	for (int j = 0; j < simplifyDataObject.V.rows(); j++)
+	{
+		V_PLANES.push_back(std::vector<int>());
+	}
+
+	for (int f = 0; f < simplifyDataObject.F.rows(); f++)
+	{
+		if (simplifyDataObject.F(f, 0) == IGL_COLLAPSE_EDGE_NULL && simplifyDataObject.F(f, 1) == IGL_COLLAPSE_EDGE_NULL && simplifyDataObject.F(f, 2) == IGL_COLLAPSE_EDGE_NULL) {
+			continue;
+		}
+		V_PLANES[simplifyDataObject.F(f, 0)].push_back(f);
+		V_PLANES[simplifyDataObject.F(f, 1)].push_back(f);
+		V_PLANES[simplifyDataObject.F(f, 2)].push_back(f);
+	}
+
+	simplifyDataObject.V_PLANES = V_PLANES;
 }
 
 // init V,F,E,EMAP,EI,EF,C,Q, V_PLANES, V_Q_MATRIX
@@ -195,12 +229,13 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject, std::vector<PriorityQ
 	int e = simplifyDataObject.Q.begin()->second;
 	Eigen::RowVectorXd new_v_location = simplifyDataObject.C.row(e);
 
-	igl::collapse_edge(
+	if (igl::collapse_edge(
 		cost_and_placement, simplifyDataObject.V, simplifyDataObject.F,
 		simplifyDataObject.E, simplifyDataObject.EMAP, simplifyDataObject.EF,
-		simplifyDataObject.EI, simplifyDataObject.Q, Qit, simplifyDataObject.C);
-
-	std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << new_v_location(0) << ","
-		<< new_v_location(1) << "," << new_v_location(2) << ")" << std::endl;
+		simplifyDataObject.EI, simplifyDataObject.Q, Qit, simplifyDataObject.C)) {
+		std::cout << "edge " << e << ", cost = " << cost << ", new v position (" << new_v_location(0) << ","
+			<< new_v_location(1) << "," << new_v_location(2) << ")" << std::endl;
+		return true;
+	}
 	return true;
 };
