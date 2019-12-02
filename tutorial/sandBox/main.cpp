@@ -3,6 +3,7 @@
 #include "tutorial/sandBox/inputManager.h"
 #include "tutorial/sandBox/MyViewer.h"
 #include "tutorial/sandBox/MyRenderer.h"
+#include "ctime"
 
 int main(int argc, char *argv[])
 {
@@ -10,7 +11,12 @@ int main(int argc, char *argv[])
   MyRenderer renderer;
   MyViewer viewer;
   viewer.load_configuration();
+  int begin = clock();
   viewer.init_simplify_data_structures_list();
+
+  int end = clock();
+
+  std::cout << (double)(end - begin)/ CLOCKS_PER_SEC << std::endl;
   Init(*disp);
   renderer.init(&viewer);
   renderer.my_init(&viewer);
