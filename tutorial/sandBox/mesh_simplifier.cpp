@@ -48,7 +48,6 @@ Eigen::Matrix4d do_sum_planes(Eigen::MatrixXd& F_NORMALS, Eigen::RowVector3d& v_
 
 Eigen::Matrix4d calculate_Qmatrix(Eigen::MatrixXd V, std::vector<int>& vertice_planes, Eigen::MatrixXd& F_NORMALS, int v_id)
 {
-	//std::vector<int> vertex_planes = V_PLANES[v_id];
 	Eigen::RowVector3d v_coordinates = V.row(v_id);
 	return do_sum_planes(F_NORMALS, v_coordinates, vertice_planes);
 }
@@ -93,14 +92,6 @@ void get_SimplifyDataObject(SimplifyDataObject &simplifyDataObject)
 
 	// init V_PLANES
 	update_v_planes(simplifyDataObject);
-
-	//simplifyDataObject.V_Q_MATRIX.clear();
-
-	// init V_Q_MATRIX
-	/*for (int v = 0; v < simplifyDataObject.V.rows(); v++)
-	{
-		simplifyDataObject.V_Q_MATRIX.push_back(calculate_Qmatrix(simplifyDataObject.V, simplifyDataObject.V_PLANES[v],simplifyDataObject.F_NORMALS, v));
-	}*/
 
 	update_q_matrixes(simplifyDataObject);
 
@@ -237,5 +228,5 @@ bool collapse_edge(SimplifyDataObject& simplifyDataObject, std::vector<PriorityQ
 			<< new_v_location(1) << "," << new_v_location(2) << ")" << std::endl;
 		return true;
 	}
-	return true;
+	return false;
 };
