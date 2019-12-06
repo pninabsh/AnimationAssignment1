@@ -1,19 +1,25 @@
 
 #include "igl/opengl/glfw/renderer.h"
 #include "tutorial/sandBox/inputManager.h"
+#include "tutorial/sandBox/MyViewer.h"
+#include "tutorial/sandBox/MyRenderer.h"
+#include "ctime"
 
 int main(int argc, char *argv[])
 {
   Display *disp = new Display(1000, 800, "Wellcome");
-  Renderer renderer;
-  igl::opengl::glfw::Viewer viewer;
- // viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/cube.obj");
- // viewer.load_mesh_from_file("C:/Users/Owner/Desktop/animation/Ass1/AnimationAssignment1/tutorial/data/bunny.off");
-  viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/sphere.obj");
-  viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/cube.obj");
-  viewer.load_mesh_from_file("C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/bunny.off");
+  MyRenderer renderer;
+  MyViewer viewer;
+  viewer.load_configuration();
+  int begin = clock();
+  viewer.init_simplify_data_structures_list();
+
+  int end = clock();
+
+  std::cout << (double)(end - begin)/ CLOCKS_PER_SEC << std::endl;
   Init(*disp);
   renderer.init(&viewer);
+  renderer.my_init(&viewer);
   disp->SetRenderer(&renderer);
   disp->launch_rendering(true);
   
