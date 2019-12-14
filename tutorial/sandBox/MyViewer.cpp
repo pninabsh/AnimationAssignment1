@@ -1,5 +1,4 @@
 #include "MyViewer.h"
-
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -31,6 +30,50 @@ void MyViewer::load_configuration()
 	configuration_file.close();
 }
 
+void fail_load_configuration_IK(string &sphere_path, string &yCylinder_path)
+{
+	cout << "cannot open or read all needed line from configuration file! loading from default mesh paths instead..." << endl;
+	sphere_path = "C:/Dev/EngineIGLnew/tutorial/data/sphere.obj";
+	yCylinder_path = "C:/Dev/EngineIGLnew/tutorial/data/ycylinder.obj";
+}
+
+bool attempt_to_load_IK_mesh(string &mesh_path, ifstream &configuration_file)
+{
+	if (configuration_file.good())
+	{
+		getline(configuration_file, mesh_path);
+		return true;
+	}
+	return false;
+}
+
+void MyViewer::load_configuration_IK()
+{
+	string sphere_path;
+	string yCylinder_path;
+	cout << "reading mesh paths from configuration.txt file..." << endl;
+
+	ifstream configuration_file("configuration.txt");
+
+	if (configuration_file.fail())
+	{
+		fail_load_configuration_IK(sphere_path, yCylinder_path);
+	}
+	else
+	{
+		cout << "loading sphere and yCylinder mesh from text line in configuration file..." << endl;
+		if (!attempt_to_load_IK_mesh(sphere_path, configuration_file) || !attempt_to_load_IK_mesh(yCylinder_path, configuration_file))
+		{
+			fail_load_configuration_IK(sphere_path, yCylinder_path);
+		}
+	}
+
+	load_mesh_from_file(sphere_path);
+	load_mesh_from_file(yCylinder_path);
+
+	cout << "loading done!" << endl;
+	configuration_file.close();
+}
 void MyViewer::init_simplify_data_structures_list()
 {
 	for (igl::opengl::ViewerData viewer_data : data_list)

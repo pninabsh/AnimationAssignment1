@@ -1,1 +1,4 @@
-C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/decimated-knight.off
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/sphere.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
