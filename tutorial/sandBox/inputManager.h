@@ -2,6 +2,8 @@
 #include "igl/opengl/glfw/Display.h"
 #include "tutorial/sandBox/MyRenderer.h"
 #include "tutorial/sandBox/MyViewer.h"
+#include "tutorial/sandBox/IK_solver.h"
+
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
@@ -121,12 +123,12 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			rndr->core().orthographic = !rndr->core().orthographic;
 			break;
 		}
-		case 'T':
+		/*case 'T':
 		case 't':
 		{
 			rndr->core().toggle(scn->data().show_faces);
 			break;
-		}
+		}*/
 		case '1':
 		case '2':
 		{
@@ -147,7 +149,30 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			scn->data().show_faceid = !scn->data().show_faceid;
 			break;
 
+
+
+		case 'P':
+		case 'p':
+			print_rotation_matrices(scn->selected_data_index, *(scn->links_numbers));
+			break;
+		case 'T':
+		case 't':
+			print_arm_tip_positions();
+			break;
+		case 'D':
+		case 'd':
+			print_destination_position();
+			break;
+		case 262: // right
+		case 263: // left
+			rotate_y_axis();
+			break;
+		case 264: // down
+		case 265: // up
+			rotate_x_axis(); 
+			break;
 		case ' ': {
+			toggle_IK_solver_animation();
 			break;
 		}
 		default: break;//do nothing
