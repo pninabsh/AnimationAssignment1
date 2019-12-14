@@ -69,11 +69,25 @@ void MyViewer::load_configuration_IK()
 	}
 
 	load_mesh_from_file(sphere_path);
+
+	load_mesh_from_file(yCylinder_path);
+	load_mesh_from_file(yCylinder_path);
+	load_mesh_from_file(yCylinder_path);
 	load_mesh_from_file(yCylinder_path);
 
+	float resize_value = 0.3;
+	float arm_part_position = 0.48;
+
 	data_list[0].MyTranslate(Eigen::Vector3f(5, 0, 0));
-	data_list[0].MyScale(Eigen::Vector3f(0.5, 0.5, 0.5));
-	data_list[1].MyScale(Eigen::Vector3f(0.5, 0.5, 0.5));
+	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[1].MyTranslate(Eigen::Vector3f(0, arm_part_position * 2, 0));
+	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[2].MyTranslate(Eigen::Vector3f(0, arm_part_position, 0));
+	data_list[2].MyScale(Eigen::Vector3f(resize_value, 0.3, 0.3));
+	data_list[3].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[4].MyTranslate(Eigen::Vector3f(0, -arm_part_position, 0));
+	data_list[4].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+
 
 	cout << "loading done!" << endl;
 	configuration_file.close();
