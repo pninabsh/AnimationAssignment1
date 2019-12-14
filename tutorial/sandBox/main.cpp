@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-  Display *disp = new Display(1000, 800, "Wellcome");
+  Display *disp = new Display(1000, 800, "Welcome");
   MyRenderer renderer;
   MyViewer viewer;
   viewer.load_configuration_IK();

@@ -2,18 +2,6 @@
 #include "igl/opengl/glfw/Display.h"
 #include "tutorial/sandBox/MyRenderer.h"
 #include "tutorial/sandBox/MyViewer.h"
-
-static std::string mapIndexToMeshName(int index) {
-	switch (index) {
-		case 0: return "sphere";
-		case 1: return "cube";
-		case 2:
-		default: return "rabbit";
-	}
-}
-
-static int numberOfClicks = 0;
-
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
@@ -31,13 +19,6 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 
 		int i = 0, savedIndx = scn->selected_data_index;
 
-		std::string meshName = mapIndexToMeshName(i);
-
-		numberOfClicks++;
-		std::cout << std::endl;
-		std::cout << "Click Number : "<< numberOfClicks << std::endl;
-		std::cout << "--------------------------------------------------------" << std::endl;
-
 		for (; i < scn->data_list.size(); i++)
 		{
 			scn->selected_data_index = i;
@@ -47,19 +28,9 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 				savedIndx = i;
 				closetHitObject = hitObjectCurrent;
 			}
-
-			meshName = mapIndexToMeshName(i);
-			if (!hitObjectCurrent.found)
-			{
-				std::cout << meshName << ": not found" << std::endl;
-			}
-			else {
-				std::cout << meshName << ": found " << hitObjectCurrent.distance << std::endl;
-			}
 		}
 		scn->selected_data_index = savedIndx;
 		rndr->UpdatePosition(x2, y2);
-
 	}
 }
 
@@ -177,7 +148,6 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 
 		case ' ': {
-			scn->simplify();
 			break;
 		}
 		default: break;//do nothing

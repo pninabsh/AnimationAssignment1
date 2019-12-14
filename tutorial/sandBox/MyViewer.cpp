@@ -71,6 +71,10 @@ void MyViewer::load_configuration_IK()
 	load_mesh_from_file(sphere_path);
 	load_mesh_from_file(yCylinder_path);
 
+	data_list[0].MyTranslate(Eigen::Vector3f(5, 0, 0));
+	data_list[0].MyScale(Eigen::Vector3f(0.5, 0.5, 0.5));
+	data_list[1].MyScale(Eigen::Vector3f(0.5, 0.5, 0.5));
+
 	cout << "loading done!" << endl;
 	configuration_file.close();
 }
