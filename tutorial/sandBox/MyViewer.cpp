@@ -47,6 +47,39 @@ bool attempt_to_load_IK_mesh(string &mesh_path, ifstream &configuration_file)
 	return false;
 }
 
+void MyViewer::setup_arm_link_midpoint(igl::opengl::ViewerData &link) {
+	Eigen::Vector3d m = link.V.colwise().minCoeff();
+	Eigen::Vector3d M = link.V.colwise().maxCoeff();
+
+	Eigen::MatrixXd V_mid_box(1, 3);
+	V_mid_box << (M(0) + m(0)) / 2, m(1) - 0.05, (M(2) + m(2)) / 2;
+	link.add_points(V_mid_box, Eigen::RowVector3d(0, 0, 1));
+}
+
+void  MyViewer::setup_arm_link_axis(igl::opengl::ViewerData &link, int previous_link_index) {
+	parent_links_indices->push_back(previous_link_index);
+	int previous_link_number = links_numbers->at(previous_link_index);
+
+	igl::opengl::ViewerData previous_link = data_list[previous_link_number];
+	Eigen::Vector3d m = previous_link.V.colwise().minCoeff();
+	Eigen::Vector3d M = previous_link.V.colwise().maxCoeff();
+
+	Eigen::RowVector3d Vs_x((M(0) + m(0)) / 2 - (M(1) - m(1)), M(1), (M(2) + m(2)) / 2);
+	Eigen::RowVector3d Vd_x((M(0) + m(0)) / 2 + (M(1) - m(1)), M(1), (M(2) + m(2)) / 2);
+
+	Eigen::RowVector3d Vs_y((M(0) + m(0)) / 2, M(1) - (M(1) - m(1)), (M(2) + m(2)) / 2);
+	Eigen::RowVector3d Vd_y((M(0) + m(0)) / 2, M(1) + (M(1) - m(1)), (M(2) + m(2)) / 2);
+
+	Eigen::RowVector3d Vs_z((M(0) + m(0)) / 2, M(1), (M(2) + m(2)) / 2 - (M(1) - m(1)));
+	Eigen::RowVector3d Vd_z((M(0) + m(0)) / 2, M(1), (M(2) + m(2)) / 2 + (M(1) - m(1)));
+
+	link.add_edges(Vs_x, Vd_x, Eigen::RowVector3d(1, 0, 0));
+	link.add_edges(Vs_y, Vd_y, Eigen::RowVector3d(0, 1, 0));
+	link.add_edges(Vs_z, Vd_z, Eigen::RowVector3d(0, 0, 1));
+
+
+}
+
 void MyViewer::load_configuration_IK()
 {
 	string sphere_path;
@@ -75,19 +108,29 @@ void MyViewer::load_configuration_IK()
 	load_mesh_from_file(yCylinder_path);
 	load_mesh_from_file(yCylinder_path);
 
-	float resize_value = 0.3;
-	float arm_part_position = 0.48;
-
-	data_list[0].MyTranslate(Eigen::Vector3f(5, 0, 0));
+	data_list[0].MyTranslate(Eigen::Vector3f(1, 0, 0));
 	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[1].MyTranslate(Eigen::Vector3f(0, arm_part_position * 2, 0));
-	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[2].MyTranslate(Eigen::Vector3f(0, arm_part_position, 0));
-	data_list[2].MyScale(Eigen::Vector3f(resize_value, 0.3, 0.3));
-	data_list[3].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[4].MyTranslate(Eigen::Vector3f(0, -arm_part_position, 0));
-	data_list[4].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 
+	data_list[1].MyTranslate(Eigen::Vector3f(0, arm_part_position * 2, 0));
+	data_list[2].MyTranslate(Eigen::Vector3f(0, arm_part_position, 0));
+	data_list[4].MyTranslate(Eigen::Vector3f(0, -arm_part_position, 0));
+
+	int previous_link = -1;
+	for (int i = 1; i < data_list.size(); i++) {
+		data_list[i].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+
+		links_numbers->push_back(i);
+
+		setup_arm_link_midpoint(data_list[i]);
+		if (previous_link != -1) {
+			setup_arm_link_axis(data_list[i], previous_link);
+		}
+		else {
+			parent_links_indices->push_back(previous_link);
+		}
+
+		previous_link++;
+	}
 
 	cout << "loading done!" << endl;
 	configuration_file.close();
