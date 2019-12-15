@@ -60,8 +60,8 @@ void glfw_mouse_move(GLFWwindow* window, double x, double y)
 
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 {
-	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-	rndr->GetScene()->data().MyScale(Eigen::Vector3f(1 + y * 0.01, 1 + y * 0.01, 1 + y * 0.01));
+	MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
+	rndr->MyScale(x, y);
 
 }
 
