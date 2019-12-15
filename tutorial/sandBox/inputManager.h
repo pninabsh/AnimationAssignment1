@@ -7,13 +7,13 @@
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
-	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+	MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
 
 	if (action == GLFW_PRESS)
 	{
 		double x2, y2;
 		glfwGetCursorPos(window, &x2, &y2);
-		igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+		MyViewer* scn = rndr->GetMyScene();
 
 		hitObject closetHitObject;
 		closetHitObject.found = false;
@@ -33,6 +33,8 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 		}
 		scn->selected_data_index = savedIndx;
 		rndr->UpdatePosition(x2, y2);
+
+		scn->is_object_selected = closetHitObject.found;
 	}
 }
 
@@ -44,15 +46,15 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 
 void glfw_mouse_move(GLFWwindow* window, double x, double y)
 {
-	Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+	MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
 	rndr->UpdatePosition(x, y);
 	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
 	{
-		rndr->MouseProcessing(GLFW_MOUSE_BUTTON_RIGHT);
+		rndr->MyMouseProcessing(GLFW_MOUSE_BUTTON_RIGHT);
 	}
 	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
-		rndr->MouseProcessing(GLFW_MOUSE_BUTTON_LEFT);
+		rndr->MyMouseProcessing(GLFW_MOUSE_BUTTON_LEFT);
 	}
 }
 

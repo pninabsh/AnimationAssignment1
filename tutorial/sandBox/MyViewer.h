@@ -12,6 +12,7 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 		void setup_arm_link_axis(igl::opengl::ViewerData &link, int previous_link_index);
 		
 	public:
+		bool is_object_selected;
 		std::vector<int>* parent_links_indices;
 		std::vector<int>* links_numbers;
 		MyViewer() {

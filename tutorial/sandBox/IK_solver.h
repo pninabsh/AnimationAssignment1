@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+bool is_link(int picked_object_index, std::vector<int> link_indices);
+
 void toggle_IK_solver_animation();
 
 void print_rotation_matrices(int picked_object_index, std::vector<int> link_indices);
