@@ -17,7 +17,7 @@ void Movable::MyTranslate(Eigen::Vector3f amt)
 //angle in radians
 void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 {
-	T.rotate(Eigen::AngleAxisf(angle, rotAxis));
+	T.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 }
 
 void Movable::MyScale(Eigen::Vector3f amt)
