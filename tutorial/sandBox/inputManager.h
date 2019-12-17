@@ -61,7 +61,7 @@ void glfw_mouse_move(GLFWwindow* window, double x, double y)
 static void glfw_mouse_scroll(GLFWwindow* window, double x, double y)
 {
 	MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
-	rndr->MyScale(x, y);
+	rndr->MyScale(y);
 
 }
 

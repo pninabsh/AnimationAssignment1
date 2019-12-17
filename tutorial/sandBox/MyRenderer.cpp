@@ -46,37 +46,37 @@ void MyRenderer::MyMouseProcessing(int button) {
 	}
 }
 
-void MyRenderer::BaseScale(double x, double y) {
-	my_viewer->data().MyScale(Eigen::Vector3f(1 + y * 0.01, 1 + y * 0.01, 1 + y * 0.01));
+void MyRenderer::BaseScale(double y) {
+	my_viewer->data().MyTranslate(Eigen::Vector3f(0, 0, -y/10.0f));
 }
 
-void MyRenderer::SceneScale(double x, double y) {
+void MyRenderer::SceneScale( double y) {
 	int saved_index = my_viewer->selected_data_index;
 	for (int i = 0; i < my_viewer->data_list.size(); i++) {
 		my_viewer->selected_data_index = i;
-		BaseScale(x,y);
+		BaseScale(y);
 	}
 	my_viewer->selected_data_index = saved_index;
 }
 
-void MyRenderer::ArmScale(double x, double y) {
+void MyRenderer::ArmScale(double y) {
 	int saved_index = my_viewer->selected_data_index;
 	for (int link_number : *my_viewer->links_numbers) {
 		my_viewer->selected_data_index = link_number;
-		BaseScale(x,y);
+		BaseScale(y);
 	}
 	my_viewer->selected_data_index = saved_index;
 }
 
 
-void MyRenderer::MyScale(double x, double y) {
+void MyRenderer::MyScale(double y) {
 	if (!my_viewer->is_object_selected) {
-		SceneScale(x, y);
+		SceneScale(y);
 	}
 	else if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
-		ArmScale(x, y);
+		ArmScale(y);
 	}
 	else {
-		BaseScale(x,y);
+		BaseScale(y);
 	}
 }
