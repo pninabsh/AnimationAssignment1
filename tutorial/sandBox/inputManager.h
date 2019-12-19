@@ -163,7 +163,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 		case 'D':
 		case 'd':
-			print_destination_position();
+			print_destination_position(scn);
 			break;
 		case 262: // right
 		case 263: // left

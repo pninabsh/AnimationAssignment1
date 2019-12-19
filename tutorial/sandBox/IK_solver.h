@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "MyViewer.h"
 
 bool is_link(int picked_object_index, std::vector<int> link_indices);
 
@@ -9,7 +10,7 @@ void print_rotation_matrices(int picked_object_index, std::vector<int> link_indi
 
 void print_arm_tip_positions();
 
-void print_destination_position();
+void print_destination_position(MyViewer* scn);
 
 void rotate_y_axis();
 

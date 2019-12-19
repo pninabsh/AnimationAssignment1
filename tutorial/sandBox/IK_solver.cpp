@@ -43,8 +43,9 @@ void print_arm_tip_positions() {
 	// print arms tip positions
 }
 
-void print_destination_position() {
-	// print destination position
+void print_destination_position(MyViewer* scn) {
+	Eigen::Matrix4f sphereLoc = scn->data_list[0].MakeTrans();
+	std::cout << "x = " << sphereLoc(0, 3) << " y = " << sphereLoc(1, 3) << " z = " << sphereLoc(2, 3) << std::endl;
  }
 
 
