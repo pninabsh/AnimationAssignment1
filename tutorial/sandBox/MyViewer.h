@@ -9,7 +9,7 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 		float resize_value = 0.3;
 		float arm_part_position = 0.48;
 		void setup_arm_link_midpoint(igl::opengl::ViewerData &link);
-		void setup_arm_link_axis(igl::opengl::ViewerData &link, int previous_link_index);
+		void setup_arm_link_axis(igl::opengl::ViewerData &link);
 		
 	public:
 		bool is_object_selected;
