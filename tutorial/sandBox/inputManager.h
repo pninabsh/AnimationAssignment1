@@ -159,7 +159,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 		case 'T':
 		case 't':
-			print_arm_tip_positions();
+			print_arm_tip_positions(scn);
 			break;
 		case 'D':
 		case 'd':
@@ -167,11 +167,11 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			break;
 		case 262: // right
 		case 263: // left
-			rotate_y_axis();
+			rotate_y_axis(scn);
 			break;
 		case 264: // down
 		case 265: // up
-			rotate_x_axis(); 
+			rotate_x_axis(scn);
 			break;
 		case ' ': {
 			toggle_IK_solver_animation();

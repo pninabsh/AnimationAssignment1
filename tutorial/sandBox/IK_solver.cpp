@@ -39,19 +39,44 @@ void print_rotation_matrices(int picked_object_index, std::vector<int> link_indi
 	// print rotation of the picked link
 }
 
-void print_arm_tip_positions() {
-	// print arms tip positions
+void print_arm_tip_positions(MyViewer* scn) {
+	/*Eigen::Matrix4f cylinderTopLoc = scn->data_list[1].MakeTrans();
+	std::cout << "Arm top position: " << std::endl;
+	std::cout << "x = " << cylinderTopLoc(0, 3) << " y = " << cylinderTopLoc(1, 3) << " z = " << cylinderTopLoc(2, 3) << std::endl;
+	Eigen::Matrix4f cylinderButtomLoc = scn->data_list[4].MakeTrans();
+	std::cout << "Arm buttom position: " << std::endl;
+	std::cout << "x = " << cylinderButtomLoc(0, 3) << " y = " << cylinderButtomLoc(1, 3) << " z = " << cylinderButtomLoc(2, 3) << std::endl;*/
 }
 
 void print_destination_position(MyViewer* scn) {
-	Eigen::Matrix4f sphereLoc = scn->data_list[0].MakeTrans();
-	std::cout << "x = " << sphereLoc(0, 3) << " y = " << sphereLoc(1, 3) << " z = " << sphereLoc(2, 3) << std::endl;
+	Eigen::Vector3f sphereLoc = scn->data_list[0].getTranslation();
+	std::cout << "x = " << sphereLoc(0) << " y = " << sphereLoc(1) << " z = " << sphereLoc(2) << std::endl;
  }
 
 
-void rotate_y_axis() {
-	// rotate y axis
+void rotate_y_axis(MyViewer* scn) {
+	Eigen::Matrix3f mul;
+	Eigen::AngleAxisf rot_x = Eigen::AngleAxisf(0.0f, Eigen::Vector3f(1, 0, 0));
+	Eigen::AngleAxisf rot_y = Eigen::AngleAxisf(5.0f, Eigen::Vector3f(0, 1, 0));
+	mul = rot_y * rot_x * rot_y;
+	//scn->data_list[1].MyRotate(mul);
+	//scn->data_list[1].MyRotate(scn->data_list[1].GetCenterOfRotation(), 1.0f);
 }
-void rotate_x_axis() {
+void rotate_x_axis(MyViewer* scn) {
 	// rotate x axis
+	Eigen::Matrix3f mul;
+	Eigen::AngleAxisf rot_x = Eigen::AngleAxisf(5.0f, Eigen::Vector3f(1, 0, 0));
+	Eigen::AngleAxisf rot_y = Eigen::AngleAxisf(0.0f, Eigen::Vector3f(0, 1, 0));
+	mul = rot_y * rot_x;
+	int pressedIndex = scn->selected_data_index;
+	for (int i = 1; i <= pressedIndex; i++) {
+		scn->selected_data_index = i;
+		scn->data_list[i].MyRotate(mul, scn->data_list[i].GetCenterOfRotation());
+	}
+	/*Eigen::Vector4f blah(4);
+	blah << 1, 0, 0, 0;
+	Eigen::Vector4f res = scn->data_list[1].MakeTrans() * blah;
+	Eigen::Vector3f res2(3);
+	res2 << res(0), res(1), res(2);*/
+	//scn->data_list[1].MyRotate(res2, 5.0f);
 }
