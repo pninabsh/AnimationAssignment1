@@ -50,13 +50,6 @@ void Movable::MyScale(Eigen::Vector3f amt)
 	Tout.scale(amt);
 }
 
-/*Eigen::Vector3f getCoordinates() {
-	Eigen::Vector3d res(3);
-	Eigen::Vector3d trans = Tout.translation();
-	res << trans(0, 3), trans(1, 3), trans(2, 3);
-	return res;
-}*/
-
 void Movable::SetCenterOfRotation(Eigen::Vector3f amt)
 {
 	Tin.translate(amt);

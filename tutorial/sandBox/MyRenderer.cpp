@@ -20,18 +20,24 @@ void MyRenderer::SceneMouseProcessing(int button) {
 	my_viewer->selected_data_index = saved_index;
 }
 
-void MyRenderer::ArmMouseMouseProcessing(int button) {
-	if (MOUSE_BUTTON_RIGHT) {
-		int saved_index = my_viewer->selected_data_index;
+void MyRenderer::ArmMouseProcessing(int button) {
+	int saved_index = my_viewer->selected_data_index;
+	if (button == MOUSE_BUTTON_RIGHT) {
 		for (int link_number : *my_viewer->links_numbers) {
 			my_viewer->selected_data_index = link_number;
 			MouseProcessing(button);
 		}
-		my_viewer->selected_data_index = saved_index;
 	}
 	else {
-
+		for (int link_number : *my_viewer->links_numbers) {
+			if (link_number <= saved_index) {
+				my_viewer->selected_data_index = link_number;
+				MouseProcessing(button);
+			}
+		}
 	}
+
+	my_viewer->selected_data_index = saved_index;
 }
 
 void MyRenderer::MyMouseProcessing(int button) {
@@ -39,7 +45,7 @@ void MyRenderer::MyMouseProcessing(int button) {
 		SceneMouseProcessing(button);
 	}
 	else if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
-		ArmMouseMouseProcessing(button);
+		ArmMouseProcessing(button);
 	}
 	else {
 		MouseProcessing(button);
