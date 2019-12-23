@@ -47,6 +47,18 @@ IGL_INLINE void igl::opengl::ViewerData::set_face_based(bool newvalue)
   }
 }
 
+void igl::opengl::ViewerData::SetParent(igl::opengl::ViewerData* view) {
+	parent = view;
+}
+
+Eigen::Matrix4f igl::opengl::ViewerData::MakeTrans()
+{
+	if (parent == nullptr) {
+		return Tout.matrix();
+	}
+	return parent->MakeTrans() * Tout.matrix();
+}
+
 // Helpers that draws the most common meshes
 IGL_INLINE void igl::opengl::ViewerData::set_mesh(
     const Eigen::MatrixXd& _V, const Eigen::MatrixXi& _F)

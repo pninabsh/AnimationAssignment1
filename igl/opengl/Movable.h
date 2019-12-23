@@ -5,9 +5,9 @@
 
 class Movable
 {
+	// Tout * y * x * y2 * Tin * scale
 public:
 	Movable();
-	Eigen::Matrix4f MakeTrans();
 	void MyTranslate(Eigen::Vector3f amt);
 	void MyRotate(Eigen::Vector3f rotAxis,float angle);
 	void MyScale(Eigen::Vector3f amt);
@@ -17,8 +17,6 @@ public:
 	void SetCenterOfRotation(Eigen::Vector3f amt);
 	Eigen::Vector3f GetCenterOfRotation();
 	void SetParent(Movable* parent);
-private:
-	Movable* parent;
 	Eigen::Transform<float,3,Eigen::Affine> Tin;
 	Eigen::Transform<float, 3, Eigen::Affine> Tout;
 };

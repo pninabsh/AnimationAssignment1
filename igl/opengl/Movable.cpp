@@ -3,21 +3,9 @@
 
 Movable::Movable()
 {
-	parent = nullptr;
 	Tin = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 	Tout = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
-}
 
-void Movable::SetParent(Movable* view) {
-	parent = view;
-}
-
-Eigen::Matrix4f Movable::MakeTrans()
-{
-	if (parent == nullptr) {
-		return Tout.matrix();
-	}
-	return parent->MakeTrans() * Tout.matrix();
 }
 
 Eigen::Vector3f Movable::getTranslation() {
@@ -26,9 +14,6 @@ Eigen::Vector3f Movable::getTranslation() {
 
 void Movable::MyTranslate(Eigen::Vector3f amt)
 {
-	/*if (preRotation)
-		Tout.pretranslate(amt);
-	else*/
 	Tout.translate(amt);
 }
 //angle in radians

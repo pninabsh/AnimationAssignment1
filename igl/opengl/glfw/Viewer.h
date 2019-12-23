@@ -39,7 +39,7 @@ namespace opengl
 namespace glfw
 {
   // GLFW-based mesh viewer
-  class Viewer : public Movable
+  class Viewer : public ViewerData
   {
   public:
     // UI Enumerations

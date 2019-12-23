@@ -129,6 +129,10 @@ public:
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
 
+  void SetParent(igl::opengl::ViewerData* view);
+
+  Eigen::Matrix4f MakeTrans();
+
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
     const Eigen::Vector3d& diffuse,
@@ -218,6 +222,8 @@ public:
   float line_width;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> line_color;
   Eigen::Matrix<float, 4, 1, Eigen::DontAlign> label_color;
+
+  ViewerData* parent = nullptr;
 
   // Shape material
   float shininess;
