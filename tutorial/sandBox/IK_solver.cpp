@@ -59,7 +59,8 @@ void rotate_y_axis(MyViewer* scn) {
 	Eigen::AngleAxisf rot_x = Eigen::AngleAxisf(0.0f, Eigen::Vector3f(1, 0, 0));
 	Eigen::AngleAxisf rot_y = Eigen::AngleAxisf(5.0f, Eigen::Vector3f(0, 1, 0));
 	mul = rot_y * rot_x * rot_y;
-	scn->data_list[1].MyRotate(Eigen::Vector3f(0, 1, 0), 1.0f);
+	int pressedIndex = scn->selected_data_index;
+	scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(0, 1, 0), 0.5f);
 }
 void rotate_x_axis(MyViewer* scn) {
 	// rotate x axis
@@ -68,5 +69,5 @@ void rotate_x_axis(MyViewer* scn) {
 	Eigen::AngleAxisf rot_y = Eigen::AngleAxisf(0.0f, Eigen::Vector3f(0, 1, 0));
 	mul = rot_y * rot_x;
 	int pressedIndex = scn->selected_data_index;
-	scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(1, 0, 0), 1.0f);
+	scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(1, 0, 0), 0.5f);
 }

@@ -20,7 +20,7 @@ void MyRenderer::SceneMouseProcessing(int button) {
 	my_viewer->selected_data_index = saved_index;
 }
 
-void MyRenderer::ArmMouseMouseProcessing(int button) {
+void MyRenderer::ArmMouseProcessing(int button) {
 	if (MOUSE_BUTTON_RIGHT) {
 		int saved_index = my_viewer->selected_data_index;
 		my_viewer->selected_data_index = 1;
@@ -37,7 +37,7 @@ void MyRenderer::MyMouseProcessing(int button) {
 		SceneMouseProcessing(button);
 	}
 	else if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
-		ArmMouseMouseProcessing(button);
+		ArmMouseProcessing(button);
 	}
 	else {
 		MouseProcessing(button);
@@ -50,19 +50,17 @@ void MyRenderer::BaseScale(double y) {
 
 void MyRenderer::SceneScale( double y) {
 	int saved_index = my_viewer->selected_data_index;
-	for (int i = 0; i < my_viewer->data_list.size(); i++) {
-		my_viewer->selected_data_index = i;
-		BaseScale(y);
-	}
+	my_viewer->selected_data_index = 0;
+	BaseScale(y);
+	my_viewer->selected_data_index = 1;
+	BaseScale(y);
 	my_viewer->selected_data_index = saved_index;
 }
 
 void MyRenderer::ArmScale(double y) {
 	int saved_index = my_viewer->selected_data_index;
-	for (int link_number : *my_viewer->links_numbers) {
-		my_viewer->selected_data_index = link_number;
-		BaseScale(y);
-	}
+	my_viewer->selected_data_index = 1;
+	BaseScale(y);
 	my_viewer->selected_data_index = saved_index;
 }
 

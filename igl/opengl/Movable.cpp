@@ -24,12 +24,9 @@ void Movable::MyTranslate(Eigen::Vector3f amt)
 void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 {
 	if (rotAxis == Eigen::Vector3f(1, 0, 0)) {
-		//Tout.translate(Eigen::Vector3f(0, 0.5, 0));
 		rotx.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
-		//Tout.translate(Eigen::Vector3f(0, -0.5, 0));
 	}
 	else {
-		
 		roty.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 	}
 }

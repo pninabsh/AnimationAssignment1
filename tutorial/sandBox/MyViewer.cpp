@@ -117,10 +117,10 @@ void MyViewer::load_configuration_IK()
 	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 	for (int i = 2; i <= 4; i++) {
-		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 1.6, 0));
+		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.75, 0));
 	}
 	for (int i = 2; i <= 4; i++) {
-		//data_list[i].MyTranslate(Eigen::Vector3f(0, -0.2, 0));
+		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.85, 0));
 	}
 	for (int i = 1; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
