@@ -6,7 +6,7 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 	private:
 		std::vector<SimplifyDataObject> *simplifyDataObjectsList;
 
-		float resize_value = 0.3;
+		float resize_value = 0.27;
 		float arm_part_position = 0.48;
 		void setup_arm_link_midpoint(igl::opengl::ViewerData &link);
 		void setup_arm_link_axis(igl::opengl::ViewerData &link);

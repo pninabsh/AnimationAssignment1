@@ -13,20 +13,18 @@ MyViewer* MyRenderer::GetMyScene() {
 
 void MyRenderer::SceneMouseProcessing(int button) {
 	int saved_index = my_viewer->selected_data_index;
-	for(int i=0;i<my_viewer->data_list.size();i++){
-		my_viewer->selected_data_index = i;
-		MouseProcessing(button);
-	}
+	my_viewer->selected_data_index = 0;
+	MouseProcessing(button);
+	my_viewer->selected_data_index = 1;
+	MouseProcessing(button);
 	my_viewer->selected_data_index = saved_index;
 }
 
 void MyRenderer::ArmMouseMouseProcessing(int button) {
 	if (MOUSE_BUTTON_RIGHT) {
 		int saved_index = my_viewer->selected_data_index;
-		for (int link_number : *my_viewer->links_numbers) {
-			my_viewer->selected_data_index = link_number;
-			MouseProcessing(button);
-		}
+		my_viewer->selected_data_index = 1;
+		MouseProcessing(button);
 		my_viewer->selected_data_index = saved_index;
 	}
 	else {

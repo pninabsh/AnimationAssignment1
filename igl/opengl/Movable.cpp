@@ -5,8 +5,12 @@ Movable::Movable()
 {
 	Tin = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 	Tout = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	roty = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	rotx = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	roty2 = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	scale = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+};
 
-}
 
 Eigen::Vector3f Movable::getTranslation() {
 	return Tout.translation();
@@ -19,20 +23,20 @@ void Movable::MyTranslate(Eigen::Vector3f amt)
 //angle in radians
 void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 {
-	Tout.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
-}
-
-//angle in radians
-void Movable::MyRotate(Eigen::Matrix3f &rot, Eigen::Vector3f center)
-{
-	Tout.translate(-center);
-	Tout.rotate(rot);
-	Tout.translate(center);
+	if (rotAxis == Eigen::Vector3f(1, 0, 0)) {
+		//Tout.translate(Eigen::Vector3f(0, 0.5, 0));
+		rotx.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
+		//Tout.translate(Eigen::Vector3f(0, -0.5, 0));
+	}
+	else {
+		
+		roty.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
+	}
 }
 
 void Movable::MyScale(Eigen::Vector3f amt)
 {
-	Tout.scale(amt);
+	scale.scale(amt);
 }
 
 /*Eigen::Vector3f getCoordinates() {

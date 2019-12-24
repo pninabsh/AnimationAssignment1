@@ -54,14 +54,14 @@ void MyViewer::setup_arm_link_midpoint(igl::opengl::ViewerData &link) {
 	Eigen::MatrixXd V_mid_box(1, 3);
 	V_mid_box << (M(0) + m(0)) / 2, m(1) - 0.05, (M(2) + m(2)) / 2;
 	link.add_points(V_mid_box, Eigen::RowVector3d(0, 0, 1));
-	Eigen::Vector3f center_rotation(3);
+	/*Eigen::Vector3f center_rotation(3);
 	center_rotation << (M(0) + m(0)) / 2, m(1), (M(2) + m(2)) / 2;
 	Eigen::Vector4f test(4);
 	test << center_rotation(0), center_rotation(1), center_rotation(2), 1;
 	Eigen::Vector4f res = link.MakeTrans() * test;
 	Eigen::Vector3f res3(3);
 	res3 << res(0), res(1), res(2);
-	link.SetCenterOfRotation(res3);
+	link.SetCenterOfRotation(res3);*/
 }
 
 void  MyViewer::setup_arm_link_axis(igl::opengl::ViewerData &link) {
@@ -109,17 +109,19 @@ void MyViewer::load_configuration_IK()
 	load_mesh_from_file(yCylinder_path);
 	load_mesh_from_file(yCylinder_path);
 	load_mesh_from_file(yCylinder_path);
+	for (int i = 2; i <= 4; i++) {
+		data_list[i].SetParent(&(data_list[i - 1]));
+	}
 
 	data_list[0].MyTranslate(Eigen::Vector3f(1, 0, 0));
 	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-
-	data_list[1].MyTranslate(Eigen::Vector3f(0, arm_part_position * 2, 0));
-	data_list[2].MyTranslate(Eigen::Vector3f(0, arm_part_position, 0));
-	data_list[4].MyTranslate(Eigen::Vector3f(0, -arm_part_position, 0));
-	for (int i = 1; i < data_list.size(); i++) {
-		data_list[i].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	for (int i = 2; i <= 4; i++) {
+		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 1.6, 0));
 	}
-
+	for (int i = 2; i <= 4; i++) {
+		//data_list[i].MyTranslate(Eigen::Vector3f(0, -0.2, 0));
+	}
 	for (int i = 1; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
 
@@ -127,7 +129,6 @@ void MyViewer::load_configuration_IK()
 		if (i != 1) {
 			setup_arm_link_axis(data_list[i]);
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
-			//SetParent(&(data_list[i -1]));
 		}
 
 	}

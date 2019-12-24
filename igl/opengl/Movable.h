@@ -11,7 +11,6 @@ public:
 	void MyTranslate(Eigen::Vector3f amt);
 	void MyRotate(Eigen::Vector3f rotAxis,float angle);
 	void MyScale(Eigen::Vector3f amt);
-	void MyRotate(Eigen::Matrix3f& rot, Eigen::Vector3f center);
 	Eigen::Vector3f getTranslation();
 	Eigen::Vector3f getCoordinates();
 	void SetCenterOfRotation(Eigen::Vector3f amt);
@@ -19,5 +18,9 @@ public:
 	void SetParent(Movable* parent);
 	Eigen::Transform<float,3,Eigen::Affine> Tin;
 	Eigen::Transform<float, 3, Eigen::Affine> Tout;
+	Eigen::Transform<float, 3, Eigen::Affine> roty;
+	Eigen::Transform<float, 3, Eigen::Affine> rotx;
+	Eigen::Transform<float, 3, Eigen::Affine> roty2;
+	Eigen::Transform<float, 3, Eigen::Affine> scale;
 };
 
