@@ -8,7 +8,7 @@ private:
 	MyViewer* my_viewer;
 	
 	void SceneMouseProcessing(int button);
-	void ArmMouseMouseProcessing(int button);
+	void ArmMouseProcessing(int button);
 
 	void BaseScale(double y);
 	void ArmScale(double y);
