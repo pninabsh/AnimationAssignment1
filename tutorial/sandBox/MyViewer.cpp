@@ -129,7 +129,7 @@ void MyViewer::load_configuration_IK()
 		links_numbers->push_back(i);
 
 		setup_arm_link_midpoint(data_list[i]);
-		if (i != 1) {
+		if (i != 4) {
 			setup_arm_link_axis(data_list[i]);
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
 		}

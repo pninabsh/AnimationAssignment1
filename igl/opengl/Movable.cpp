@@ -16,6 +16,10 @@ Eigen::Vector3f Movable::getTranslation() {
 	return Tout.translation();
 }
 
+Eigen::Matrix3f Movable::getRotation() {
+	return roty.rotation() * rotx.rotation();
+}
+
 void Movable::MyTranslate(Eigen::Vector3f amt)
 {
 	Tout.translate(amt);
@@ -26,8 +30,11 @@ void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 	if (rotAxis == Eigen::Vector3f(1, 0, 0)) {
 		rotx.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 	}
-	else {
+	else if (rotAxis == Eigen::Vector3f(0, 1, 0)) {
 		roty.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
+	}
+	else {
+		roty2.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 	}
 }
 

@@ -155,7 +155,7 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 
 		case 'P':
 		case 'p':
-			print_rotation_matrices(scn->selected_data_index, *(scn->links_numbers));
+			print_rotation_matrices(scn->selected_data_index, *(scn->links_numbers), scn);
 			break;
 		case 'T':
 		case 't':
@@ -166,15 +166,19 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			print_destination_position(scn);
 			break;
 		case 262: // right
-		case 263: // left
-			rotate_y_axis(scn);
+			rotate_y_axis(scn, -1);
 			break;
-		case 264: // down
+		case 263: // left
+			rotate_y_axis(scn, 1);
+			break;
+		case 264: // down 
+			rotate_x_axis(scn, -1);
+			break;
 		case 265: // up
-			rotate_x_axis(scn);
+			rotate_x_axis(scn, 1);
 			break;
 		case ' ': {
-			toggle_IK_solver_animation();
+			toggle_IK_solver_animation(scn);
 			break;
 		}
 		default: break;//do nothing
