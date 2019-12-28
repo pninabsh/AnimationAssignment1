@@ -33,7 +33,7 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 	//d and e are the same in all iterations
 	//changes between iterations
 	float threshold = 0.1f;
-	float maxDist = 16.0f;
+	float maxDist = 2.0f;
 	Eigen::Vector3f d = scn->data_list[0].getTranslation();
 	Eigen::Vector3d e = getCoordinates(scn->data_list[4], true);
 	float dist = distance(d, e);
@@ -48,6 +48,7 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 			Eigen::Vector3f planeVector(plane(0), plane(1), plane(2));
 			auto dotProduct = re.dot(rd);
 			if (dotProduct < -1 || dotProduct > 1) {
+				std::cout << "The angle is not between -1 and 1" << std::endl;
 				return;
 			}
 			auto theta = acos(dotProduct);
@@ -57,6 +58,13 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 			dist = distance(d, e);
 			std::cout << "The distance is: " << dist << std::endl;
 		}
+	}
+	else if(isAnimating && dist >= maxDist){
+		isAnimating = false;
+		std::cout << "cannot reach" << std::endl;
+	}
+	else {
+		isAnimating = false;
 	}
 }
 
@@ -103,7 +111,7 @@ void print_rotation_matrices(int picked_object_index, std::vector<int> link_indi
 	}
 	else {
 		// print rotation of the picked link
-		rotMat = scn->data_list[1].getRotation();
+		rotMat = scn->data_list[picked_object_index].getRotation();
 	}
 	print_rotation_matrices_helping(rotMat);
 }
