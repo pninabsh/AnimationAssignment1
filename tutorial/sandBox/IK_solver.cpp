@@ -2,7 +2,11 @@
 #include <igl/opengl/glfw/Viewer.h>
 using namespace std;
 
-static int isAnimating = false;
+extern bool isAnimating = false;
+
+bool getIsAnimating() {
+	return isAnimating;
+}
 
 Eigen::Vector3d getCoordinates(igl::opengl::ViewerData link, bool upLink) {
 	Eigen::Vector3d mLink = link.V.colwise().minCoeff();
@@ -23,7 +27,7 @@ float distance(Eigen::Vector3f p1, Eigen::Vector3d p2) {
 	return res;
 }
 
-void ccd_step(MyViewer* scn) {
+void ccd_step(igl::opengl::glfw::Viewer* scn) {
 	/*Eigen::Vector3d mLink = scn->data_list[4].V.colwise().minCoeff();
 	Eigen::Vector3d MLink = scn->data_list[4].V.colwise().maxCoeff();*/
 	//d and e are the same in all iterations
@@ -33,7 +37,6 @@ void ccd_step(MyViewer* scn) {
 	Eigen::Vector3f d = scn->data_list[0].getTranslation();
 	Eigen::Vector3d e = getCoordinates(scn->data_list[4], true);
 	float dist = distance(d, e);
-	std::cout << "The distance is: " << dist << std::endl;
 	if (isAnimating && dist > threshold && dist < maxDist) {
 		for (int i = 4; i >= 1; i--) {
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
@@ -73,8 +76,6 @@ void toggle_IK_solver_animation(MyViewer* scn) {
 	else {
 		start_IK_solver_animation(scn);
 	}
-
-	isAnimating = !isAnimating;
 }
 
 bool is_link(int picked_object_index, std::vector<int> link_indices) {

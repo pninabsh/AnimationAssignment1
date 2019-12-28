@@ -8,6 +8,7 @@
 
 #include "igl/igl_inline.h"
 #include <igl/get_seconds.h>
+#include "tutorial/sandBox/IK_solver.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -141,11 +142,10 @@ bool Display::launch_rendering(bool loop)
 		if (!loop)
 			return !glfwWindowShouldClose(window);
 
-		/*if (isAnimating) {
-			Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-			igl::opengl::glfw::Viewer* scn = rndr->GetScene();
-			ccd_step(scn);
-		}*/
+		Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+		igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+		ccd_step(scn);
+
 		
 
 #ifdef __APPLE__
