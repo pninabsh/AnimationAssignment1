@@ -15,3 +15,5 @@ void print_destination_position(MyViewer* scn);
 void rotate_y_axis(MyViewer* scn, int dir);
 
 void rotate_x_axis(MyViewer* scn, int dir);
+
+void ccd_step(igl::opengl::glfw::Viewer* scn);

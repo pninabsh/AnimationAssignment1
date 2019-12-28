@@ -33,8 +33,9 @@ void ccd_step(MyViewer* scn) {
 	Eigen::Vector3f d = scn->data_list[0].getTranslation();
 	Eigen::Vector3d e = getCoordinates(scn->data_list[4], true);
 	float dist = distance(d, e);
-	while (isAnimating && dist > threshold && dist < maxDist) {
-		for (int i = 4; i >= 4; i--) {
+	std::cout << "The distance is: " << dist << std::endl;
+	if (isAnimating && dist > threshold && dist < maxDist) {
+		for (int i = 4; i >= 1; i--) {
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -47,9 +48,11 @@ void ccd_step(MyViewer* scn) {
 				return;
 			}
 			auto theta = acos(dotProduct);
-			scn->data_list[4].MyRotate(planeVector, theta);
+			theta = theta / 5;
+			scn->data_list[i].MyRotate(planeVector, theta);
 			e = getCoordinates(scn->data_list[4], true);
 			dist = distance(d, e);
+			std::cout << "The distance is: " << dist << std::endl;
 		}
 	}
 }

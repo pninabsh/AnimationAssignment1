@@ -9,7 +9,6 @@
 #include "igl/igl_inline.h"
 #include <igl/get_seconds.h>
 
-
 static void glfw_error_callback(int error, const char* description)
 {
 	fputs(description, stderr);
@@ -120,7 +119,6 @@ bool Display::launch_rendering(bool loop)
 	
 	while (!glfwWindowShouldClose(window))
 	{
-
 		double tic = igl::get_seconds();
 		renderer->draw(window);
 		glfwSwapBuffers(window);
@@ -142,6 +140,13 @@ bool Display::launch_rendering(bool loop)
 		}
 		if (!loop)
 			return !glfwWindowShouldClose(window);
+
+		/*if (isAnimating) {
+			Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
+			igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+			ccd_step(scn);
+		}*/
+		
 
 #ifdef __APPLE__
 		static bool first_time_hack = true;
