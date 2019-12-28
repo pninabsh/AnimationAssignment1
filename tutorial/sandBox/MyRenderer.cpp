@@ -27,7 +27,6 @@ void MyRenderer::SceneMouseProcessing(int button) {
 
 void MyRenderer::ArmMouseProcessing(int button) {
 	int saved_index = my_viewer->selected_data_index;
-	my_viewer->selected_data_index = 1;
 	MouseProcessing(button);
 	my_viewer->selected_data_index = saved_index;
 }
@@ -50,12 +49,6 @@ void MyRenderer::BaseScale(double y) {
 }
 
 void MyRenderer::SceneScale( double y) {
-	/*int saved_index = my_viewer->selected_data_index;
-	my_viewer->selected_data_index = 0;
-	BaseScale(y);
-	my_viewer->selected_data_index = 1;
-	BaseScale(y);
-	my_viewer->selected_data_index = saved_index;*/
 	my_viewer->MyTranslate(Eigen::Vector3f(0, 0, -y / 10.0f));
 }
 
