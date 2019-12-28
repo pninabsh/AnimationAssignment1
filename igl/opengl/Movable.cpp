@@ -17,7 +17,7 @@ Eigen::Vector3f Movable::getTranslation() {
 }
 
 Eigen::Matrix3f Movable::getRotation() {
-	return roty.rotation() * rotx.rotation();
+	return roty.rotation() * rotx.rotation() * roty2.rotation();
 }
 
 void Movable::MyTranslate(Eigen::Vector3f amt)

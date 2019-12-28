@@ -105,7 +105,7 @@ void print_rotation_matrices_helping(Eigen::Matrix3f rot) {
 
 void print_rotation_matrices(int picked_object_index, std::vector<int> link_indices, MyViewer* scn) {
 	Eigen::Matrix3f rotMat;
-	if (!is_link(picked_object_index,link_indices)) {
+	if (!is_link(picked_object_index,link_indices) || !scn->is_object_selected) {
 		// print rotation of whole scene
 		rotMat = scn->getRotation();
 	}
@@ -129,10 +129,21 @@ void print_destination_position(MyViewer* scn) {
 
 
 void rotate_y_axis(MyViewer* scn, int dir) {
-	int pressedIndex = scn->selected_data_index;
-	scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(0, 1, 0), dir * 0.1f);
+	if (!scn->is_object_selected) {
+		scn->MyRotate(Eigen::Vector3f(0, 1, 0), dir * 0.1f);
+	}
+	else {
+		int pressedIndex = scn->selected_data_index;
+		scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(0, 1, 0), dir * 0.1f);
+	}
 }
+
 void rotate_x_axis(MyViewer* scn, int dir) {
-	int pressedIndex = scn->selected_data_index;
-	scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+	if (!scn->is_object_selected) {
+		scn->MyRotate(Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+	}
+	else {
+		int pressedIndex = scn->selected_data_index;
+		scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+	}
 }

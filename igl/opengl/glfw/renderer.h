@@ -19,7 +19,7 @@ public:
 	~Renderer();
 	IGL_INLINE void draw( GLFWwindow* window);
 	IGL_INLINE void init(igl::opengl::glfw::Viewer* scn);
-	
+	double xold, yold, xrel, yrel;
 	//IGL_INLINE bool key_pressed(unsigned int unicode_key, int modifiers);
 
 		// Returns **true** if action should be cancelled.
@@ -109,6 +109,5 @@ private:
 	size_t selected_core_index;
 	int next_core_id;
 	float highdpi;
-	double xold, yold, xrel, yrel;
 };
 
