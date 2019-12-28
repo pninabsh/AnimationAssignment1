@@ -33,12 +33,13 @@ void MyRenderer::ArmMouseProcessing(int button) {
 }
 
 void MyRenderer::MyMouseProcessing(int button) {
-	if (!my_viewer->is_object_selected) {
-		SceneMouseProcessing(button);
-	}
-	else if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
+	if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
 		ArmMouseProcessing(button);
 	}
+	else if (!my_viewer->is_object_selected) {
+		SceneMouseProcessing(button);
+	}
+
 	else {
 		MouseProcessing(button);
 	}
