@@ -11,19 +11,16 @@ void MyViewer::load_configuration()
 	string mesh_path;
 	ifstream configuration_file("configuration.txt");
 
-	if (configuration_file.fail())
+	if (configuration_file.good())
 	{
+		cout << "loading mesh from text line in configuration file..." << endl;
+		getline(configuration_file, mesh_path);
+	}
+	else {
 		cout << "cannot open configuration file! loading from default mesh paths instead..." << endl;
 		mesh_path = "C:/Dev/EngineIGLnew/tutorial/data/cube.obj";
 	}
-	else
-	{
-		while (configuration_file.good())
-		{
-			cout << "loading mesh from text line in configuration file..." << endl;
-			getline(configuration_file, mesh_path);
-		}
-	}
+
 	cout << "loading done!" << endl;
 	configuration_file.close();
 
