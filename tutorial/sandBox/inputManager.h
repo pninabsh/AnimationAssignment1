@@ -3,17 +3,6 @@
 #include "tutorial/sandBox/MyRenderer.h"
 #include "tutorial/sandBox/MyViewer.h"
 
-static std::string mapIndexToMeshName(int index) {
-	switch (index) {
-		case 0: return "sphere";
-		case 1: return "cube";
-		case 2:
-		default: return "rabbit";
-	}
-}
-
-static int numberOfClicks = 0;
-
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
 
@@ -31,13 +20,6 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 
 		int i = 0, savedIndx = scn->selected_data_index;
 
-		std::string meshName = mapIndexToMeshName(i);
-
-		numberOfClicks++;
-		std::cout << std::endl;
-		std::cout << "Click Number : "<< numberOfClicks << std::endl;
-		std::cout << "--------------------------------------------------------" << std::endl;
-
 		for (; i < scn->data_list.size(); i++)
 		{
 			scn->selected_data_index = i;
@@ -46,15 +28,6 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 			if (hitObjectCurrent.found && hitObjectCurrent.distance < closetHitObject.distance) {
 				savedIndx = i;
 				closetHitObject = hitObjectCurrent;
-			}
-
-			meshName = mapIndexToMeshName(i);
-			if (!hitObjectCurrent.found)
-			{
-				std::cout << meshName << ": not found" << std::endl;
-			}
-			else {
-				std::cout << meshName << ": found " << hitObjectCurrent.distance << std::endl;
 			}
 		}
 		scn->selected_data_index = savedIndx;
@@ -116,7 +89,8 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 
-	else if (action == GLFW_PRESS || action == GLFW_REPEAT)
+	else if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+		float SPEED_AMOUNT = 0.001f;
 		switch (key)
 		{
 		case 'A':
@@ -175,8 +149,21 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 		case ':':
 			scn->data().show_faceid = !scn->data().show_faceid;
 			break;
+		case 262: // right
+			scn->data_list[0].setSpeed(Eigen::Vector3f(SPEED_AMOUNT, 0, 0));
+			break;
+		case 263: // left
+			scn->data_list[0].setSpeed(Eigen::Vector3f(-SPEED_AMOUNT, 0, 0));
+			break;
+		case 264: // down 
+			scn->data_list[0].setSpeed(Eigen::Vector3f(0, -SPEED_AMOUNT, 0));
+			break;
+		case 265: // up
+			scn->data_list[0].setSpeed(Eigen::Vector3f(0, SPEED_AMOUNT, 0));
+			break;
 		default: break;//do nothing
 		}
+	}
 }
 
 

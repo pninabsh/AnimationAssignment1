@@ -32,5 +32,8 @@ void MyViewer::load_configuration()
 
 	this->data_list[0].MyScale(Eigen::RowVector3f(0.5, 0.5, 1));
 	this->data_list[1].MyScale(Eigen::RowVector3f(0.5, 0.5, 1));
+
+	this->data_list[0].setSpeed(Eigen::RowVector3f(0.001f, 0, 0));
+
 	this->data_list[1].MyTranslate(Eigen::RowVector3f(0.75, 0, 0));
 }

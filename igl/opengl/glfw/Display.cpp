@@ -137,7 +137,7 @@ bool Display::launch_rendering(bool loop)
 		}
 		else
 		{
-			glfwWaitEvents();
+		//	glfwWaitEvents();
 			frame_counter = 0;
 		}
 		if (!loop)

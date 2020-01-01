@@ -3,6 +3,17 @@
 Movable::Movable()
 {
 	T = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	speed = Eigen::Vector3f(0, 0, 0);
+}
+
+void Movable::slide()
+{
+	this->MyTranslate(this->speed);
+}
+
+void Movable::setSpeed(Eigen::Vector3f speed)
+{
+	this->speed = speed;
 }
 
 Eigen::Matrix4f Movable::MakeTrans()
