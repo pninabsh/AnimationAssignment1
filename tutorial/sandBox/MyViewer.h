@@ -14,6 +14,4 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 			delete simplifyDataObjectsList;
 		}
 		void load_configuration();
-		void init_simplify_data_structures_list();
-		void simplify();
 };
