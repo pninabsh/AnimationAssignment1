@@ -6,6 +6,7 @@
 class MyViewer : public igl::opengl::glfw::Viewer {
 	private:
 		std::vector<SimplifyDataObject> *simplifyDataObjectsList;
+		void create_bounding_box();
 		
 	public:
 		MyViewer() {

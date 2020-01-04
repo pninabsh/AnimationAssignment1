@@ -14,6 +14,61 @@ Eigen::RowVector3d pink(1, 0, 1);
 Eigen::RowVector3d yellow(1, 1, 0);
 Eigen::RowVector3d white(1, 1, 1);
 
+void draw_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, std::vector<Eigen::AlignedBox3d::CornerType> vertices) {
+	Eigen::RowVector3d v1 = bounding_box.corner(vertices.at(0));
+	Eigen::RowVector3d v2 = bounding_box.corner(vertices.at(1));
+	Eigen::RowVector3d v3 = bounding_box.corner(vertices.at(2));
+	Eigen::RowVector3d v4 = bounding_box.corner(vertices.at(3));
+	mesh.add_edges(v1, v2, red);
+	mesh.add_edges(v1, v3, red);
+	mesh.add_edges(v2, v4, red);
+	mesh.add_edges(v3, v4, red);
+}
+
+void draw_back_face(igl::opengl::ViewerData &mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopRightFloor,
+		bounding_box.BottomLeftFloor, bounding_box.BottomRightFloor  });
+}
+
+void draw_front_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftCeil, bounding_box.TopRightCeil,
+		bounding_box.BottomLeftCeil, bounding_box.BottomRightCeil });
+}
+
+void draw_top_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopRightFloor,
+		bounding_box.TopLeftCeil, bounding_box.TopRightCeil  });
+}
+
+void draw_bottom_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.BottomLeftFloor, bounding_box.BottomRightFloor,
+		bounding_box.BottomLeftCeil, bounding_box.BottomRightCeil  });
+}
+
+void draw_left_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopLeftCeil,
+		bounding_box.BottomLeftFloor, bounding_box.BottomLeftCeil  });
+}
+
+void draw_right_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box) {
+	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopRightFloor, bounding_box.TopRightCeil,
+		bounding_box.BottomRightFloor, bounding_box.BottomRightCeil  });
+}
+
+void MyViewer::create_bounding_box() {
+	igl::AABB<Eigen::MatrixXd, 3> tree;
+	for(int i=0;i<this->data_list.size();i++) {
+		tree.init(this->data_list[i].V, this->data_list[i].F);
+		Eigen::AlignedBox<double, 3> bounding_box = tree.m_box;
+		draw_back_face(this->data_list[i], bounding_box);
+		draw_front_face(this->data_list[i], bounding_box);
+		draw_top_face(this->data_list[i], bounding_box);
+		draw_bottom_face(this->data_list[i], bounding_box);
+		draw_left_face(this->data_list[i], bounding_box);
+		draw_right_face(this->data_list[i], bounding_box);
+	}
+}
+
 void MyViewer::load_configuration()
 {
 	cout << "reading mesh paths from configuration.txt file..." << endl;
@@ -43,35 +98,13 @@ void MyViewer::load_configuration()
 	this->data_list[0].setSpeed(Eigen::RowVector3f(0.001f, 0, 0));
 
 	this->data_list[1].MyTranslate(Eigen::RowVector3f(0.75, 0, 0));
+	
+	create_bounding_box();
 
-	igl::AABB<Eigen::MatrixXd, 3> tree;
-	igl::AABB<Eigen::MatrixXd, 3> *pointer;
+	/*igl::AABB<Eigen::MatrixXd, 3> tree;
 	tree.init(this->data_list[0].V, this->data_list[0].F);
-	std::cout << "woho" << std::endl;
-	Eigen::AlignedBox<double, 3> right_face = tree.m_left->m_left->m_left->m_right->m_box;
-	//Eigen::AlignedBox<double, 3> back_face = tree.m_right->m_left->m_right->m_box;
-	//Eigen::AlignedBox<double, 3> bottom_face = tree.m_left->m_right->m_right->m_box;
-	//Eigen::AlignedBox<double, 3> front_face = tree.m_left->m_left->m_right->m_box;
-	//Eigen::AlignedBox<double, 3> top_face = tree.m_right->m_left->m_left->m_right->m_box;
-	//Eigen::AlignedBox<double, 3> left_face = tree.m_left->m_left->m_left->m_right->m_box;
-	//Eigen::RowVector3d v1 = right_face.corner(right_face.BottomLeftCeil);
-	Eigen::RowVector3d v1 = right_face.corner(right_face.BottomLeftCeil);
-	Eigen::RowVector3d v2 = right_face.corner(right_face.BottomLeftFloor);
-	Eigen::RowVector3d v3 = right_face.corner(right_face.BottomRightCeil);
-	Eigen::RowVector3d v4 = right_face.corner(right_face.BottomRightFloor);
-	Eigen::RowVector3d v5 = right_face.corner(right_face.TopRightCeil);
-	Eigen::RowVector3d v6 = right_face.corner(right_face.TopRightFloor);
-	Eigen::RowVector3d v7 = right_face.corner(right_face.TopLeftCeil);
-	Eigen::RowVector3d v8 = right_face.corner(right_face.TopLeftFloor);
-	Eigen::RowVector3d v9 = right_face.center();
-
-	this->data_list[0].add_points(v1, red);
-	this->data_list[0].add_points(v2, green);
-	this->data_list[0].add_points(v3, blue);
-	this->data_list[0].add_points(v4, pink);
-	this->data_list[0].add_points(v5, yellow);
-	this->data_list[0].add_points(v6, white);
-	this->data_list[0].add_points(v7, black);
-	this->data_list[0].add_points(v8, teal);
-	this->data_list[0].add_points(v9, grey);
+	Eigen::AlignedBox<double, 3> bounding_box = tree.m_box;
+	Eigen::RowVector3d v1 = bounding_box.corner(bounding_box.TopLeftFloor);
+	Eigen::RowVector3d v2 = bounding_box.corner(bounding_box.TopRightFloor);
+	this->data_list[0].add_points(v1, red);*/
 }
