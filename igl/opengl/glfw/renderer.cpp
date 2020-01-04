@@ -61,7 +61,6 @@ IGL_INLINE void Renderer::draw(GLFWwindow *window)
 
 	for (auto &core : core_list)
 	{
-		std::cout << "woho" << std::endl;
 		for (int i = 0; i < scn->data_list.size(); i++) {
 			auto& mesh = scn->data_list[i];
 			

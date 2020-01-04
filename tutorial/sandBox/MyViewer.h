@@ -1,4 +1,5 @@
 #pragma once
+#include "igl/AABB.h"
 #include "igl/opengl/glfw/Viewer.h"
 #include "tutorial/sandBox/mesh_simplifier.h"
 
