@@ -2,13 +2,13 @@
 
 bool detect_x_collision(igl::opengl::ViewerData collider1, Eigen::AlignedBox<double, 3> bounding_box1,
 	igl::opengl::ViewerData collider2, Eigen::AlignedBox<double, 3> bounding_box2) {
-	Eigen::RowVector3d oldX = bounding_box1.corner(bounding_box1.BottomLeft);
-	Eigen::RowVector4d newX = Eigen::RowVector4d(oldX(0), oldX(1), oldX(2), 0);
-	double X =  (newX * collider1.MakeTrans().cast<double>())(0);
+	Eigen::Vector3d oldX = bounding_box1.corner(bounding_box1.BottomLeft);
+	Eigen::Vector4d newX = Eigen::Vector4d(oldX(0), oldX(1), oldX(2), 1);
+	double X =  (collider1.MakeTrans().cast<double>() * newX)(0);
 
-	Eigen::RowVector3d oldX2 = bounding_box2.corner(bounding_box2.BottomLeft);
-	Eigen::RowVector4d newX2 = Eigen::RowVector4d(oldX2(0), oldX2(1), oldX2(2), 1);
-	double X2 = (newX2 * collider2.MakeTrans().cast<double>())(0);
+	Eigen::Vector3d oldX2 = bounding_box2.corner(bounding_box2.BottomLeft);
+	Eigen::Vector4d newX2 = Eigen::Vector4d(oldX2(0), oldX2(1), oldX2(2), 1);
+	double X2 = (collider2.MakeTrans().cast<double>() * newX2)(0);
 	//double x2 = (collider1.MakeTrans() * bounding_box1.corner(bounding_box1.BottomRight))(0);
 	
 	//double x3 = (collider2.MakeTrans() * bounding_box2.corner(bounding_box2.BottomLeft))(0);
