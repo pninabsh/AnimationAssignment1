@@ -4,6 +4,8 @@
 #include <igl/unproject_onto_mesh.h>
 #include "igl/look_at.h"
 #include <Eigen/Dense>
+#include "tutorial/sandBox/detectCollision.h"
+
 Renderer::Renderer() : selected_core_index(0),
 					   next_core_id(2)
 {
@@ -61,14 +63,21 @@ IGL_INLINE void Renderer::draw(GLFWwindow *window)
 
 	for (auto &core : core_list)
 	{
-		for (int i = 0; i < scn->data_list.size(); i++) {
-			auto& mesh = scn->data_list[i];
-			
+		for (int i = 0; i < scn->data_list.size(); i++)
+		{
+			auto &mesh = scn->data_list[i];
+
 			scn->data_list[i].slide();
 			if (mesh.is_visible & core.id)
 			{
 				core.draw(scn->MakeTrans(), mesh);
 			}
+		}
+		if (detect_collision(scn->data_list[0], scn->data_list[1]))
+		{
+			scn->data_list[0].setSpeed(Eigen::Vector3f(0, 0, 0));
+			//TODO: find colliders
+			//TODO: color colliders
 		}
 	}
 }
@@ -142,10 +151,10 @@ hitObject Renderer::Picking(double newx, double newy)
 		Eigen::Vector3f alpha1MultiplyV1(bc(1) * v1(0), bc(1) * v1(1), bc(1) * v1(2));
 		Eigen::Vector3f alpha2MultiplyV2(bc(2) * v2(0), bc(2) * v2(1), bc(2) * v2(2));
 		Eigen::Vector3f p(alpha0MultiplyV0(0) + alpha1MultiplyV1(0) + alpha2MultiplyV2(0),
-			alpha0MultiplyV0(1) + alpha1MultiplyV1(1) + alpha2MultiplyV2(1),
-			alpha0MultiplyV0(2) + alpha1MultiplyV1(2) + alpha2MultiplyV2(2));
+						  alpha0MultiplyV0(1) + alpha1MultiplyV1(1) + alpha2MultiplyV2(1),
+						  alpha0MultiplyV0(2) + alpha1MultiplyV1(2) + alpha2MultiplyV2(2));
 		//perform transformatiom on P point
-		Eigen::Matrix<float, 4, 1> pPointIn4dMatrix = { p(0), p(1), p(2), 1};
+		Eigen::Matrix<float, 4, 1> pPointIn4dMatrix = {p(0), p(1), p(2), 1};
 		//multiply view * pPointIn4dMatrix in order to get the transformed p point
 		Eigen::Matrix<float, 4, 1> resultMatrix = view * pPointIn4dMatrix;
 		Eigen::Vector3f resultVector(resultMatrix(0), resultMatrix(1), resultMatrix(2));

@@ -59,6 +59,7 @@ void MyViewer::create_bounding_box() {
 	igl::AABB<Eigen::MatrixXd, 3> tree;
 	for(int i=0;i<this->data_list.size();i++) {
 		tree.init(this->data_list[i].V, this->data_list[i].F);
+		this->data_list[i].kd_tree = tree;
 		Eigen::AlignedBox<double, 3> bounding_box = tree.m_box;
 		draw_back_face(this->data_list[i], bounding_box);
 		draw_front_face(this->data_list[i], bounding_box);
@@ -97,7 +98,7 @@ void MyViewer::load_configuration()
 
 	this->data_list[0].setSpeed(Eigen::RowVector3f(0.001f, 0, 0));
 
-	this->data_list[1].MyTranslate(Eigen::RowVector3f(0.75, 0, 0));
+	this->data_list[1].MyTranslate(Eigen::RowVector3f(1.75, 0, 0));
 	
 	create_bounding_box();
 

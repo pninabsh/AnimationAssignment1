@@ -16,6 +16,7 @@
 //#include <Eigen/Core>
 #include <memory>
 #include <vector>
+#include "../AABB.h"
 
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
@@ -43,6 +44,7 @@ class ViewerData : public Movable
 public:
   ViewerData();
 
+  IGL_INLINE igl::AABB<Eigen::MatrixXd, 3> kd_tree;
   // Empty all fields
   IGL_INLINE void clear();
 
@@ -50,9 +52,9 @@ public:
   IGL_INLINE void set_face_based(bool newvalue);
 
   // Helpers that can draw the most common meshes
-  IGL_INLINE void set_mesh(const Eigen::MatrixXd& V, const Eigen::MatrixXi& F);
-  IGL_INLINE void set_vertices(const Eigen::MatrixXd& V);
-  IGL_INLINE void set_normals(const Eigen::MatrixXd& N);
+  IGL_INLINE void set_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
+  IGL_INLINE void set_vertices(const Eigen::MatrixXd &V);
+  IGL_INLINE void set_normals(const Eigen::MatrixXd &N);
 
   IGL_INLINE void set_visible(bool value, unsigned int core_id = 1);
 
@@ -65,13 +67,13 @@ public:
   //
   // Inputs:
   //   UV  #V by 2 list of UV coordinates (indexed by F)
-  IGL_INLINE void set_uv(const Eigen::MatrixXd& UV);
+  IGL_INLINE void set_uv(const Eigen::MatrixXd &UV);
   // Set per-corner UV coordinates
   //
   // Inputs:
   //   UV_V  #UV by 2 list of UV coordinates
   //   UV_F  #F by 3 list of UV indices into UV_V
-  IGL_INLINE void set_uv(const Eigen::MatrixXd& UV_V, const Eigen::MatrixXi& UV_F);
+  IGL_INLINE void set_uv(const Eigen::MatrixXd &UV_V, const Eigen::MatrixXi &UV_F);
   // Set the texture associated with the mesh.
   //
   // Inputs:
@@ -80,9 +82,9 @@ public:
   //   B  width by height image matrix of blue channel
   //
   IGL_INLINE void set_texture(
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B);
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &R,
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &G,
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &B);
 
   // Set the texture associated with the mesh.
   //
@@ -93,10 +95,10 @@ public:
   //   A  width by height image matrix of alpha channel
   //
   IGL_INLINE void set_texture(
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& R,
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& G,
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& B,
-    const Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic>& A);
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &R,
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &G,
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &B,
+      const Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> &A);
 
   // Sets points given a list of point vertices. In constrast to `set_points`
   // this will (purposefully) clober existing points.
@@ -105,9 +107,9 @@ public:
   //   P  #P by 3 list of vertex positions
   //   C  #P|1 by 3 color(s)
   IGL_INLINE void set_points(
-    const Eigen::MatrixXd& P,
-    const Eigen::MatrixXd& C);
-  IGL_INLINE void add_points(const Eigen::MatrixXd& P,  const Eigen::MatrixXd& C);
+      const Eigen::MatrixXd &P,
+      const Eigen::MatrixXd &C);
+  IGL_INLINE void add_points(const Eigen::MatrixXd &P, const Eigen::MatrixXd &C);
   // Sets edges given a list of edge vertices and edge indices. In constrast
   // to `add_edges` this will (purposefully) clober existing edges.
   //
@@ -115,31 +117,31 @@ public:
   //   P  #P by 3 list of vertex positions
   //   E  #E by 2 list of edge indices into P
   //   C  #E|1 by 3 color(s)
-  IGL_INLINE void set_edges (const Eigen::MatrixXd& P, const Eigen::MatrixXi& E, const Eigen::MatrixXd& C);
+  IGL_INLINE void set_edges(const Eigen::MatrixXd &P, const Eigen::MatrixXi &E, const Eigen::MatrixXd &C);
   // Alec: This is very confusing. Why does add_edges have a different API from
   // set_edges?
-  IGL_INLINE void add_edges (const Eigen::MatrixXd& P1, const Eigen::MatrixXd& P2, const Eigen::MatrixXd& C);
+  IGL_INLINE void add_edges(const Eigen::MatrixXd &P1, const Eigen::MatrixXd &P2, const Eigen::MatrixXd &C);
 
   // Adds text labels at the given positions in 3D.
   // Note: This requires the ImGui viewer plugin to display text labels.
-  IGL_INLINE void add_label (const Eigen::VectorXd& P,  const std::string& str);
+  IGL_INLINE void add_label(const Eigen::VectorXd &P, const std::string &str);
   // Clear the label data
-  IGL_INLINE void clear_labels ();
+  IGL_INLINE void clear_labels();
 
   // Computes the normals of the mesh
   IGL_INLINE void compute_normals();
 
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
-    const Eigen::Vector3d& diffuse,
-    const Eigen::Vector3d& ambient,
-    const Eigen::Vector3d& specular);
+      const Eigen::Vector3d &diffuse,
+      const Eigen::Vector3d &ambient,
+      const Eigen::Vector3d &specular);
 
   // Assigns uniform colors to all faces/vertices
   IGL_INLINE void uniform_colors(
-    const Eigen::Vector4d& ambient,
-    const Eigen::Vector4d& diffuse,
-    const Eigen::Vector4d& specular);
+      const Eigen::Vector4d &ambient,
+      const Eigen::Vector4d &diffuse,
+      const Eigen::Vector4d &specular);
 
   // Generates a default grid texture
   IGL_INLINE void grid_texture();
@@ -153,15 +155,15 @@ public:
   // Per face attributes
   Eigen::MatrixXd F_normals; // One normal per face
 
-  Eigen::MatrixXd F_material_ambient; // Per face ambient color
-  Eigen::MatrixXd F_material_diffuse; // Per face diffuse color
+  Eigen::MatrixXd F_material_ambient;  // Per face ambient color
+  Eigen::MatrixXd F_material_diffuse;  // Per face diffuse color
   Eigen::MatrixXd F_material_specular; // Per face specular color
 
   // Per vertex attributes
   Eigen::MatrixXd V_normals; // One normal per vertex
 
-  Eigen::MatrixXd V_material_ambient; // Per vertex ambient color
-  Eigen::MatrixXd V_material_diffuse; // Per vertex diffuse color
+  Eigen::MatrixXd V_material_ambient;  // Per vertex ambient color
+  Eigen::MatrixXd V_material_diffuse;  // Per vertex diffuse color
   Eigen::MatrixXd V_material_specular; // Per vertex specular color
 
   // UV parametrization
@@ -169,10 +171,10 @@ public:
   Eigen::MatrixXi F_uv; // optional faces for UVs
 
   // Texture
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_R;
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_G;
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_B;
-  Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> texture_A;
+  Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> texture_R;
+  Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> texture_G;
+  Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> texture_B;
+  Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> texture_A;
 
   // Overlays
 
@@ -189,8 +191,8 @@ public:
   // Text labels plotted over the scene
   // Textp contains, in the i-th row, the position in global coordinates where the i-th label should be anchored
   // Texts contains in the i-th position the text of the i-th label
-  Eigen::MatrixXd           labels_positions;
-  std::vector<std::string>  labels_strings;
+  Eigen::MatrixXd labels_positions;
+  std::vector<std::string> labels_strings;
 
   // Marks dirty buffers that need to be uploaded to OpenGL
   uint32_t dirty;
@@ -230,9 +232,9 @@ public:
 
   // Update contents from a 'Data' instance
   IGL_INLINE void updateGL(
-    const igl::opengl::ViewerData& data,
-    const bool invert_normals,
-    igl::opengl::MeshGL& meshgl);
+      const igl::opengl::ViewerData &data,
+      const bool invert_normals,
+      igl::opengl::MeshGL &meshgl);
 };
 
 } // namespace opengl
@@ -243,62 +245,62 @@ public:
 #include <igl/serialize.h>
 namespace igl
 {
-  namespace serialization
-  {
-    inline void serialization(bool s, igl::opengl::ViewerData& obj, std::vector<char>& buffer)
-    {
-      SERIALIZE_MEMBER(V);
-      SERIALIZE_MEMBER(F);
-      SERIALIZE_MEMBER(F_normals);
-      SERIALIZE_MEMBER(F_material_ambient);
-      SERIALIZE_MEMBER(F_material_diffuse);
-      SERIALIZE_MEMBER(F_material_specular);
-      SERIALIZE_MEMBER(V_normals);
-      SERIALIZE_MEMBER(V_material_ambient);
-      SERIALIZE_MEMBER(V_material_diffuse);
-      SERIALIZE_MEMBER(V_material_specular);
-      SERIALIZE_MEMBER(V_uv);
-      SERIALIZE_MEMBER(F_uv);
-      SERIALIZE_MEMBER(texture_R);
-      SERIALIZE_MEMBER(texture_G);
-      SERIALIZE_MEMBER(texture_B);
-      SERIALIZE_MEMBER(texture_A);
-      SERIALIZE_MEMBER(lines);
-      SERIALIZE_MEMBER(points);
-      SERIALIZE_MEMBER(labels_positions);
-      SERIALIZE_MEMBER(labels_strings);
-      SERIALIZE_MEMBER(dirty);
-      SERIALIZE_MEMBER(face_based);
-      SERIALIZE_MEMBER(show_faces);
-      SERIALIZE_MEMBER(show_lines);
-      SERIALIZE_MEMBER(invert_normals);
-      SERIALIZE_MEMBER(show_overlay);
-      SERIALIZE_MEMBER(show_overlay_depth);
-      SERIALIZE_MEMBER(show_vertid);
-      SERIALIZE_MEMBER(show_faceid);
-      SERIALIZE_MEMBER(show_texture);
-      SERIALIZE_MEMBER(point_size);
-      SERIALIZE_MEMBER(line_width);
-      SERIALIZE_MEMBER(line_color);
-      SERIALIZE_MEMBER(shininess);
-      SERIALIZE_MEMBER(id);
-    }
-    template<>
-    inline void serialize(const igl::opengl::ViewerData& obj, std::vector<char>& buffer)
-    {
-      serialization(true, const_cast<igl::opengl::ViewerData&>(obj), buffer);
-    }
-    template<>
-    inline void deserialize(igl::opengl::ViewerData& obj, const std::vector<char>& buffer)
-    {
-      serialization(false, obj, const_cast<std::vector<char>&>(buffer));
-      obj.dirty = igl::opengl::MeshGL::DIRTY_ALL;
-    }
-  }
+namespace serialization
+{
+inline void serialization(bool s, igl::opengl::ViewerData &obj, std::vector<char> &buffer)
+{
+  SERIALIZE_MEMBER(V);
+  SERIALIZE_MEMBER(F);
+  SERIALIZE_MEMBER(F_normals);
+  SERIALIZE_MEMBER(F_material_ambient);
+  SERIALIZE_MEMBER(F_material_diffuse);
+  SERIALIZE_MEMBER(F_material_specular);
+  SERIALIZE_MEMBER(V_normals);
+  SERIALIZE_MEMBER(V_material_ambient);
+  SERIALIZE_MEMBER(V_material_diffuse);
+  SERIALIZE_MEMBER(V_material_specular);
+  SERIALIZE_MEMBER(V_uv);
+  SERIALIZE_MEMBER(F_uv);
+  SERIALIZE_MEMBER(texture_R);
+  SERIALIZE_MEMBER(texture_G);
+  SERIALIZE_MEMBER(texture_B);
+  SERIALIZE_MEMBER(texture_A);
+  SERIALIZE_MEMBER(lines);
+  SERIALIZE_MEMBER(points);
+  SERIALIZE_MEMBER(labels_positions);
+  SERIALIZE_MEMBER(labels_strings);
+  SERIALIZE_MEMBER(dirty);
+  SERIALIZE_MEMBER(face_based);
+  SERIALIZE_MEMBER(show_faces);
+  SERIALIZE_MEMBER(show_lines);
+  SERIALIZE_MEMBER(invert_normals);
+  SERIALIZE_MEMBER(show_overlay);
+  SERIALIZE_MEMBER(show_overlay_depth);
+  SERIALIZE_MEMBER(show_vertid);
+  SERIALIZE_MEMBER(show_faceid);
+  SERIALIZE_MEMBER(show_texture);
+  SERIALIZE_MEMBER(point_size);
+  SERIALIZE_MEMBER(line_width);
+  SERIALIZE_MEMBER(line_color);
+  SERIALIZE_MEMBER(shininess);
+  SERIALIZE_MEMBER(id);
 }
+template <>
+inline void serialize(const igl::opengl::ViewerData &obj, std::vector<char> &buffer)
+{
+  serialization(true, const_cast<igl::opengl::ViewerData &>(obj), buffer);
+}
+template <>
+inline void deserialize(igl::opengl::ViewerData &obj, const std::vector<char> &buffer)
+{
+  serialization(false, obj, const_cast<std::vector<char> &>(buffer));
+  obj.dirty = igl::opengl::MeshGL::DIRTY_ALL;
+}
+} // namespace serialization
+} // namespace igl
 
 #ifndef IGL_STATIC_LIBRARY
-#  include "ViewerData.cpp"
+#include "ViewerData.cpp"
 #endif
 
 #endif
