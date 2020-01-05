@@ -4,6 +4,7 @@ Movable::Movable()
 {
 	T = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 	speed = Eigen::Vector3f(0, 0, 0);
+	isMoving = true;
 }
 
 void Movable::slide()

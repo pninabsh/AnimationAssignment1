@@ -73,11 +73,12 @@ IGL_INLINE void Renderer::draw(GLFWwindow *window)
 				core.draw(scn->MakeTrans(), mesh);
 			}
 		}
-		if (detect_collision(scn->data_list[0], scn->data_list[1]))
+		if (scn->data_list[0].isMoving && detect_collision(scn->data_list[0],scn->data_list[0].kd_tree.m_box,
+			scn->data_list[1], scn->data_list[1].kd_tree.m_box))
 		{
 			scn->data_list[0].setSpeed(Eigen::Vector3f(0, 0, 0));
-			//TODO: find colliders
-			//TODO: color colliders
+			scn->data_list[0].isMoving = false;
+			find_collided_boxes(scn->data_list[0], scn->data_list[1]);
 		}
 	}
 }
