@@ -130,20 +130,24 @@ void print_destination_position(MyViewer* scn) {
 
 void rotate_y_axis(MyViewer* scn, int dir) {
 	if (!scn->is_object_selected) {
-		scn->MyRotate(Eigen::Vector3f(0, 1, 0), dir * 0.1f);
+		auto m = scn->getRotation().transpose();
+		scn->MyRotate(m * Eigen::Vector3f(0, 1, 0), dir * 0.1f);
 	}
 	else {
 		int pressedIndex = scn->selected_data_index;
-		scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(0, 1, 0), dir * 0.1f);
+		auto m = scn->data_list[pressedIndex].getRotation().transpose();
+		scn->data_list[pressedIndex].MyRotate(m * Eigen::Vector3f(0, 1, 0), dir * 0.01f);
 	}
 }
 
 void rotate_x_axis(MyViewer* scn, int dir) {
 	if (!scn->is_object_selected) {
-		scn->MyRotate(Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+		auto m = scn->getRotation().transpose();
+		scn->MyRotate(m * Eigen::Vector3f(1, 0, 0), dir * 0.1f);
 	}
 	else {
 		int pressedIndex = scn->selected_data_index;
-		scn->data_list[pressedIndex].MyRotate(Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+		auto m = scn->data_list[pressedIndex].getRotation().transpose();
+		scn->data_list[pressedIndex].MyRotate(m*Eigen::Vector3f(1, 0, 0), dir * 0.01f);
 	}
 }
