@@ -136,7 +136,7 @@ void rotate_y_axis(MyViewer* scn, int dir) {
 	else {
 		int pressedIndex = scn->selected_data_index;
 		auto m = scn->data_list[pressedIndex].getRotation().transpose();
-		scn->data_list[pressedIndex].MyRotate(m * Eigen::Vector3f(0, 1, 0), dir * 0.01f);
+		scn->data_list[pressedIndex].MyRotate(m * Eigen::Vector3f(0, 1, 0), dir * 0.1f);
 	}
 }
 
@@ -148,6 +148,6 @@ void rotate_x_axis(MyViewer* scn, int dir) {
 	else {
 		int pressedIndex = scn->selected_data_index;
 		auto m = scn->data_list[pressedIndex].getRotation().transpose();
-		scn->data_list[pressedIndex].MyRotate(m*Eigen::Vector3f(1, 0, 0), dir * 0.01f);
+		scn->data_list[pressedIndex].MyRotate(m*Eigen::Vector3f(1, 0, 0), dir * 0.1f);
 	}
 }

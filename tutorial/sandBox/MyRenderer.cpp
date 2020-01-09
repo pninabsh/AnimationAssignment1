@@ -27,18 +27,18 @@ void MyRenderer::SceneMouseProcessing(int button) {
 
 void MyRenderer::ArmMouseProcessing(int button) {
 	int saved_index = my_viewer->selected_data_index;
+	my_viewer->selected_data_index = 1;
 	MouseProcessing(button);
 	my_viewer->selected_data_index = saved_index;
 }
 
 void MyRenderer::MyMouseProcessing(int button) {
-	if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
-		ArmMouseProcessing(button);
-	}
-	else if (!my_viewer->is_object_selected) {
+	if (!my_viewer->is_object_selected) {
 		SceneMouseProcessing(button);
 	}
-
+	else if (is_link(my_viewer->selected_data_index, *(my_viewer->links_numbers))) {
+		ArmMouseProcessing(button);
+	}
 	else {
 		MouseProcessing(button);
 	}
