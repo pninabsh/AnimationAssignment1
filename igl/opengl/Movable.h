@@ -12,6 +12,7 @@ public:
 	void MyTranslate(Eigen::Vector3f amt);
 	void MyRotate(Eigen::Vector3f rotAxis, float angle);
 	void MyScale(Eigen::Vector3f amt);
+	Eigen::Matrix3d GetRotation();
 	bool isMoving;
 
 private:
