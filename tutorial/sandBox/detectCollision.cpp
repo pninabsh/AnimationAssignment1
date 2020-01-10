@@ -71,8 +71,8 @@ Eigen::Vector3d calculate_point_vector3d(Eigen::Vector3d point, igl::opengl::Vie
 	return Eigen::Vector3d(point4d_scene(0), point4d_scene(1), point4d_scene(2));
 }
 
-bool check_collision_condition(double R, double R0, double R1) {
-	return R > R0 + R1;
+bool check_collision_condition(double R0, double R1, double R) {
+	return R <= R0 + R1;
 }
 
 Eigen::Vector3d calculate_A0_B0(igl::opengl::ViewerData collider, Eigen::AlignedBox<double, 3> bounding_box) {
@@ -237,8 +237,8 @@ void find_collided_boxes(igl::opengl::ViewerData &collider1, igl::opengl::Viewer
 	collided_boxes collided_boxes_object;
 	collided_boxes_object.collided_boxes_collider1 = std::vector< Eigen::AlignedBox<double, 3>>();
 	collided_boxes_object.collided_boxes_collider2 = std::vector< Eigen::AlignedBox<double, 3>>();
-	search_collided_boxes_in_trees(collider1, collider1.kd_tree, collided_boxes_object.collided_boxes_collider1,
-		collider2, collider2.kd_tree, collided_boxes_object.collided_boxes_collider2);
+	/*search_collided_boxes_in_trees(collider1, collider1.kd_tree, collided_boxes_object.collided_boxes_collider1,
+		collider2, collider2.kd_tree, collided_boxes_object.collided_boxes_collider2);*/
 
 	for (Eigen::AlignedBox<double, 3> box : collided_boxes_object.collided_boxes_collider1) {
 		draw_box(collider1, box, green);
