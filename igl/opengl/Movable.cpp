@@ -39,5 +39,5 @@ void Movable::MyScale(Eigen::Vector3f amt)
 
 Eigen::Matrix3d Movable::GetRotation()
 {
-	return T.rotation().cast<double>();
+	return T.rotation().matrix().cast<double>();
 }
