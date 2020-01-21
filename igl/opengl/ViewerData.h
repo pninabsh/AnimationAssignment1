@@ -16,6 +16,7 @@
 //#include <Eigen/Core>
 #include <memory>
 #include <vector>
+#include "../AABB.h"
 
 // Alec: This is a mesh class containing a variety of data types (normals,
 // overlays, material colors, etc.)
@@ -42,7 +43,7 @@ class ViewerData : public Movable
 {
 public:
   ViewerData();
-
+  IGL_INLINE igl::AABB<Eigen::MatrixXd, 3> kd_tree;
   // Empty all fields
   IGL_INLINE void clear();
 

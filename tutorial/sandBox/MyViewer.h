@@ -1,4 +1,5 @@
 #pragma once
+#include "igl/AABB.h"
 #include "igl/opengl/glfw/Viewer.h"
 #include "tutorial/sandBox/mesh_simplifier.h"
 
@@ -8,8 +9,7 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 
 		float resize_value = 0.27;
 		float arm_part_position = 0.48;
-		void setup_arm_link_midpoint(igl::opengl::ViewerData &link);
-		void setup_arm_link_axis(igl::opengl::ViewerData &link);
+		void create_bounding_box();
 		
 	public:
 		bool is_object_selected;
