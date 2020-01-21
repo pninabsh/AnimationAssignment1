@@ -144,7 +144,9 @@ bool Display::launch_rendering(bool loop)
 
 		Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
 		igl::opengl::glfw::Viewer* scn = rndr->GetScene();
-		ccd_step(scn, 0);
+		if (getIsAnimating()) {
+			ccd_step(scn, rndr->GetScene()->selected_data_index);
+		}
 
 		
 

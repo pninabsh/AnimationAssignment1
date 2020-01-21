@@ -2,6 +2,8 @@
 #include "igl/AABB.h"
 #include "igl/opengl/glfw/Viewer.h"
 #include "tutorial/sandBox/mesh_simplifier.h"
+#include <build\tutorial\sandBox\DetectCollision.h>
+
 
 class MyViewer : public igl::opengl::glfw::Viewer {
 	private:

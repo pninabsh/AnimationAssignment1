@@ -10,55 +10,6 @@ Eigen::RowVector3d pink(1, 0, 1);
 Eigen::RowVector3d yellow(1, 1, 0);
 Eigen::RowVector3d white(1, 1, 1);
 
-void draw_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, std::vector<Eigen::AlignedBox3d::CornerType> vertices, Eigen::RowVector3d color) {
-	Eigen::RowVector3d v1 = bounding_box.corner(vertices.at(0));
-	Eigen::RowVector3d v2 = bounding_box.corner(vertices.at(1));
-	Eigen::RowVector3d v3 = bounding_box.corner(vertices.at(2));
-	Eigen::RowVector3d v4 = bounding_box.corner(vertices.at(3));
-	mesh.add_edges(v1, v2, color);
-	mesh.add_edges(v1, v3, color);
-	mesh.add_edges(v2, v4, color);
-	mesh.add_edges(v3, v4, color);
-}
-
-void draw_back_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopRightFloor,
-		bounding_box.BottomLeftFloor, bounding_box.BottomRightFloor  }, color);
-}
-
-void draw_front_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftCeil, bounding_box.TopRightCeil,
-		bounding_box.BottomLeftCeil, bounding_box.BottomRightCeil }, color);
-}
-
-void draw_top_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopRightFloor,
-		bounding_box.TopLeftCeil, bounding_box.TopRightCeil  }, color);
-}
-
-void draw_bottom_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.BottomLeftFloor, bounding_box.BottomRightFloor,
-		bounding_box.BottomLeftCeil, bounding_box.BottomRightCeil  }, color);
-}
-
-void draw_left_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopLeftFloor, bounding_box.TopLeftCeil,
-		bounding_box.BottomLeftFloor, bounding_box.BottomLeftCeil  }, color);
-}
-
-void draw_right_face(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_face(mesh, bounding_box, std::vector<Eigen::AlignedBox3d::CornerType>{bounding_box.TopRightFloor, bounding_box.TopRightCeil,
-		bounding_box.BottomRightFloor, bounding_box.BottomRightCeil  }, color);
-}
-
-void draw_box(igl::opengl::ViewerData& mesh, Eigen::AlignedBox<double, 3> bounding_box, Eigen::RowVector3d color) {
-	draw_back_face(mesh, bounding_box, color);
-	draw_front_face(mesh, bounding_box, color);
-	draw_top_face(mesh, bounding_box, color);
-	draw_bottom_face(mesh, bounding_box, color);
-	draw_left_face(mesh, bounding_box, color);
-	draw_right_face(mesh, bounding_box, color);
-}
 
 Eigen::Vector4d calculate_point(Eigen::Vector3d point, igl::opengl::ViewerData collider) {
 	Eigen::Vector4d point4d = Eigen::Vector4d(point(0), point(1), point(2), 1);
@@ -126,8 +77,6 @@ bool find_collided_boxes(igl::opengl::ViewerData collider1, igl::AABB<Eigen::Mat
 	bool collide = false;
 
 	if (node1.is_leaf() && node2.is_leaf()) {
-		//draw_box(collider1, node1.m_box, white);
-		//draw_box(collider2, node2.m_box, white);
 		return true;
 	}
 

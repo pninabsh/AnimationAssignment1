@@ -33,7 +33,7 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 			}
 		}
 		if (closetHitObject.found) {
-			ccd_step(scn, savedIndx);
+			start_IK_solver_animation(scn, savedIndx);
 		}
 		scn->selected_data_index = savedIndx;
 		rndr->UpdatePosition(x2, y2);
@@ -182,7 +182,6 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			rotate_x_axis(scn, 1);
 			break;
 		case ' ': {
-			toggle_IK_solver_animation(scn);
 			break;
 		}
 		default: break;//do nothing
