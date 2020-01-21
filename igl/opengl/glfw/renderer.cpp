@@ -97,7 +97,6 @@ void Renderer::MouseProcessing(int button)
 
 	if (button == 1) //right
 	{
-
 		scn->data().MyTranslate(Eigen::Vector3f(-xrel / 2000.0f, 0, 0));
 		scn->data().MyTranslate(Eigen::Vector3f(0, yrel / 2000.0f, 0));
 	}

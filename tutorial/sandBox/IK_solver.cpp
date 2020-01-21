@@ -35,10 +35,10 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 	float threshold = 0.1f;
 	float maxDist = 2.0f;
 	Eigen::Vector3f d = scn->data_list[0].getTranslation();
-	Eigen::Vector3d e = getCoordinates(scn->data_list[4], true);
+	Eigen::Vector3d e = getCoordinates(scn->data_list[10], true);
 	float dist = distance(d, e);
-	if (isAnimating && dist > threshold && dist < maxDist) {
-		for (int i = 4; i >= 1; i--) {
+	if (isAnimating && dist > threshold/* && dist < maxDist*/) {
+		for (int i = 10; i >= 1; i--) {
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -54,15 +54,15 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 			auto theta = acos(dotProduct);
 			theta = theta / 5;
 			scn->data_list[i].MyRotate(planeVector, theta);
-			e = getCoordinates(scn->data_list[4], true);
+			e = getCoordinates(scn->data_list[10], true);
 			dist = distance(d, e);
 			std::cout << "The distance is: " << dist << std::endl;
 		}
 	}
-	else if(isAnimating && dist >= maxDist){
+	/*else if(isAnimating && dist >= maxDist){
 		isAnimating = false;
 		std::cout << "cannot reach" << std::endl;
-	}
+	}*/
 	else {
 		isAnimating = false;
 	}

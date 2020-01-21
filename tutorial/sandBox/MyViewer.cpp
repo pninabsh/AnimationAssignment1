@@ -105,32 +105,32 @@ void MyViewer::load_configuration_IK()
 
 	load_mesh_from_file(sphere_path);
 
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	for (int i = 2; i <= 4; i++) {
+	for (int i = 0; i < 10; i++) {
+		load_mesh_from_file(yCylinder_path);
+	}
+	
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].SetParent(&(data_list[i - 1]));
 	}
 
-	data_list[0].MyTranslate(Eigen::Vector3f(1, 0, 0));
+	data_list[0].MyTranslate(Eigen::Vector3f(1, -1, -2));
 	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 	//data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -0.8, 0));
-	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, 0.2, 0));
-	data_list[1].MyTranslate(Eigen::Vector3f(0, -0.2, 0));
-	for (int i = 2; i <= 4; i++) {
+	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -1, 0));
+	data_list[1].MyTranslate(Eigen::Vector3f(0, -1, -2));
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 2; i <= 4; i++) {
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
 	}
 	for (int i = 1; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
 
-		setup_arm_link_midpoint(data_list[i]);
-		if (i != 4) {
-			setup_arm_link_axis(data_list[i]);
+		//setup_arm_link_midpoint(data_list[i]);
+		if (i != 10) {
+			//setup_arm_link_axis(data_list[i]);
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
 		}
 	}
