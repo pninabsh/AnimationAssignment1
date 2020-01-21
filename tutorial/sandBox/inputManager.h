@@ -2,7 +2,8 @@
 #include "igl/opengl/glfw/Display.h"
 #include "tutorial/sandBox/MyRenderer.h"
 #include "tutorial/sandBox/MyViewer.h"
-#include "tutorial/sandBox/IK_solver.h"
+#include "IK_solver.h"
+
 
 static void glfw_mouse_press(GLFWwindow* window, int button, int action, int modifier)
 {
@@ -30,6 +31,9 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 				savedIndx = i;
 				closetHitObject = hitObjectCurrent;
 			}
+		}
+		if (closetHitObject.found) {
+			ccd_step(scn, savedIndx);
 		}
 		scn->selected_data_index = savedIndx;
 		rndr->UpdatePosition(x2, y2);

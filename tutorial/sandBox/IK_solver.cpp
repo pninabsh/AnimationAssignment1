@@ -2,11 +2,8 @@
 #include <igl/opengl/glfw/Viewer.h>
 using namespace std;
 
-extern bool isAnimating = false;
-
-bool getIsAnimating() {
-	return isAnimating;
-}
+bool isAnimating = false;
+int score = 0;
 
 Eigen::Vector3d getCoordinates(igl::opengl::ViewerData link, bool upLink) {
 	Eigen::Vector3d mLink = link.V.colwise().minCoeff();
@@ -27,18 +24,20 @@ float distance(Eigen::Vector3f p1, Eigen::Vector3d p2) {
 	return res;
 }
 
-void ccd_step(igl::opengl::glfw::Viewer* scn) {
+void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 	/*Eigen::Vector3d mLink = scn->data_list[4].V.colwise().minCoeff();
 	Eigen::Vector3d MLink = scn->data_list[4].V.colwise().maxCoeff();*/
 	//d and e are the same in all iterations
 	//changes between iterations
 	float threshold = 0.1f;
 	float maxDist = 2.0f;
-	Eigen::Vector3f d = scn->data_list[0].getTranslation();
-	Eigen::Vector3d e = getCoordinates(scn->data_list[4], true);
+	Eigen::Vector3f d = scn->data_list[hitObject].getTranslation();
+	Eigen::Vector3d e = getCoordinates(scn->data_list[10], true);
 	float dist = distance(d, e);
-	if (isAnimating && dist > threshold && dist < maxDist) {
-		for (int i = 4; i >= 1; i--) {
+	isAnimating = true;
+	if (isAnimating && dist > threshold) {
+		isAnimating = true;
+		for (int i = 10; i >= 1; i--) {
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -54,23 +53,21 @@ void ccd_step(igl::opengl::glfw::Viewer* scn) {
 			auto theta = acos(dotProduct);
 			theta = theta / 5;
 			scn->data_list[i].MyRotate(planeVector, theta);
-			e = getCoordinates(scn->data_list[4], true);
+			e = getCoordinates(scn->data_list[10], true);
 			dist = distance(d, e);
-			std::cout << "The distance is: " << dist << std::endl;
 		}
 	}
-	else if(isAnimating && dist >= maxDist){
+	else if(isAnimating){
 		isAnimating = false;
-		std::cout << "cannot reach" << std::endl;
-	}
-	else {
-		isAnimating = false;
+		scn->data_list[0].set_visible(false); 
+		score += 20;
+		std::cout << "The score is: " << score << std::endl;
 	}
 }
 
 void start_IK_solver_animation(MyViewer* scn) {
 	isAnimating = true;
-	ccd_step(scn);
+	ccd_step(scn, 0);
 }
 
 void stop_IK_solver_animation(){

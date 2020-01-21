@@ -47,40 +47,6 @@ bool attempt_to_load_IK_mesh(string &mesh_path, ifstream &configuration_file)
 	return false;
 }
 
-void MyViewer::setup_arm_link_midpoint(igl::opengl::ViewerData &link) {
-	Eigen::Vector3d m = link.V.colwise().minCoeff();
-	Eigen::Vector3d M = link.V.colwise().maxCoeff();
-
-	Eigen::MatrixXd V_mid_box(1, 3);
-	V_mid_box << (M(0) + m(0)) / 2, m(1) - 0.05, (M(2) + m(2)) / 2;
-	link.add_points(V_mid_box, Eigen::RowVector3d(0, 0, 1));
-	/*Eigen::Vector3f center_rotation(3);
-	center_rotation << (M(0) + m(0)) / 2, m(1), (M(2) + m(2)) / 2;
-	Eigen::Vector4f test(4);
-	test << center_rotation(0), center_rotation(1), center_rotation(2), 1;
-	Eigen::Vector4f res = link.MakeTrans() * test;
-	Eigen::Vector3f res3(3);
-	res3 << res(0), res(1), res(2);
-	link.SetCenterOfRotation(res3);*/
-}
-
-void  MyViewer::setup_arm_link_axis(igl::opengl::ViewerData &link) {
-	Eigen::Vector3d m = link.V.colwise().minCoeff();
-	Eigen::Vector3d M = link.V.colwise().maxCoeff();
-
-	Eigen::RowVector3d Vs_x((M(0) + m(0)) / 2 - (M(1) - m(1)), M(1), (M(2) + m(2)) / 2);
-	Eigen::RowVector3d Vd_x((M(0) + m(0)) / 2 + (M(1) - m(1)), M(1), (M(2) + m(2)) / 2);
-
-	Eigen::RowVector3d Vs_y((M(0) + m(0)) / 2, M(1) - (M(1) - m(1)), (M(2) + m(2)) / 2);
-	Eigen::RowVector3d Vd_y((M(0) + m(0)) / 2, M(1) + (M(1) - m(1)), (M(2) + m(2)) / 2);
-
-	Eigen::RowVector3d Vs_z((M(0) + m(0)) / 2, M(1), (M(2) + m(2)) / 2 - (M(1) - m(1)));
-	Eigen::RowVector3d Vd_z((M(0) + m(0)) / 2, M(1), (M(2) + m(2)) / 2 + (M(1) - m(1)));
-
-	link.add_edges(Vs_x, Vd_x, Eigen::RowVector3d(1, 0, 0));
-	link.add_edges(Vs_y, Vd_y, Eigen::RowVector3d(0, 1, 0));
-	link.add_edges(Vs_z, Vd_z, Eigen::RowVector3d(0, 0, 1));
-}
 
 void MyViewer::load_configuration_IK()
 {
@@ -105,32 +71,30 @@ void MyViewer::load_configuration_IK()
 
 	load_mesh_from_file(sphere_path);
 
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	load_mesh_from_file(yCylinder_path);
-	for (int i = 2; i <= 4; i++) {
+	for (int i = 0; i < 10; i++) {
+		load_mesh_from_file(yCylinder_path);
+	}
+	
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].SetParent(&(data_list[i - 1]));
 	}
 
-	data_list[0].MyTranslate(Eigen::Vector3f(1, 0, 0));
+	data_list[0].MyTranslate(Eigen::Vector3f(1, -1, -2));
 	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[0].setSpeed(Eigen::Vector3f (0, 0.01f, 0));
 	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	//data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -0.8, 0));
-	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, 0.2, 0));
-	data_list[1].MyTranslate(Eigen::Vector3f(0, -0.2, 0));
-	for (int i = 2; i <= 4; i++) {
+	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -1, 0));
+	data_list[1].MyTranslate(Eigen::Vector3f(0, -1, -2));
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 2; i <= 4; i++) {
+	for (int i = 2; i <= 10; i++) {
 		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
 	}
 	for (int i = 1; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
 
-		setup_arm_link_midpoint(data_list[i]);
-		if (i != 4) {
-			setup_arm_link_axis(data_list[i]);
+		if (i != 10) {
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
 		}
 	}

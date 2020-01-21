@@ -15,7 +15,9 @@ public:
 	Eigen::Vector3f getCoordinates();
 	void SetCenterOfRotation(Eigen::Vector3f amt);
 	Eigen::Vector3f GetCenterOfRotation();
+	void setSpeed(Eigen::Vector3f speed);
 	void SetParent(Movable* parent);
+	void slide();
 	Eigen::Matrix3f getRotation();
 	Eigen::Transform<float,3,Eigen::Affine> Tin;
 	Eigen::Transform<float, 3, Eigen::Affine> Tout;
@@ -23,5 +25,6 @@ public:
 	Eigen::Transform<float, 3, Eigen::Affine> rotx;
 	Eigen::Transform<float, 3, Eigen::Affine> roty2;
 	Eigen::Transform<float, 3, Eigen::Affine> scale;
+	Eigen::Vector3f speed;
 };
 

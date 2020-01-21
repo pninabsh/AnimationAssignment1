@@ -63,6 +63,7 @@ IGL_INLINE void Renderer::draw(GLFWwindow *window)
 	{
 		for (auto &mesh : scn->data_list)
 		{
+			mesh.slide();
 			if (mesh.is_visible & core.id)
 			{
 				core.draw(scn->MakeTrans(), mesh);
@@ -97,7 +98,6 @@ void Renderer::MouseProcessing(int button)
 
 	if (button == 1) //right
 	{
-
 		scn->data().MyTranslate(Eigen::Vector3f(-xrel / 2000.0f, 0, 0));
 		scn->data().MyTranslate(Eigen::Vector3f(0, yrel / 2000.0f, 0));
 	}

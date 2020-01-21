@@ -18,4 +18,4 @@ void rotate_y_axis(MyViewer* scn, int dir);
 
 void rotate_x_axis(MyViewer* scn, int dir);
 
-extern void ccd_step(igl::opengl::glfw::Viewer* scn);
+extern void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject);

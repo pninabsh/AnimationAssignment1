@@ -9,11 +9,21 @@ Movable::Movable()
 	rotx = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 	roty2 = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
 	scale = Eigen::Transform<float, 3, Eigen::Affine>::Identity();
+	speed = Eigen::Vector3f(0, 0, 0);
 };
 
+void Movable::slide()
+{
+	this->MyTranslate(this->speed);
+}
 
 Eigen::Vector3f Movable::getTranslation() {
 	return Tout.translation();
+}
+
+void Movable::setSpeed(Eigen::Vector3f speed)
+{
+	this->speed = speed;
 }
 
 Eigen::Matrix3f Movable::getRotation() {
