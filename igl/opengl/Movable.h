@@ -21,6 +21,7 @@ public:
 	Eigen::Matrix3f getRotation();
 	Eigen::Transform<float,3,Eigen::Affine> Tin;
 	Eigen::Transform<float, 3, Eigen::Affine> Tout;
+	Eigen::Transform<float, 3, Eigen::Affine> rot;
 	Eigen::Transform<float, 3, Eigen::Affine> roty;
 	Eigen::Transform<float, 3, Eigen::Affine> rotx;
 	Eigen::Transform<float, 3, Eigen::Affine> roty2;

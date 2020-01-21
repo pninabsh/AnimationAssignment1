@@ -4,6 +4,8 @@
 #include <igl/unproject_onto_mesh.h>
 #include "igl/look_at.h"
 #include <Eigen/Dense>
+#include "tutorial/sandBox/detectCollision.h"
+
 Renderer::Renderer() : selected_core_index(0),
 					   next_core_id(2)
 {
@@ -69,6 +71,10 @@ IGL_INLINE void Renderer::draw(GLFWwindow *window)
 				core.draw(scn->MakeTrans(), mesh);
 			}
 		}
+		/*if (find_collided_boxes(scn->data_list[0], scn->data_list[0].kd_tree, scn->data_list[1], scn->data_list[1].kd_tree))
+		{
+			scn->data_list[0].setSpeed(Eigen::Vector3f(0, 0, 0));
+		}*/
 	}
 }
 

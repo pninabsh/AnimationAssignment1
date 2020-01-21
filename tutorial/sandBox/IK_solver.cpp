@@ -1,5 +1,6 @@
 #include "IK_solver.h"
 #include <igl/opengl/glfw/Viewer.h>
+#include <build\tutorial\sandBox\DetectCollision.h>
 using namespace std;
 
 bool isAnimating = false;
@@ -34,10 +35,10 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 	Eigen::Vector3f d = scn->data_list[hitObject].getTranslation();
 	Eigen::Vector3d e = getCoordinates(scn->data_list[10], true);
 	float dist = distance(d, e);
-	isAnimating = true;
-	if (isAnimating && dist > threshold) {
-		isAnimating = true;
+	bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[10], scn->data_list[10].kd_tree);
+	if (isAnimating && !collide) {
 		for (int i = 10; i >= 1; i--) {
+			Eigen::Vector3f d = scn->data_list[hitObject].getTranslation();
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -55,32 +56,28 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 			scn->data_list[i].MyRotate(planeVector, theta);
 			e = getCoordinates(scn->data_list[10], true);
 			dist = distance(d, e);
+			std::cout << "The distance is: " << dist << std::endl;
 		}
 	}
-	else if(isAnimating){
+	else if (collide && scn->data_list[hitObject].is_visible){
 		isAnimating = false;
-		scn->data_list[0].set_visible(false); 
+		//scn->data_list[hitObject].set_visible(false);
 		score += 20;
 		std::cout << "The score is: " << score << std::endl;
 	}
 }
 
-void start_IK_solver_animation(MyViewer* scn) {
+void start_IK_solver_animation(MyViewer* scn, int pickedObject) {
 	isAnimating = true;
-	ccd_step(scn, 0);
+	//ccd_step(scn, pickedObject);
+}
+
+bool getIsAnimating() {
+	return isAnimating;
 }
 
 void stop_IK_solver_animation(){
 	isAnimating = false;
-}
-
-void toggle_IK_solver_animation(MyViewer* scn) {
-	if (isAnimating) {
-		stop_IK_solver_animation();
-	}
-	else {
-		start_IK_solver_animation(scn);
-	}
 }
 
 bool is_link(int picked_object_index, std::vector<int> link_indices) {

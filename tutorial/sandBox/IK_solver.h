@@ -2,11 +2,9 @@
 #include <vector>
 #include "MyViewer.h"
 
-bool getIsAnimating();
-
 bool is_link(int picked_object_index, std::vector<int> link_indices);
 
-void toggle_IK_solver_animation(MyViewer* scn);
+void start_IK_solver_animation(MyViewer* scn, int pickedObject);
 
 void print_rotation_matrices(int picked_object_index, std::vector<int> link_indices, MyViewer* scn);
 
@@ -19,3 +17,5 @@ void rotate_y_axis(MyViewer* scn, int dir);
 void rotate_x_axis(MyViewer* scn, int dir);
 
 extern void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject);
+
+bool getIsAnimating();
