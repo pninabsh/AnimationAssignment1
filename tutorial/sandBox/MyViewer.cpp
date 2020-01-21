@@ -3,6 +3,16 @@
 #include <fstream>
 using namespace std;
 
+void MyViewer::create_bounding_box() {
+	igl::AABB<Eigen::MatrixXd, 3> tree;
+	tree.init(this->data_list[0].V, this->data_list[0].F);
+	for (int i = 0; i < this->data_list.size(); i++) {
+		tree.init(this->data_list[i].V, this->data_list[i].F);
+		this->data_list[i].kd_tree = tree;
+		Eigen::AlignedBox<double, 3> bounding_box = tree.m_box;
+	}
+}
+
 void MyViewer::load_configuration()
 {
 	cout << "reading mesh paths from configuration.txt file..." << endl;
@@ -28,6 +38,7 @@ void MyViewer::load_configuration()
 	}
 	cout << "loading done!" << endl;
 	configuration_file.close();
+	create_bounding_box();
 }
 
 void fail_load_configuration_IK(string &sphere_path, string &yCylinder_path)
