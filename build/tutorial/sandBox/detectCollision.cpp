@@ -93,7 +93,7 @@ bool detect_collision(igl::opengl::ViewerData collider1, Eigen::AlignedBox<doubl
 	Eigen::Vector3d B1 = rotation2 * Eigen::Vector3d(0, 1, 0);
 	Eigen::Vector3d B2 = rotation2 * Eigen::Vector3d(0, 0, 1);
 
-	Eigen::Matrix3d c = rotation1.transpose() * rotation2;
+	Eigen::Matrix3d c = rotation1.inverse() * rotation2;
 	//calculate a0, a1, a2
 	float a0 = bounding_box1.sizes()[0] / 2;
 	float a1 = bounding_box1.sizes()[1] / 2;

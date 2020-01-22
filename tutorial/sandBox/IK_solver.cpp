@@ -36,9 +36,9 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 	Eigen::Vector3d e = getCoordinates(scn->data_list[10], true);
 	float dist = distance(d, e);
 	bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[10], scn->data_list[10].kd_tree);
-	if (isAnimating && !collide) {
+	if (!collide) {
 		for (int i = 10; i >= 1; i--) {
-			Eigen::Vector3f d = scn->data_list[hitObject].getTranslation();
+			d = scn->data_list[hitObject].getTranslation();
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -59,7 +59,7 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 			std::cout << "The distance is: " << dist << std::endl;
 		}
 	}
-	else if (collide && scn->data_list[hitObject].is_visible){
+	else if (collide && scn->data_list[hitObject].is_visible) {
 		isAnimating = false;
 		//scn->data_list[hitObject].set_visible(false);
 		score += 20;
