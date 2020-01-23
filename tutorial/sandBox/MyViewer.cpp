@@ -6,8 +6,12 @@ using namespace std;
 void MyViewer::create_bounding_box() {
 	igl::AABB<Eigen::MatrixXd, 3> tree;
 	tree.init(this->data_list[0].V, this->data_list[0].F);
-	for (int i = 0; i < this->data_list.size(); i++) {
-		tree.init(this->data_list[i].V, this->data_list[i].F);
+	init_simplify_data_structures_list();
+	for (int i = 0; i < 30; i++) {
+		simplify();
+	}
+	for (int i = 0; i < simplifyDataObjectsList->size(); i++) {
+		tree.init(simplifyDataObjectsList->at(i).V, simplifyDataObjectsList->at(i).F);
 		this->data_list[i].kd_tree = tree;
 	}
 }
@@ -34,6 +38,7 @@ void MyViewer::load_configuration()
 
 	load_mesh_from_file(mesh_path);
 	load_mesh_from_file(mesh_path);
+	
 
 	this->data_list[0].MyScale(Eigen::RowVector3f(1, 1, 1));
 	this->data_list[1].MyScale(Eigen::RowVector3f(1, 1, 1));
@@ -133,7 +138,7 @@ void MyViewer::simplify()
 	SimplifyDataObject selectedSimplifyDataObject;
 
 	const auto do_simplify = [this, &selectedSimplifyDataObject](double number_of_edges) -> void {
-		bool something_collapsed = false;
+		//bool something_collapsed = false;
 
 		std::vector<PriorityQueue::iterator> Qit;
 		Qit.resize(selectedSimplifyDataObject.E.rows());
@@ -149,25 +154,25 @@ void MyViewer::simplify()
 			{
 				break;
 			}
-			something_collapsed = true;
-			update_v_planes(selectedSimplifyDataObject);
-			update_q_matrixes(selectedSimplifyDataObject);
-			update_priority_queue(selectedSimplifyDataObject);
+			//something_collapsed = true;
+			//update_v_planes(selectedSimplifyDataObject);
+			//update_q_matrixes(selectedSimplifyDataObject);
+			//update_priority_queue(selectedSimplifyDataObject);
 		}
 
 		simplifyDataObjectsList->at(selected_data_index) = selectedSimplifyDataObject;
 
-		if (something_collapsed)
+		/*if (something_collapsed)
 		{
 			data().clear();
 			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
 			data().set_face_based(true);
 			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
 			get_SimplifyDataObject(selectedSimplifyDataObject);
-		}
+		}*/
 	};
 
 	selectedSimplifyDataObject = simplifyDataObjectsList->at(selected_data_index);
-	double rounded_up_five_percent_edges = std::ceil(0.05 * selectedSimplifyDataObject.Q.size());
+	double rounded_up_five_percent_edges = std::ceil(0.8 * selectedSimplifyDataObject.Q.size());
 	do_simplify(rounded_up_five_percent_edges);
 }

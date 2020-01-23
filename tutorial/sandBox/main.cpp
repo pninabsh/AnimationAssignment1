@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
   MyRenderer renderer;
   MyViewer viewer;
   viewer.load_configuration_IK();
+  viewer.init_simplify_data_structures_list();
   Init(*disp);
   renderer.init(&viewer);
   renderer.my_init(&viewer);
