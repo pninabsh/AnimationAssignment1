@@ -9,8 +9,6 @@ void MyViewer::create_bounding_box() {
 	for (int i = 0; i < this->data_list.size(); i++) {
 		tree.init(this->data_list[i].V, this->data_list[i].F);
 		this->data_list[i].kd_tree = tree;
-		Eigen::AlignedBox<double, 3> bounding_box = tree.m_box;
-		draw_box(this->data_list[i], bounding_box, Eigen::RowVector3d(1, 0, 0));
 	}
 }
 
@@ -96,12 +94,12 @@ void MyViewer::load_configuration_IK()
 		data_list[i].SetParent(&(data_list[i - 1]));
 	}
 
-	data_list[0].MyTranslate(Eigen::Vector3f(1, -1, -2));
-	data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
+	//data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
 	data_list[0].setSpeed(Eigen::Vector3f (0, 0.01f, 0));
-	data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -1, 0));
-	data_list[1].MyTranslate(Eigen::Vector3f(0, -1, -2));
+	//data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
+	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
+	data_list[1].MyTranslate(Eigen::Vector3f(0, -6, 0));
 	for (int i = 2; i <= 10; i++) {
 		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
 	}

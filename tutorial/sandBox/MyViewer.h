@@ -9,7 +9,7 @@ class MyViewer : public igl::opengl::glfw::Viewer {
 	private:
 		std::vector<SimplifyDataObject> *simplifyDataObjectsList;
 
-		float resize_value = 0.27;
+		float resize_value = 1;
 		float arm_part_position = 0.48;
 		void create_bounding_box();
 		
