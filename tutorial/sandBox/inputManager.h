@@ -32,7 +32,8 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 				closetHitObject = hitObjectCurrent;
 			}
 		}
-		if (closetHitObject.found) {
+		//TODO: when more meshes are added to the scene, check whether indexes are still correct
+		if (closetHitObject.found && (savedIndx < 1 || savedIndx > 10)) {
 			start_IK_solver_animation(scn, savedIndx);
 		}
 		scn->selected_data_index = savedIndx;

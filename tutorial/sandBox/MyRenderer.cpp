@@ -14,7 +14,6 @@ MyViewer* MyRenderer::GetMyScene() {
 void MyRenderer::SceneMouseProcessing(int button) {
 	if (button == 1) //right
 	{
-
 		my_viewer->MyTranslate(Eigen::Vector3f(-xrel / 2000.0f, 0, 0));
 		my_viewer->MyTranslate(Eigen::Vector3f(0, yrel / 2000.0f, 0));
 	}
