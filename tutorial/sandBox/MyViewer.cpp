@@ -192,13 +192,13 @@ void MyViewer::organize_spheres_on_board()
 	data_list[0].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
 
 	data_list[1].MyTranslate(Eigen::Vector3f(-2, -6, 0));
-	//data_list[1].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+	data_list[1].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
 
 	data_list[2].MyTranslate(Eigen::Vector3f(-6, -6, 0));
-	//data_list[2].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+	data_list[2].setSpeed(Eigen::Vector3f(0.01f, 0, 0));
 
 	data_list[3].MyTranslate(Eigen::Vector3f(6, 6, 0));
-	//data_list[3].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+	data_list[3].setSpeed(Eigen::Vector3f(0, -0.01f, 0));
 
 	data_list[4].MyTranslate(Eigen::Vector3f(-9, 5, 0));
 	data_list[4].setSpeed(Eigen::Vector3f(0.01f, 0, 0));
