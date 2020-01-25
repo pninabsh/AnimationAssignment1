@@ -1,15 +1,22 @@
 #include "MyViewer.h"
 #include <iostream>
 #include <fstream>
+#include "IK_solver.h"
+#include <tutorial\sandBox\MyRenderer.h>
+#include <tutorial\sandBox\inputManager.h>
+using namespace igl;
 using namespace std;
+
+int level = 0;
+Display* disp = NULL;
 
 void MyViewer::create_bounding_box() {
 	igl::AABB<Eigen::MatrixXd, 3> tree;
 	tree.init(this->data_list[0].V, this->data_list[0].F);
 	init_simplify_data_structures_list();
-	for (int i = 0; i < 30; i++) {
+	/*for (int i = 0; i < 30; i++) {
 		simplify();
-	}
+	}*/
 	for (int i = 0; i < simplifyDataObjectsList->size(); i++) {
 		tree.init(simplifyDataObjectsList->at(i).V, simplifyDataObjectsList->at(i).F);
 		this->data_list[i].kd_tree = tree;
@@ -38,7 +45,7 @@ void MyViewer::load_configuration()
 
 	load_mesh_from_file(mesh_path);
 	load_mesh_from_file(mesh_path);
-	
+
 
 	this->data_list[0].MyScale(Eigen::RowVector3f(1, 1, 1));
 	this->data_list[1].MyScale(Eigen::RowVector3f(1, 1, 1));
@@ -50,14 +57,14 @@ void MyViewer::load_configuration()
 	create_bounding_box();
 }
 
-void fail_load_configuration_IK(string &sphere_path, string &yCylinder_path)
+void fail_load_configuration_IK(string& sphere_path, string& yCylinder_path)
 {
 	cout << "cannot open or read all needed line from configuration file! loading from default mesh paths instead..." << endl;
 	sphere_path = "C:/Dev/EngineIGLnew/tutorial/data/sphere.obj";
 	yCylinder_path = "C:/Dev/EngineIGLnew/tutorial/data/ycylinder.obj";
 }
 
-bool attempt_to_load_IK_mesh(string &mesh_path, ifstream &configuration_file)
+bool attempt_to_load_IK_mesh(string& mesh_path, ifstream& configuration_file)
 {
 	if (configuration_file.good())
 	{
@@ -89,41 +96,43 @@ void MyViewer::load_configuration_IK()
 		}
 	}
 
-	load_mesh_from_file(sphere_path);
+	for (int i = 0; i < 5; i++) {
+		load_mesh_from_file(sphere_path);
+	}
 
 	for (int i = 0; i < 10; i++) {
 		load_mesh_from_file(yCylinder_path);
 	}
-	
-	for (int i = 2; i <= 10; i++) {
+
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].SetParent(&(data_list[i - 1]));
 	}
 
-	data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
-	//data_list[0].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[0].setSpeed(Eigen::Vector3f (0, 0.01f, 0));
-	//data_list[1].MyScale(Eigen::Vector3f(resize_value, resize_value, resize_value));
-	data_list[1].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
-	data_list[1].MyTranslate(Eigen::Vector3f(0, -6, 0));
-	for (int i = 2; i <= 10; i++) {
+	/*data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
+	data_list[0].setSpeed(Eigen::Vector3f (0, 0.01f, 0));*/
+	organize_spheres_on_board();
+	data_list[5].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
+	data_list[5].MyTranslate(Eigen::Vector3f(0, -6, 0));
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 2; i <= 10; i++) {
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 1; i < data_list.size(); i++) {
+	for (int i = 5; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
 
-		if (i != 10) {
+		if (i != 14) {
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
 		}
 	}
-	
+
 	Eigen::RowVector3d color(1, 0, 0);
-	data_list[1].set_colors(color);
+	data_list[5].set_colors(color);
 	cout << "loading done!" << endl;
 	configuration_file.close();
 	create_bounding_box();
+	timer.start();
 }
 void MyViewer::init_simplify_data_structures_list()
 {
@@ -176,3 +185,49 @@ void MyViewer::simplify()
 	double rounded_up_five_percent_edges = std::ceil(0.8 * selectedSimplifyDataObject.Q.size());
 	do_simplify(rounded_up_five_percent_edges);
 }
+
+void MyViewer::organize_spheres_on_board()
+{
+	data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
+	data_list[0].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+
+	data_list[1].MyTranslate(Eigen::Vector3f(-2, -6, 0));
+	//data_list[1].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+
+	data_list[2].MyTranslate(Eigen::Vector3f(-6, -6, 0));
+	//data_list[2].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+
+	data_list[3].MyTranslate(Eigen::Vector3f(6, 6, 0));
+	//data_list[3].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+
+	data_list[4].MyTranslate(Eigen::Vector3f(-9, 5, 0));
+	data_list[4].setSpeed(Eigen::Vector3f(0.01f, 0, 0));
+	for (int i = 0; i < 5; i++) {
+		data_list[i].set_visible(true);
+	}
+}
+
+void MyViewer::level_ended() {
+	stop_IK_solver_animation();
+	timer.stop();
+	level++;
+	std::cout << "Level number: " << level << std::endl;
+	std::cout << "The final score you achieved is: " << score << std::endl;
+	Initialize_scene();
+}
+
+void MyViewer::Initialize_scene() {
+	if (disp == NULL) {
+		disp = new Display(1200, 1000, "Welcome");
+	}
+	MyRenderer renderer;
+	load_configuration_IK();
+	init_simplify_data_structures_list();
+	Init(*disp);
+	renderer.init(this);
+	renderer.my_init(this);
+	disp->SetRenderer(&renderer);
+	disp->launch_rendering(true);
+	//delete disp;
+}
+

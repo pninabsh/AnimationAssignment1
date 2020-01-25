@@ -1,12 +1,12 @@
 
-#include "igl/opengl/glfw/renderer.h"
-#include "tutorial/sandBox/inputManager.h"
+//#include "igl/opengl/glfw/renderer.h"
+//#include "tutorial/sandBox/inputManager.h"
 #include "tutorial/sandBox/MyViewer.h"
-#include "tutorial/sandBox/MyRenderer.h"
+//#include "tutorial/sandBox/MyRenderer.h"
 
 int main(int argc, char *argv[])
 {
-  Display *disp = new Display(1200, 1000, "Welcome");
+  /*Display *disp = new Display(1200, 1000, "Welcome");
   MyRenderer renderer;
   MyViewer viewer;
   viewer.load_configuration_IK();
@@ -17,5 +17,7 @@ int main(int argc, char *argv[])
   disp->SetRenderer(&renderer);
   disp->launch_rendering(true);
   
-  delete disp;
+  delete disp;*/
+	MyViewer viewer;
+	viewer.Initialize_scene();
 }

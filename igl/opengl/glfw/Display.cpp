@@ -110,6 +110,7 @@ bool Display::launch_rendering(bool loop)
 {
 	// glfwMakeContextCurrent(window);
 	// Rendering loop
+	MyViewer myviewer;
 	const int num_extra_frames = 5;
 	int frame_counter = 0;
 	int windowWidth, windowHeight;
@@ -148,7 +149,9 @@ bool Display::launch_rendering(bool loop)
 			ccd_step(scn, rndr->GetScene()->selected_data_index);
 		}
 
-		
+		if (timer.getElapsedTimeInSec() > 120) {
+			myviewer.level_ended();
+		}
 
 #ifdef __APPLE__
 		static bool first_time_hack = true;

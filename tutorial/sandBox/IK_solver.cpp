@@ -1,9 +1,11 @@
 #include "IK_solver.h"
 #include <igl/opengl/glfw/Viewer.h>
 #include <build\tutorial\sandBox\DetectCollision.h>
+//#include "MyViewer.h"
 using namespace std;
 
 bool isAnimating = false;
+igl::Timer timer;
 int score = 0;
 
 Eigen::Vector3d getCoordinates(igl::opengl::ViewerData link, bool upLink) {
@@ -28,11 +30,11 @@ float distance(Eigen::Vector3f p1, Eigen::Vector3d p2) {
 void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 	//d and e are the same in all iterations
 	//changes between iterations
-	bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[10], scn->data_list[10].kd_tree);
+	bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[14], scn->data_list[14].kd_tree);
 	if (!collide) {
-		for (int i = 10; i >= 1; i--) {
+		for (int i = 14; i >= 5; i--) {
 			Eigen::Vector3f d = scn->data_list[hitObject].getTranslation();
-			Eigen::Vector3d e = getCoordinates(scn->data_list[10], true);
+			Eigen::Vector3d e = getCoordinates(scn->data_list[14], true);
 			Eigen::Vector3d r = getCoordinates(scn->data_list[i], false);
 			Eigen::Vector3d re = (e - r).normalized();
 			Eigen::Vector3d rd;
@@ -48,14 +50,14 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 			auto theta = acos(dotProduct);
 			theta = theta / 5;
 			scn->data_list[i].MyRotate(planeVector, theta);
-			e = getCoordinates(scn->data_list[10], true);
-			bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[10], scn->data_list[10].kd_tree); 
+			e = getCoordinates(scn->data_list[14], true);
+			bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[14], scn->data_list[14].kd_tree);
 			if (collide) {
 				return;
-			}	
+			}
 		}
 	}
-	else {
+	else if(isAnimating) {
 		isAnimating = false;
 		scn->data_list[hitObject].set_visible(false);
 		score += 20;
@@ -64,7 +66,7 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 	}
 }
 
-void start_IK_solver_animation(MyViewer* scn, int pickedObject) {
+void start_IK_solver_animation() {
 	isAnimating = true;
 	//ccd_step(scn, pickedObject);
 }
@@ -73,7 +75,7 @@ bool getIsAnimating() {
 	return isAnimating;
 }
 
-void stop_IK_solver_animation(){
+void stop_IK_solver_animation() {
 	isAnimating = false;
 }
 
@@ -96,7 +98,7 @@ void print_rotation_matrices_helping(Eigen::Matrix3f rot) {
 
 void print_rotation_matrices(int picked_object_index, std::vector<int> link_indices, MyViewer* scn) {
 	Eigen::Matrix3f rotMat;
-	if (!is_link(picked_object_index,link_indices) || !scn->is_object_selected) {
+	if (!is_link(picked_object_index, link_indices) || !scn->is_object_selected) {
 		// print rotation of whole scene
 		rotMat = scn->getRotation();
 	}
@@ -116,7 +118,7 @@ void print_arm_tip_positions(MyViewer* scn) {
 void print_destination_position(MyViewer* scn) {
 	Eigen::Vector3f sphereLoc = scn->data_list[0].getTranslation();
 	std::cout << "x = " << sphereLoc(0) << " y = " << sphereLoc(1) << " z = " << sphereLoc(2) << std::endl;
- }
+}
 
 
 void rotate_y_axis(MyViewer* scn, int dir) {
@@ -139,6 +141,6 @@ void rotate_x_axis(MyViewer* scn, int dir) {
 	else {
 		int pressedIndex = scn->selected_data_index;
 		auto m = scn->data_list[pressedIndex].getRotation().transpose();
-		scn->data_list[pressedIndex].MyRotate(m*Eigen::Vector3f(1, 0, 0), dir * 0.1f);
+		scn->data_list[pressedIndex].MyRotate(m * Eigen::Vector3f(1, 0, 0), dir * 0.1f);
 	}
 }

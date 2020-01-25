@@ -111,7 +111,7 @@ namespace glfw
   ;       Toggle vertex labels
   :       Toggle face labels)"
 );
-    std::cout<<usage<<std::endl;
+    //std::cout<<usage<<std::endl;
 #endif
   }
 

@@ -95,6 +95,7 @@ public:
 	inline igl::opengl::glfw::Viewer* GetScene() {
 		return scn;
 	}
+	GLFWwindow* GetWindow();
 	inline void ChangeCamera(int unicode_key)
 	{
 		selected_core_index =

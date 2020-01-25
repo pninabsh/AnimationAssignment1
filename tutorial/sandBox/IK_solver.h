@@ -2,9 +2,15 @@
 #include <vector>
 #include "MyViewer.h"
 
+extern int score;
+
+extern igl::Timer timer;
+
 bool is_link(int picked_object_index, std::vector<int> link_indices);
 
-void start_IK_solver_animation(MyViewer* scn, int pickedObject);
+void start_IK_solver_animation();
+
+void stop_IK_solver_animation();
 
 void print_rotation_matrices(int picked_object_index, std::vector<int> link_indices, MyViewer* scn);
 
