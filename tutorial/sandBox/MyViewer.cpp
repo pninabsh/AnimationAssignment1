@@ -14,57 +14,26 @@ void MyViewer::create_bounding_box() {
 	igl::AABB<Eigen::MatrixXd, 3> tree;
 	tree.init(this->data_list[0].V, this->data_list[0].F);
 	init_simplify_data_structures_list();
-	/*for (int i = 0; i < 30; i++) {
-		simplify();
-	}*/
+
 	for (int i = 0; i < simplifyDataObjectsList->size(); i++) {
 		tree.init(simplifyDataObjectsList->at(i).V, simplifyDataObjectsList->at(i).F);
 		this->data_list[i].kd_tree = tree;
 	}
 }
 
-void MyViewer::load_configuration()
-{
-	cout << "reading mesh paths from configuration.txt file..." << endl;
-
-	string mesh_path;
-	ifstream configuration_file("configuration.txt");
-
-	if (configuration_file.good())
-	{
-		cout << "loading mesh from text line in configuration file..." << endl;
-		getline(configuration_file, mesh_path);
-	}
-	else {
-		cout << "cannot open configuration file! loading from default mesh paths instead..." << endl;
-		mesh_path = "C:/Dev/EngineIGLnew/tutorial/data/cube.obj";
-	}
-
-	cout << "loading done!" << endl;
-	configuration_file.close();
-
-	load_mesh_from_file(mesh_path);
-	load_mesh_from_file(mesh_path);
-
-
-	this->data_list[0].MyScale(Eigen::RowVector3f(1, 1, 1));
-	this->data_list[1].MyScale(Eigen::RowVector3f(1, 1, 1));
-
-	this->data_list[0].setSpeed(Eigen::RowVector3f(0.001f, 0, 0));
-
-	this->data_list[1].MyTranslate(Eigen::RowVector3f(1, 0, 0));
-
-	create_bounding_box();
-}
-
-void fail_load_configuration_IK(string& sphere_path, string& yCylinder_path)
+void fail_load_resource(string& sphere_path, string& yCylinder_path, string& cube_path,
+	string& catch_sound_path, string& hit_sound_path, string& end_level_sound_path)
 {
 	cout << "cannot open or read all needed line from configuration file! loading from default mesh paths instead..." << endl;
 	sphere_path = "C:/Dev/EngineIGLnew/tutorial/data/sphere.obj";
 	yCylinder_path = "C:/Dev/EngineIGLnew/tutorial/data/ycylinder.obj";
+	cube_path = "C:/Dev/EngineIGLnew/tutorial/data/cube.obj";
+	catch_sound_path = "C:/Dev/EngineIGLnew/tutorial/data/catch.wav";
+	hit_sound_path = "C:/Dev/EngineIGLnew/tutorial/data/hit.wav";
+	end_level_sound_path = "C:/Dev/EngineIGLnew/tutorial/data/end_level.wav";
 }
 
-bool attempt_to_load_IK_mesh(string& mesh_path, ifstream& configuration_file)
+bool attempt_load_resource(string& mesh_path, ifstream& configuration_file)
 {
 	if (configuration_file.good())
 	{
@@ -75,26 +44,37 @@ bool attempt_to_load_IK_mesh(string& mesh_path, ifstream& configuration_file)
 }
 
 
-void MyViewer::load_configuration_IK()
+void MyViewer::load_configuration()
 {
 	string sphere_path;
 	string yCylinder_path;
+	string cube_path;
+	string catch_sound_path;
+	string hit_sound_path;
+	string end_level_sound_path;
 	cout << "reading mesh paths from configuration.txt file..." << endl;
 
 	ifstream configuration_file("configuration.txt");
 
 	if (configuration_file.fail())
 	{
-		fail_load_configuration_IK(sphere_path, yCylinder_path);
+		fail_load_resource(sphere_path, yCylinder_path, cube_path,catch_sound_path,hit_sound_path, end_level_sound_path);
 	}
 	else
 	{
-		cout << "loading sphere and yCylinder mesh from text line in configuration file..." << endl;
-		if (!attempt_to_load_IK_mesh(sphere_path, configuration_file) || !attempt_to_load_IK_mesh(yCylinder_path, configuration_file))
+		cout << "loading resources from configuration file..." << endl;
+		bool isAllResourcesLoaded = attempt_load_resource(sphere_path, configuration_file) && attempt_load_resource(yCylinder_path, configuration_file)
+			&& attempt_load_resource(cube_path, configuration_file)
+			&& attempt_load_resource(catch_sound_path, configuration_file) && attempt_load_resource(hit_sound_path, configuration_file)
+			&& attempt_load_resource(end_level_sound_path, configuration_file);
+
+		if (!isAllResourcesLoaded)
 		{
-			fail_load_configuration_IK(sphere_path, yCylinder_path);
+			fail_load_resource(sphere_path, yCylinder_path, cube_path, catch_sound_path, hit_sound_path, end_level_sound_path);
 		}
 	}
+
+	this->sound_manager.configureSoundPaths(catch_sound_path, hit_sound_path, end_level_sound_path);
 
 	for (int i = 0; i < 5; i++) {
 		load_mesh_from_file(sphere_path);
@@ -221,7 +201,7 @@ void MyViewer::Initialize_scene() {
 		disp = new Display(1200, 1000, "Welcome");
 	}
 	MyRenderer renderer;
-	load_configuration_IK();
+	load_configuration();
 	init_simplify_data_structures_list();
 	Init(*disp);
 	renderer.init(this);

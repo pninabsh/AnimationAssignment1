@@ -9,6 +9,7 @@
 #include "igl/igl_inline.h"
 #include <igl/get_seconds.h>
 #include "tutorial/sandBox/IK_solver.h"
+#include "tutorial/sandBox/MyRenderer.h"
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -143,10 +144,10 @@ bool Display::launch_rendering(bool loop)
 		if (!loop)
 			return !glfwWindowShouldClose(window);
 
-		Renderer* rndr = (Renderer*)glfwGetWindowUserPointer(window);
-		igl::opengl::glfw::Viewer* scn = rndr->GetScene();
+		MyRenderer* rndr = (MyRenderer*)glfwGetWindowUserPointer(window);
+		MyViewer* scn = rndr->GetMyScene();
 		if (getIsAnimating()) {
-			ccd_step(scn, rndr->GetScene()->selected_data_index);
+			ccd_step(scn, rndr->GetMyScene()->selected_data_index);
 		}
 
 		if (timer.getElapsedTimeInSec() > 120) {

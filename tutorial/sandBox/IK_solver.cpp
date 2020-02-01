@@ -1,7 +1,5 @@
 #include "IK_solver.h"
 #include <igl/opengl/glfw/Viewer.h>
-#include <build\tutorial\sandBox\DetectCollision.h>
-//#include "MyViewer.h"
 using namespace std;
 
 bool isAnimating = false;
@@ -27,7 +25,7 @@ float distance(Eigen::Vector3f p1, Eigen::Vector3d p2) {
 	return res;
 }
 
-void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
+void ccd_step(MyViewer* scn, int hitObject) {
 	//d and e are the same in all iterations
 	//changes between iterations
 	bool collide = find_collided_boxes(scn->data_list[hitObject], scn->data_list[hitObject].kd_tree, scn->data_list[14], scn->data_list[14].kd_tree);
@@ -61,6 +59,7 @@ void ccd_step(igl::opengl::glfw::Viewer* scn, int hitObject) {
 		isAnimating = false;
 		scn->data_list[hitObject].set_visible(false);
 		score += 20;
+		scn->sound_manager.play_hit();
 		std::cout << "The score is: " << score << std::endl;
 		return;
 	}

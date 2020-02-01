@@ -3,7 +3,8 @@
 #include <igl/Timer.h>
 #include "igl/opengl/glfw/Viewer.h"
 #include "tutorial/sandBox/mesh_simplifier.h"
-#include <build\tutorial\sandBox\DetectCollision.h>
+#include "tutorial/sandBox/DetectCollision.h"
+#include "tutorial/sandBox/SoundManager.h"
 
 
 class MyViewer : public igl::opengl::glfw::Viewer {
@@ -15,6 +16,7 @@ private:
 	void create_bounding_box();
 
 public:
+	SoundManager sound_manager;
 	bool is_object_selected;
 	std::vector<int>* parent_links_indices;
 	std::vector<int>* links_numbers;
@@ -23,6 +25,7 @@ public:
 		simplifyDataObjectsList = new std::vector<SimplifyDataObject>();
 		parent_links_indices = new std::vector<int>();
 		links_numbers = new std::vector<int>();
+		sound_manager = SoundManager();
 	}
 	~MyViewer() {
 		delete simplifyDataObjectsList;
@@ -30,7 +33,6 @@ public:
 		delete links_numbers;
 	}
 	void load_configuration();
-	void load_configuration_IK();
 	void init_simplify_data_structures_list();
 	void simplify();
 	void organize_spheres_on_board();
