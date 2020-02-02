@@ -1,4 +1,6 @@
 C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/sphere.obj
 C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
-C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
-C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/yCylinder.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/cube.obj
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/catch.wav
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/hit.wav
+C:/Users/User/Documents/dev/AnimationAssignment1/tutorial/data/end_level.wav

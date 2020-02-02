@@ -34,6 +34,7 @@ static void glfw_mouse_press(GLFWwindow* window, int button, int action, int mod
 		}
 		//TODO: when more meshes are added to the scene, check whether indexes are still correct
 		if (closetHitObject.found && (savedIndx < 5)) {
+			scn->sound_manager.play_hit();
 			start_IK_solver_animation();
 		}
 		scn->selected_data_index = savedIndx;

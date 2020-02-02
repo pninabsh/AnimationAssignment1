@@ -191,6 +191,7 @@ void MyViewer::level_ended() {
 	stop_IK_solver_animation();
 	timer.stop();
 	level++;
+	this->sound_manager.play_end_level();
 	std::cout << "Level number: " << level << std::endl;
 	std::cout << "The final score you achieved is: " << score << std::endl;
 	Initialize_scene();
