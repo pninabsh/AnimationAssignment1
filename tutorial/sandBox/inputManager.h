@@ -131,12 +131,6 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			rndr->core().orthographic = !rndr->core().orthographic;
 			break;
 		}
-		/*case 'T':
-		case 't':translate
-		{
-			rndr->core().toggle(scn->data().show_faces);
-			break;
-		}*/
 		case '1':
 		case '2':
 		{
@@ -184,6 +178,11 @@ static void glfw_key_callback(GLFWwindow* window, int key, int scancode, int act
 			rotate_x_axis(scn, 1);
 			break;
 		case ' ': {
+			scn->level_reset(true);
+			break;
+		}
+		case 257: {
+			scn->level_reset(false);
 			break;
 		}
 		default: break;//do nothing

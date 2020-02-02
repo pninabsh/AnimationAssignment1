@@ -7,7 +7,6 @@
 using namespace igl;
 using namespace std;
 
-int level = 0;
 Display* disp = NULL;
 
 void MyViewer::create_bounding_box() {
@@ -83,39 +82,12 @@ void MyViewer::load_configuration()
 	for (int i = 0; i < 10; i++) {
 		load_mesh_from_file(yCylinder_path);
 	}
-
-	for (int i = 6; i <= 14; i++) {
-		data_list[i].SetParent(&(data_list[i - 1]));
-	}
-
-	/*data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
-	data_list[0].setSpeed(Eigen::Vector3f (0, 0.01f, 0));*/
-	organize_spheres_on_board();
-	data_list[5].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
-	data_list[5].MyTranslate(Eigen::Vector3f(0, -6, 0));
-	for (int i = 6; i <= 14; i++) {
-		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
-	}
-	for (int i = 6; i <= 14; i++) {
-		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
-	}
-	for (int i = 5; i < data_list.size(); i++) {
-		links_numbers->push_back(i);
-
-		if (i != 14) {
-			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
-		}
-	}
-
-	Eigen::RowVector3d color(1, 0, 0);
-	data_list[5].set_colors(color);
 	cout << "loading done!" << endl;
 	configuration_file.close();
-	create_bounding_box();
-	timer.start();
 }
 void MyViewer::init_simplify_data_structures_list()
 {
+	simplifyDataObjectsList->clear();
 	for (igl::opengl::ViewerData viewer_data : data_list)
 	{
 		simplifyDataObjectsList->push_back(get_SimplifyDataObject(viewer_data));
@@ -127,8 +99,6 @@ void MyViewer::simplify()
 	SimplifyDataObject selectedSimplifyDataObject;
 
 	const auto do_simplify = [this, &selectedSimplifyDataObject](double number_of_edges) -> void {
-		//bool something_collapsed = false;
-
 		std::vector<PriorityQueue::iterator> Qit;
 		Qit.resize(selectedSimplifyDataObject.E.rows());
 
@@ -143,22 +113,9 @@ void MyViewer::simplify()
 			{
 				break;
 			}
-			//something_collapsed = true;
-			//update_v_planes(selectedSimplifyDataObject);
-			//update_q_matrixes(selectedSimplifyDataObject);
-			//update_priority_queue(selectedSimplifyDataObject);
 		}
 
 		simplifyDataObjectsList->at(selected_data_index) = selectedSimplifyDataObject;
-
-		/*if (something_collapsed)
-		{
-			data().clear();
-			data().set_mesh(selectedSimplifyDataObject.V, selectedSimplifyDataObject.F);
-			data().set_face_based(true);
-			// use the modified V and F and F_NORMALS to re-calculate E,EF,EI,Q,C,EMAP,V_Q_MATRIX,V_PLANES
-			get_SimplifyDataObject(selectedSimplifyDataObject);
-		}*/
 	};
 
 	selectedSimplifyDataObject = simplifyDataObjectsList->at(selected_data_index);
@@ -187,14 +144,69 @@ void MyViewer::organize_spheres_on_board()
 	}
 }
 
-void MyViewer::level_ended() {
+void MyViewer::organize_snake() {
+	links_numbers->clear();
+	parent_links_indices->clear();
+
+	for (int i = 6; i <= 14; i++) {
+		data_list[i].SetParent(&(data_list[i - 1]));
+	}
+
+	data_list[5].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
+	data_list[5].MyTranslate(Eigen::Vector3f(0, -6, 0));
+	for (int i = 6; i <= 14; i++) {
+		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
+	}
+	for (int i = 6; i <= 14; i++) {
+		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
+	}
+	for (int i = 5; i < data_list.size(); i++) {
+		links_numbers->push_back(i);
+
+		if (i != 14) {
+			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
+		}
+	}
+
+	Eigen::RowVector3d color(1, 0, 0);
+	data_list[5].set_colors(color);
+}
+
+void  MyViewer::create_level() {
+	organize_spheres_on_board();
+	organize_snake();
+	create_bounding_box();
+	timer.start();
+
+}
+
+void MyViewer::level_reset(bool to_level_up) {
+	if (waiting_for_user_answer) {
+		waiting_for_user_answer = false;
+
+		if (to_level_up) {
+			level++;
+		}
+
+		for (int i = 0; i < data_list.size(); i++) {
+			data_list[i].reset();
+		}
+		create_level();
+	}
+}
+
+void MyViewer::end_level() {
 	stop_IK_solver_animation();
 	timer.stop();
-	level++;
-	this->sound_manager.play_end_level();
+	sound_manager.play_end_level();
 	std::cout << "Level number: " << level << std::endl;
 	std::cout << "The final score you achieved is: " << score << std::endl;
-	Initialize_scene();
+	std::cout << "Press enter for replaying the level, or press space to continue to the next level" << std::endl;
+	waiting_for_user_answer = true;
+}
+
+bool MyViewer::is_waiting_for_user() {
+	return waiting_for_user_answer;
 }
 
 void MyViewer::Initialize_scene() {
@@ -203,6 +215,7 @@ void MyViewer::Initialize_scene() {
 	}
 	MyRenderer renderer;
 	load_configuration();
+	create_level();
 	init_simplify_data_structures_list();
 	Init(*disp);
 	renderer.init(this);

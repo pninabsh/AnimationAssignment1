@@ -54,9 +54,9 @@ void igl::opengl::ViewerData::SetParent(igl::opengl::ViewerData* view) {
 Eigen::Matrix4f igl::opengl::ViewerData::MakeTrans()
 {
 	if (parent == nullptr) {
-		return Tout.matrix() * rot.matrix()/*roty.matrix() * rotx.matrix() * roty2.matrix()*/ * Tin.matrix() * scale.matrix();
+		return Tout.matrix() * rot.matrix() * Tin.matrix() * scale.matrix();
 	}
-	return parent->MakeTrans() * Tout.matrix() * rot.matrix() /*roty.matrix() * rotx.matrix() * roty2.matrix() */* Tin.matrix() * scale.matrix();
+	return parent->MakeTrans() * Tout.matrix() * rot.matrix() * Tin.matrix() * scale.matrix();
 }
 
 // Helpers that draws the most common meshes

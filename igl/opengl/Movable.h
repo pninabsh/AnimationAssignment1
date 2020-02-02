@@ -5,9 +5,9 @@
 
 class Movable
 {
-	// Tout * y * x * y2 * Tin * scale
 public:
 	Movable();
+	void reset();
 	void MyTranslate(Eigen::Vector3f amt);
 	void MyRotate(Eigen::Vector3f rotAxis,float angle);
 	void MyScale(Eigen::Vector3f amt);

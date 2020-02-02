@@ -9,6 +9,8 @@
 
 class MyViewer : public igl::opengl::glfw::Viewer {
 private:
+	int level;
+	bool waiting_for_user_answer;
 	std::vector<SimplifyDataObject>* simplifyDataObjectsList;
 
 	float resize_value = 1;
@@ -22,6 +24,8 @@ public:
 	std::vector<int>* links_numbers;
 	void Initialize_scene();
 	MyViewer() {
+		level = 1;
+		waiting_for_user_answer = false;
 		simplifyDataObjectsList = new std::vector<SimplifyDataObject>();
 		parent_links_indices = new std::vector<int>();
 		links_numbers = new std::vector<int>();
@@ -32,9 +36,13 @@ public:
 		delete parent_links_indices;
 		delete links_numbers;
 	}
+	void create_level();
 	void load_configuration();
 	void init_simplify_data_structures_list();
 	void simplify();
 	void organize_spheres_on_board();
-	void level_ended();
+	void organize_snake();
+	void end_level();
+	void level_reset(bool to_level_up);
+	bool is_waiting_for_user();
 };

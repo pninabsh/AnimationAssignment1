@@ -15,7 +15,7 @@ Movable::Movable()
 
 void Movable::slide()
 {
-	this->MyTranslate(this->speed);
+	MyTranslate(speed);
 }
 
 Eigen::Vector3f Movable::getTranslation() {
@@ -27,8 +27,17 @@ void Movable::setSpeed(Eigen::Vector3f speed)
 	this->speed = speed;
 }
 
+void Movable::reset() {
+	Tin.translation().setZero();
+	Tout.translation().setZero();
+	roty.linear().setIdentity();
+	rot.linear().setIdentity();
+	rotx.linear().setIdentity();
+	roty2.linear().setIdentity();
+	speed = Eigen::Vector3f(0, 0, 0);
+}
+
 Eigen::Matrix3f Movable::getRotation() {
-	//return roty2.rotation() * roty.rotation() * rotx.rotation();
 	return rot.rotation();
 }
 
@@ -39,15 +48,6 @@ void Movable::MyTranslate(Eigen::Vector3f amt)
 //angle in radians
 void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 {
-	/*if (rotAxis == Eigen::Vector3f(1, 0, 0)) {
-		rotx.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
-	}
-	else if (rotAxis == Eigen::Vector3f(0, 1, 0)) {
-		roty.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
-	}
-	else {
-		roty2.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
-	}*/
 	rot.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 }
 
