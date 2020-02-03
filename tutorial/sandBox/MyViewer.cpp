@@ -123,22 +123,43 @@ void MyViewer::simplify()
 	do_simplify(rounded_up_five_percent_edges);
 }
 
-void MyViewer::organize_spheres_on_board()
+void MyViewer::organize_spheres_on_board1()
 {
 	data_list[0].MyTranslate(Eigen::Vector3f(2, -6, 0));
-	data_list[0].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
+	data_list[0].setSpeed(Eigen::Vector3f(0, 0.03f, 0));
 
 	data_list[1].MyTranslate(Eigen::Vector3f(-2, -6, 0));
 	data_list[1].setSpeed(Eigen::Vector3f(0, 0.01f, 0));
 
 	data_list[2].MyTranslate(Eigen::Vector3f(-6, -6, 0));
-	data_list[2].setSpeed(Eigen::Vector3f(0.01f, 0, 0));
+	data_list[2].setSpeed(Eigen::Vector3f(0.05f, 0, 0));
 
 	data_list[3].MyTranslate(Eigen::Vector3f(6, 6, 0));
 	data_list[3].setSpeed(Eigen::Vector3f(0, -0.01f, 0));
 
 	data_list[4].MyTranslate(Eigen::Vector3f(-9, 5, 0));
-	data_list[4].setSpeed(Eigen::Vector3f(0.01f, 0, 0));
+	data_list[4].setSpeed(Eigen::Vector3f(0.07f, 0, 0));
+	for (int i = 0; i < 5; i++) {
+		data_list[i].set_visible(true);
+	}
+}
+
+void MyViewer::organize_spheres_on_board2()
+{
+	data_list[0].MyTranslate(Eigen::Vector3f(1, 3, 0));
+	data_list[0].setSpeed(Eigen::Vector3f(0, 0.02f, 0));
+
+	data_list[1].MyTranslate(Eigen::Vector3f(2, 4, 0));
+	data_list[1].setSpeed(Eigen::Vector3f(0, 0.04f, 0));
+
+	data_list[2].MyTranslate(Eigen::Vector3f(-4, -4, 0));
+	data_list[2].setSpeed(Eigen::Vector3f(0.03f, 0, 0));
+
+	data_list[3].MyTranslate(Eigen::Vector3f(-3, -3, 0));
+	data_list[3].setSpeed(Eigen::Vector3f(0, 0.005f, 0));
+
+	data_list[4].MyTranslate(Eigen::Vector3f(-5, 5, 0));
+	data_list[4].setSpeed(Eigen::Vector3f(0.09f, 0, 0));
 	for (int i = 0; i < 5; i++) {
 		data_list[i].set_visible(true);
 	}
@@ -173,7 +194,12 @@ void MyViewer::organize_snake() {
 }
 
 void  MyViewer::create_level() {
-	organize_spheres_on_board();
+	if (level % 2 == 1) {
+		organize_spheres_on_board1();
+	}
+	else {
+		organize_spheres_on_board2();
+	}
 	organize_snake();
 	create_bounding_box();
 	timer.start();

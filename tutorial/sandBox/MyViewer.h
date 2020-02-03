@@ -40,7 +40,8 @@ public:
 	void load_configuration();
 	void init_simplify_data_structures_list();
 	void simplify();
-	void organize_spheres_on_board();
+	void organize_spheres_on_board1();
+	void organize_spheres_on_board2();
 	void organize_snake();
 	void end_level();
 	void level_reset(bool to_level_up);
