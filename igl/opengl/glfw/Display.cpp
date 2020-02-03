@@ -148,7 +148,7 @@ bool Display::launch_rendering(bool loop)
 			ccd_step(scn, rndr->GetMyScene()->selected_data_index);
 		}
 
-		if (timer.getElapsedTimeInSec() > 10 && !scn->is_waiting_for_user())
+		if (timer.getElapsedTimeInSec() > 120 && !scn->is_waiting_for_user())
 		{
 			scn->end_level();
 		}
