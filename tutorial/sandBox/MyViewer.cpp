@@ -245,6 +245,11 @@ void MyViewer::Initialize_scene() {
 	init_simplify_data_structures_list();
 	Init(*disp);
 	renderer.init(this);
+	renderer.callback_post_resize = [&](int w, int h) {
+		renderer.core(1).viewport = Eigen::Vector4f(0, 0, w / 2, h);
+		renderer.core(2).viewport = Eigen::Vector4f(w / 2, 0, w - (w / 2), h);
+		return true;
+	};
 	renderer.my_init(this);
 	disp->SetRenderer(&renderer);
 	disp->launch_rendering(true);

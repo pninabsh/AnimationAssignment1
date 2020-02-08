@@ -31,7 +31,7 @@ public:
 	std::function<bool(GLFWwindow* window, int mouse_x, int mouse_y)> callback_mouse_move;
 	std::function<bool(GLFWwindow* window, float delta_y)> callback_mouse_scroll;
 	std::function<bool(GLFWwindow* window, unsigned int key, int modifiers)> callback_key_pressed;
-	std::function<bool(GLFWwindow* window, int w, int h)> callback_post_resize;
+	std::function<bool( int w, int h)> callback_post_resize;
 	// THESE SHOULD BE DEPRECATED:
 	std::function<bool(GLFWwindow* window, unsigned int key, int modifiers)> callback_key_down;
 	std::function<bool(GLFWwindow* window, unsigned int key, int modifiers)> callback_key_up;
