@@ -86,11 +86,8 @@ IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer* viewer)
 	core().viewport = Eigen::Vector4f(0, 0, 500, 800);
 	left_view = core_list[0].id;
 	right_view = append_core(Eigen::Vector4f(640, 0, 500, 800));
-
 	for (size_t i = 0; i < scn->data_list.size(); i++) {
-
 		core().toggle(scn->data(i).show_faces);
-
 	}
 }
 
@@ -123,7 +120,7 @@ Renderer::~Renderer()
 	//	delete scn;
 }
 
-hitObject Renderer::Picking(double newx, double newy)
+hitObject Renderer::picking_help(double newx, double newy, int core_id)
 {
 	hitObject hitObjectCurrent;
 	hitObjectCurrent.found = false;
@@ -133,12 +130,12 @@ hitObject Renderer::Picking(double newx, double newy)
 	//Eigen::MatrixXd C = Eigen::MatrixXd::Constant(scn->data().F.rows(), 3, 1);
 	Eigen::Vector3f bc;
 	double x = newx;
-	double y = core().viewport(3) - newy;
+	double y = core(core_id).viewport(3) - newy;
 	Eigen::Matrix4f view = Eigen::Matrix4f::Identity();
-	igl::look_at(core().camera_eye, core().camera_center, core().camera_up, view);
-	view = view * (core().trackball_angle * Eigen::Scaling(core().camera_zoom * core().camera_base_zoom) * Eigen::Translation3f(core().camera_translation + core().camera_base_translation)).matrix() * scn->MakeTrans() * scn->data().MakeTrans();
+	igl::look_at(core(core_id).camera_eye, core(core_id).camera_center, core(core_id).camera_up, view);
+	view = view * (core(core_id).trackball_angle * Eigen::Scaling(core(core_id).camera_zoom * core(core_id).camera_base_zoom) * Eigen::Translation3f(core(core_id).camera_translation + core(core_id).camera_base_translation)).matrix() * scn->MakeTrans() * scn->data().MakeTrans();
 	if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view,
-		core().proj, core().viewport, scn->data().V, scn->data().F, fid, bc))
+		core(core_id).proj, core(core_id).viewport, scn->data().V, scn->data().F, fid, bc))
 	{
 		//find vertexes - watch igl::ray_mesh_intersect to see how the verixes vere found there and replace f with fid
 		Eigen::RowVector3d v0 = scn->data().V.row(scn->data().F(fid, 0)).template cast<double>();
@@ -162,6 +159,15 @@ hitObject Renderer::Picking(double newx, double newy)
 	}
 
 	return hitObjectCurrent;
+}
+
+hitObject Renderer::Picking(double newx, double newy) {
+	hitObject object1 = picking_help(newx, newy, 1);
+	hitObject object2 = picking_help(newx, newy, 2);
+	if (object1.found) {
+		return object1;
+	}
+	return object2;
 }
 
 IGL_INLINE void Renderer::resize(GLFWwindow* window, int w, int h)

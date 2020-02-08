@@ -57,7 +57,7 @@ void ccd_step(MyViewer* scn, int hitObject) {
 	}
 	else if(isAnimating) {
 		isAnimating = false;
-		scn->data_list[hitObject].set_visible(false);
+		scn->data_list[hitObject].clear();
 		score += 20;
 		scn->sound_manager.play_catch();
 		std::cout << "The score is: " << score << std::endl;
