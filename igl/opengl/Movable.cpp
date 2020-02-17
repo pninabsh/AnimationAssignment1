@@ -51,6 +51,11 @@ void Movable::MyRotate(Eigen::Vector3f rotAxis, float angle)
 	rot.rotate(Eigen::AngleAxisf(angle, rotAxis.normalized()));
 }
 
+void Movable::MyRotate2(Eigen::AngleAxisf r)
+{
+	rot.rotate(r);
+}
+
 void Movable::MyScale(Eigen::Vector3f amt)
 {
 	scale.scale(amt);

@@ -6,7 +6,7 @@
 #include <Eigen/Dense>
 
 Renderer::Renderer() : selected_core_index(0),
-next_core_id(2)
+					   next_core_id(2)
 {
 	core_list.emplace_back(igl::opengl::ViewerCore());
 	core_list.front().id = 1;
@@ -36,10 +36,11 @@ next_core_id(2)
 	yold = 0;
 }
 
-IGL_INLINE void Renderer::draw(GLFWwindow* window)
+IGL_INLINE void Renderer::draw(GLFWwindow *_window)
 {
 	using namespace std;
 	using namespace Eigen;
+	window = _window;
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 
@@ -54,14 +55,14 @@ IGL_INLINE void Renderer::draw(GLFWwindow* window)
 		highdpi = highdpi_tmp;
 	}
 
-	for (auto& core : core_list)
+	for (auto &core : core_list)
 	{
 		core.clear_framebuffers();
 	}
 
-	for (auto& core : core_list)
+	for (auto &core : core_list)
 	{
-		for (auto& mesh : scn->data_list)
+		for (auto &mesh : scn->data_list)
 		{
 			mesh.slide();
 			if (mesh.is_visible & core.id)
@@ -70,14 +71,103 @@ IGL_INLINE void Renderer::draw(GLFWwindow* window)
 			}
 		}
 	}
+	//UpdateCamera();
+	/*for (int i = 0; i <= 4; i++) {
+		scn->data_list[i].MyRotate(Eigen::Vector3f(1, 0, 0), 0.1f);
+		scn->data_list[i].MyRotate(Eigen::Vector3f(0, 1, 0), 0.1f);
+	}*/
 }
 
-void Renderer::SetScene(igl::opengl::glfw::Viewer* viewer)
+void Renderer::SetScene(igl::opengl::glfw::Viewer *viewer)
 {
 	scn = viewer;
 }
 
-IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer* viewer)
+Eigen::Vector3d Renderer::getCoordinates(igl::opengl::ViewerData link, bool upLink) {
+	Eigen::Vector3d mLink = link.V.colwise().minCoeff();
+	Eigen::Vector3d MLink = link.V.colwise().maxCoeff();
+	Eigen::Vector4f helpingVector(4);
+	if (upLink) {
+		helpingVector << (MLink(0) + mLink(0)) / 2, MLink(1), (MLink(2) + mLink(2)) / 2, 1;
+	}
+	else {
+		helpingVector << (MLink(0) + mLink(0)) / 2, mLink(1), (MLink(2) + mLink(2)) / 2, 1;
+	}
+	Eigen::Vector4f mulVector = link.MakeTrans() * helpingVector;
+	return Eigen::Vector3d(mulVector(0), mulVector(1), mulVector(2));
+}
+
+void Renderer::UpdateCamera() {
+	//Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
+	//core(2).camera_up = N;
+	/*Eigen::RowVector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 30) /*+ Eigen::RowVector3f(0,0,30);*/
+	//core(2).camera_eye = E;
+
+	/*Eigen::Vector3f top = scn->data(14).getTranslation();
+	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	//TR = TR + Eigen::RowVector3f(0, -3, 0);
+	core(2).camera_base_translation = Eigen::RowVector3f(0, 4, 0);
+	core(2).camera_translation = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));*/
+	//core(2).camera_translation = Eigen::Vector3f(0, -5, -10);
+	//core(2).camera_up = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
+	//core(2).camera_zoom = 0.85;
+	//core(2).camera_eye = TR;
+
+	/*Eigen::Matrix3f rota = scn->CalParentsRotationMatrixes(scn->snake_head);
+	// TODO - play with yTheta in order to fix the camera_eye
+	core(right_view).camera_up = rota * Eigen::Vector3f(0, 0, 1);
+	core(right_view).camera_eye = rota * Eigen::Vector3f(0, -2.09, 0);
+	Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->CalcParentsTrans(scn->snake_head)).col(3).head(3); //A.col(1);
+	Eigen::Vector3f a = (scn->CalParentsRotationMatrixes(scn->snake_head).matrix().col(1) * -0.83);*/
+
+
+	//TR += a;
+
+	//core(2).camera_translation = TR;
+
+	/*Eigen::Vector3f top = scn->data(14).getTranslation();
+	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Vector3f N = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, 0, 1);
+	core(2).camera_up = N;
+	Eigen::Vector3f E = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, -2.09, 0);
+	core(2).camera_eye = E;
+
+	//Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->data_list[14].MakeTrans().col(3).head(3));//A.col(1);
+	Eigen::Vector3f TR = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+	/*Eigen::Vector3f a = (scn->data_list[14].MakeTrans().col(1) * -0.83);
+	TR += a;*/
+	//core(2).camera_translation = TR;
+
+	/*Eigen::Vector3f top = scn->data(14).getTranslation();
+	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Vector3f N = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, 0, 1);
+	core(2).camera_up = N;
+	Eigen::Vector3f E = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, -2.09, 0);
+	core(2).camera_eye = E;
+
+	//Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->data_list[14].MakeTrans().col(3).head(3));//A.col(1);*/
+	//Eigen::Vector3f TR = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+	/*Eigen::Vector3f a = (scn->data_list[14].MakeTrans().col(1) * -0.83);
+	TR += a;*/
+	//core(2).camera_translation = TR;
+	Eigen::Vector3d top = getCoordinates(scn->data_list[14], true);
+	//Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Vector4f top_scene = scn->MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Matrix3f rota = scn->data(14).getRotationOfParents();
+	// TODO - play wiendth yTheta in order to fix the camera_eye
+	core(2).camera_up = rota * Eigen::Vector3f(0, 0, 1);
+	core(2).camera_eye = rota * Eigen::Vector3f(0, -2.09, 0);
+	Eigen::Vector3f TR = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));
+	Eigen::Vector3f a = (scn->data(14).getRotationOfParents().col(1) * -2);
+	TR += a;
+	core(2).camera_translation = Eigen::Vector3f(TR(0), TR(1), TR(2));
+	core(2).camera_zoom = 0.5;
+}
+
+
+IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer *viewer)
 {
 	unsigned int left_view, right_view;
 	scn = viewer;
@@ -86,6 +176,49 @@ IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer* viewer)
 	core().viewport = Eigen::Vector4f(0, 0, 500, 800);
 	left_view = core_list[0].id;
 	right_view = append_core(Eigen::Vector4f(640, 0, 500, 800));
+	/*Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
+	core(right_view).camera_up = N;
+	Eigen::RowVector3f E = scn->data(0).getRotation() * Eigen::Vector3f(0, 1, 0);
+	core(right_view).camera_eye = E;
+
+	Eigen::RowVector3f TR = -scn->data(14).MakeTrans().col(3).head(3); //A.col(1);
+	TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+	core(right_view).camera_translation = TR;*/
+	//UpdateCamera();
+	/*Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 1, 0);
+	core(right_view).camera_up = N;*/
+	//Eigen::RowVector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, -1, 0);
+	//core(right_view).camera_eye += scn->data(14).getTranslation();
+	/*Eigen::Vector3f E = scn->data(14).getTranslation() + Eigen::Vector3f(20 * cos(5), 10, 20 * sin(5));
+	core(right_view).camera_eye = E;
+	core(right_view).camera_center = scn->data(14).getTranslation();*/
+	/*core(right_view).camera_base_translation = Eigen::RowVector3f(0, 0, -5);
+	//Eigen::RowVector3f TR = scn->data(14).getTranslation(); //A.col(1);
+	Eigen::RowVector3f TR = scn->data(14).getTranslation();
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+
+
+
+
+	core(right_view).camera_translation = TR;*/
+	//core(right_view).camera_eye = TR;
+	Eigen::Vector3d top = getCoordinates(scn->data_list[14], true);
+	//Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Vector4f top_scene = scn->MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
+	core(right_view).camera_up = N;
+	Eigen::Vector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, -2.09, 0);
+	core(right_view).camera_eye = Eigen::Vector3f(0,0,30) + E;
+	//Eigen::RowVector4f TR = -(scn->MakeTrans() * scn->data(14).getTranslationOfParents()).col(3).head(3);//A.col(1);
+	Eigen::Vector3f TR = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+	//Eigen::Vector4f a = (scn->data(14).getRotationOfParents().col(1) * -0.83);
+	//TR += a;
+	Eigen::Vector3f a = (scn->data(14).getRotationOfParents().col(1) * -2);
+	TR += a;
+	core(right_view).camera_translation =  Eigen::Vector3f(TR(0), TR(1), TR(2));
+	core(right_view).camera_zoom = 0.5;
+
 	for (size_t i = 0; i < scn->data_list.size(); i++) {
 		core().toggle(scn->data(i).show_faces);
 	}
@@ -106,11 +239,13 @@ void Renderer::MouseProcessing(int button)
 	{
 		scn->data().MyTranslate(Eigen::Vector3f(-xrel / 2000.0f, 0, 0));
 		scn->data().MyTranslate(Eigen::Vector3f(0, yrel / 2000.0f, 0));
+		//UpdateCamera();
 	}
 	else //left
 	{
 		scn->data().MyRotate(Eigen::Vector3f(1, 0, 0), xrel / 180.0f);
 		scn->data().MyRotate(Eigen::Vector3f(0, 0, 1), yrel / 180.0f);
+		//UpdateCamera();
 	}
 }
 
@@ -135,7 +270,7 @@ hitObject Renderer::picking_help(double newx, double newy, int core_id)
 	igl::look_at(core(core_id).camera_eye, core(core_id).camera_center, core(core_id).camera_up, view);
 	view = view * (core(core_id).trackball_angle * Eigen::Scaling(core(core_id).camera_zoom * core(core_id).camera_base_zoom) * Eigen::Translation3f(core(core_id).camera_translation + core(core_id).camera_base_translation)).matrix() * scn->MakeTrans() * scn->data().MakeTrans();
 	if (igl::unproject_onto_mesh(Eigen::Vector2f(x, y), view,
-		core(core_id).proj, core(core_id).viewport, scn->data().V, scn->data().F, fid, bc))
+								 core(core_id).proj, core(core_id).viewport, scn->data().V, scn->data().F, fid, bc))
 	{
 		//find vertexes - watch igl::ray_mesh_intersect to see how the verixes vere found there and replace f with fid
 		Eigen::RowVector3d v0 = scn->data().V.row(scn->data().F(fid, 0)).template cast<double>();
@@ -149,7 +284,7 @@ hitObject Renderer::picking_help(double newx, double newy, int core_id)
 			alpha0MultiplyV0(1) + alpha1MultiplyV1(1) + alpha2MultiplyV2(1),
 			alpha0MultiplyV0(2) + alpha1MultiplyV1(2) + alpha2MultiplyV2(2));
 		//perform transformatiom on P point
-		Eigen::Matrix<float, 4, 1> pPointIn4dMatrix = { p(0), p(1), p(2), 1 };
+		Eigen::Matrix<float, 4, 1> pPointIn4dMatrix = { p(0), p(1), p(2), 1};
 		//multiply view * pPointIn4dMatrix in order to get the transformed p point
 		Eigen::Matrix<float, 4, 1> resultMatrix = view * pPointIn4dMatrix;
 		Eigen::Vector3f resultVector(resultMatrix(0), resultMatrix(1), resultMatrix(2));
@@ -161,7 +296,7 @@ hitObject Renderer::picking_help(double newx, double newy, int core_id)
 	return hitObjectCurrent;
 }
 
-hitObject Renderer::Picking(double newx, double newy) {
+hitObject Renderer::Picking(double newx, double newy){
 	hitObject object1 = picking_help(newx, newy, 1);
 	hitObject object2 = picking_help(newx, newy, 2);
 	if (object1.found) {
@@ -170,7 +305,7 @@ hitObject Renderer::Picking(double newx, double newy) {
 	return object2;
 }
 
-IGL_INLINE void Renderer::resize(GLFWwindow* window, int w, int h)
+IGL_INLINE void Renderer::resize(GLFWwindow *window, int w, int h)
 {
 	if (window)
 	{
@@ -179,7 +314,7 @@ IGL_INLINE void Renderer::resize(GLFWwindow* window, int w, int h)
 	post_resize(window, w, h);
 }
 
-IGL_INLINE void Renderer::post_resize(GLFWwindow* window, int w, int h)
+IGL_INLINE void Renderer::post_resize(GLFWwindow *window, int w, int h)
 {
 	if (core_list.size() == 1)
 	{
@@ -200,7 +335,7 @@ IGL_INLINE void Renderer::post_resize(GLFWwindow* window, int w, int h)
 	}
 }
 
-IGL_INLINE igl::opengl::ViewerCore& Renderer::core(unsigned core_id /*= 0*/)
+IGL_INLINE igl::opengl::ViewerCore &Renderer::core(unsigned core_id /*= 0*/)
 {
 	assert(!core_list.empty() && "core_list should never be empty");
 	int core_index;
@@ -212,7 +347,7 @@ IGL_INLINE igl::opengl::ViewerCore& Renderer::core(unsigned core_id /*= 0*/)
 	return core_list[core_index];
 }
 
-IGL_INLINE const igl::opengl::ViewerCore& Renderer::core(unsigned core_id /*= 0*/) const
+IGL_INLINE const igl::opengl::ViewerCore &Renderer::core(unsigned core_id /*= 0*/) const
 {
 	assert(!core_list.empty() && "core_list should never be empty");
 	int core_index;
@@ -260,7 +395,7 @@ IGL_INLINE int Renderer::append_core(Eigen::Vector4f viewport, bool append_empty
 	next_core_id <<= 1;
 	if (!append_empty)
 	{
-		for (auto& data : scn->data_list)
+		for (auto &data : scn->data_list)
 		{
 			data.set_visible(true, core_list.back().id);
 			//data.copy_options(core(), core_list.back());

@@ -4,16 +4,29 @@
 #include <thread>
 
 #include "../gl.h"
+//#include "<GLFW/glfw3.h>"
 #include "Display.h"
-
 #include "igl/igl_inline.h"
 #include <igl/get_seconds.h>
 #include "tutorial/sandBox/IK_solver.h"
 #include "tutorial/sandBox/MyRenderer.h"
+#include "../../ImGui/imgui.h"
+#include <external\imgui\imgui.h>
+#include <igl/get_seconds.h>
+#include <igl/PI.h>
+//#include "../../imgui/"
+//#include "tutorial/sandBox/Imgui/imgui.h"
+//#include "tutorial/sandBox/Imgui/imgui_impl_glfw_gl3.h"
+//#include "Imgui/"
+#include "imgui/ImGuiMenu.h"
 
 static void glfw_error_callback(int error, const char *description)
 {
 	fputs(description, stderr);
+}
+
+void drawText(const char *text, int length, int x, int y) {
+	//glMatrixMode(GL_PROJECTION);
 }
 
 Display::Display(int windowWidth, int windowHeight, const std::string &title)
@@ -114,13 +127,299 @@ bool Display::launch_rendering(bool loop)
 	int windowWidth, windowHeight;
 	//main loop
 	Renderer *renderer = (Renderer *)glfwGetWindowUserPointer(window);
+	//renderer->draw(window);
+	MyViewer viewer;
+	/*ImGui::CreateContext();
+	ImGui_ImplGlfwGL3_Init(window, true);
+	ImGui::StyleColorsDark();*/
+	//ImGui::CreateContext();
+	//igl::opengl::glfw::imgui::ImGuiMenu menu;
+	/*menu.init(renderer);
+	menu.pre_draw();*/
+	/*viewer.plugins.push_back(&menu);*/
+
+	// Customize the menu
+	//double doubleVariable = 0.1f; // Shared between two menus
+	/*menu.init(renderer);
+	menu.callback_draw_custom_window = [&]()
+	{
+		// Define next window position + size
+		ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+		ImGui::Begin(
+			"New Window", nullptr,
+			ImGuiWindowFlags_NoSavedSettings
+		);
+
+		// Expose the same variable directly ...
+		ImGui::PushItemWidth(-80);
+		ImGui::DragScalar("double", ImGuiDataType_Double, &doubleVariable, 0.1, 0, 0, "%.4f");
+		ImGui::PopItemWidth();
+
+		static std::string str = "bunny";
+		//ImGui::InputText("Name", str);
+
+		ImGui::End();
+	};
+	//menu.draw_custom_window();
+	menu.pre_draw();
+	//menu.draw_menu();
+	menu.post_draw();
+	viewer.plugins.push_back(&menu);*/
+	/*menu.callback_draw_custom_window = [&]()
+	{
+		// Define next window position + size
+		ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+		ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+		ImGui::Begin(
+			"New Window", nullptr,
+			ImGuiWindowFlags_NoSavedSettings
+		);
+
+		// Expose the same variable directly ...
+		ImGui::PushItemWidth(-80);
+		ImGui::DragScalar("double", ImGuiDataType_Double, &doubleVariable, 0.1, 0, 0, "%.4f");
+		ImGui::PopItemWidth();
+
+		static std::string str = "bunny";
+		//ImGui::InputText("Name", str);
+
+		ImGui::End();
+	};*/
+	//menu.draw_custom_window();
+	/*menu.init(renderer);
+	menu.pre_draw();*/
+	//igl::opengl::glfw::imgui::ImGuiMenu menu;
+	/*menu.callback_draw_viewer_menu = [&]()
+	{
+		// Draw parent menu content
+		menu.draw_viewer_menu();
+
+		// Add new group
+		if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			// Expose variable directly ...
+			//ImGui::InputFloat("float", &doubleVariable, 0, 0, 3);
+
+			// ... or using a custom callback
+			static bool boolVariable = true;
+			if (ImGui::Checkbox("bool", &boolVariable))
+			{
+				// do something
+				std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+			}
+
+			// Expose an enumeration type
+			enum Orientation { Up = 0, Down, Left, Right };
+			static Orientation dir = Up;
+			ImGui::Combo("Direction", (int*)(&dir), "Up\0Down\0Left\0Right\0\0");
+
+			// We can also use a std::vector<std::string> defined dynamically
+			static int num_choices = 3;
+			static std::vector<std::string> choices;
+			static int idx_choice = 0;
+			if (ImGui::InputInt("Num letters", &num_choices))
+			{
+				num_choices = std::max(1, std::min(26, num_choices));
+			}
+			if (num_choices != (int)choices.size())
+			{
+				choices.resize(num_choices);
+				for (int i = 0; i < num_choices; ++i)
+					choices[i] = std::string(1, 'A' + i);
+				if (idx_choice >= num_choices)
+					idx_choice = num_choices - 1;
+			}
+			//ImGui::Combo("Letter", &idx_choice, choices);
+
+			// Add a button
+			if (ImGui::Button("Print Hello", ImVec2(-1, 0)))
+			{
+				std::cout << "Hello\n";
+			}
+		}
+	};*/
+	//menu.init(renderer);
+	//menu.pre_draw();
+	//menu.post_draw();
+
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
 	renderer->post_resize(window, windowWidth, windowHeight);
+	igl::opengl::glfw::Viewer* scn = renderer->scn;
+	std::stringstream l1;
+	l1 << "Score 20";
+	scn->data().add_label(Eigen::Vector3d(5, 2, -2), l1.str());
+
+	//viewer.plugins.push_back(&menu);
 
 	while (!glfwWindowShouldClose(window))
 	{
+		MyViewer viewer;
+		//scn->data().add_label(Eigen::Vector3d(5, 2, -2), "Score: ");
+		/*ImGui::CreateContext();
+		ImGui_ImplGlfwGL3_Init(window, true);
+		ImGui::StyleColorsDark();*/
+		//ImGui::CreateContext();
+		//igl::opengl::glfw::imgui::ImGuiMenu menu;
+		//glfwPollEvents();
+		//glClearColor(0.45f, 0.55f, 0.60f, 1.00f);
+		//glClear(GL_COLOR_BUFFER_BIT);
+
+		// Customize the menu
+		double doubleVariable = 0.1f; // Shared between two menus
+		
+		//ImGui_ImplGlfwGL3_NewFrame();
 		double tic = igl::get_seconds();
+		renderer->UpdateCamera();
 		renderer->draw(window);
+
+		for (int i = 0; i <= 4; i++) {
+			double t = 0.25 * igl::get_seconds();
+			scn->data_list[i].MyRotate2(Eigen::AngleAxisf(t * 2. * igl::PI, Eigen::Vector3f(0, 1, 0)));
+			scn->data_list[i].MyTranslate(Eigen::Vector3f(0, 0.125 * cos(2. * igl::PI * t), 0));
+		}
+		//float doubleVariable = 0.1f; // Shared between two menus
+
+		//menu.callback_draw_custom_window = [&]() {};
+		/*menu.callback_draw_viewer_menu = [&]()
+		{
+			// Draw parent menu content
+			menu.draw_viewer_menu();
+
+			// Add new group
+			if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				// Expose variable directly ...
+				//ImGui::InputFloat("float", &doubleVariable, 0, 0, 3);
+
+				// ... or using a custom callback
+				static bool boolVariable = true;
+				if (ImGui::Checkbox("bool", &boolVariable))
+				{
+					// do something
+					std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+				}
+
+				// Expose an enumeration type
+				enum Orientation { Up = 0, Down, Left, Right };
+				static Orientation dir = Up;
+				ImGui::Combo("Direction", (int*)(&dir), "Up\0Down\0Left\0Right\0\0");
+
+				// We can also use a std::vector<std::string> defined dynamically
+				static int num_choices = 3;
+				static std::vector<std::string> choices;
+				static int idx_choice = 0;
+				if (ImGui::InputInt("Num letters", &num_choices))
+				{
+					num_choices = std::max(1, std::min(26, num_choices));
+				}
+				if (num_choices != (int)choices.size())
+				{
+					choices.resize(num_choices);
+					for (int i = 0; i < num_choices; ++i)
+						choices[i] = std::string(1, 'A' + i);
+					if (idx_choice >= num_choices)
+						idx_choice = num_choices - 1;
+				}
+				//ImGui::Combo("Letter", &idx_choice, choices);
+
+				// Add a button
+				if (ImGui::Button("Print Hello", ImVec2(-1, 0)))
+				{
+					std::cout << "Hello\n";
+				}
+			}
+		};*/
+		// Draw additional windows
+		/*menu.callback_draw_custom_window = [&]()
+		{
+			// Define next window position + size
+			ImGui::SetNextWindowPos(ImVec2(180.f * menu.menu_scaling(), 10), ImGuiSetCond_FirstUseEver);
+			ImGui::SetNextWindowSize(ImVec2(200, 160), ImGuiSetCond_FirstUseEver);
+			ImGui::Begin(
+				"New Window", nullptr,
+				ImGuiWindowFlags_NoSavedSettings
+			);
+
+			// Expose the same variable directly ...
+			ImGui::PushItemWidth(-80);
+			ImGui::DragScalar("double", ImGuiDataType_Double, &doubleVariable, 0.1, 0, 0, "%.4f");
+			ImGui::PopItemWidth();
+
+			static std::string str = "bunny";
+			//ImGui::InputText("Name", str);
+
+			ImGui::End();
+		};*/
+		//menu.init(renderer);
+		/*menu.callback_draw_viewer_menu = [&]()
+		{
+			// Draw parent menu content
+			menu.draw_viewer_menu();
+
+			// Add new group
+			if (ImGui::CollapsingHeader("New Group", ImGuiTreeNodeFlags_DefaultOpen))
+			{
+				// Expose variable directly ...
+				//ImGui::InputFloat("float", &doubleVariable, 0, 0, 3);
+
+				// ... or using a custom callback
+				static bool boolVariable = true;
+				if (ImGui::Checkbox("bool", &boolVariable))
+				{
+					// do something
+					std::cout << "boolVariable: " << std::boolalpha << boolVariable << std::endl;
+				}
+
+				// Expose an enumeration type
+				enum Orientation { Up = 0, Down, Left, Right };
+				static Orientation dir = Up;
+				ImGui::Combo("Direction", (int*)(&dir), "Up\0Down\0Left\0Right\0\0");
+
+				// We can also use a std::vector<std::string> defined dynamically
+				static int num_choices = 3;
+				static std::vector<std::string> choices;
+				static int idx_choice = 0;
+				if (ImGui::InputInt("Num letters", &num_choices))
+				{
+					num_choices = std::max(1, std::min(26, num_choices));
+				}
+				if (num_choices != (int)choices.size())
+				{
+					choices.resize(num_choices);
+					for (int i = 0; i < num_choices; ++i)
+						choices[i] = std::string(1, 'A' + i);
+					if (idx_choice >= num_choices)
+						idx_choice = num_choices - 1;
+				}
+				//ImGui::Combo("Letter", &idx_choice, choices);
+
+				// Add a button
+				if (ImGui::Button("Print Hello", ImVec2(-1, 0)))
+				{
+					std::cout << "Hello\n";
+				}
+			}
+		};*/
+		//menu.callback_draw_viewer_window = []() {};
+		//menu.draw_labels_window();
+		//viewer.plugins.push_back(&menu);
+		//menu.init(renderer);
+		//menu.draw_example();
+		//menu.pre_draw();
+		
+		//menu.post_draw();
+		//
+//igl::opengl::glfw::imgui::ImGuiMenu menu;
+		
+		
+
+		//viewer.data().add_label(Eigen::Vector3d(0, 0, 0), "Score: ");
+		//menu.draw_text(Eigen::Vector3d(10, 10, 0), Eigen::Vector3d(0, 1, 0), "Hi", Eigen::Vector4f(0, 0, 0.043, 0));
+		//viewer.plugins.push_back(&menu);
+
+		//ImGui::Render();
+		//ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(window);
 		if (renderer->core().is_animating || frame_counter++ < num_extra_frames)
 		{ //motion
@@ -146,13 +445,19 @@ bool Display::launch_rendering(bool loop)
 		if (getIsAnimating())
 		{
 			ccd_step(scn, rndr->GetMyScene()->selected_data_index);
+			//rndr->UpdateCamera();
 		}
 
-		if (timer.getElapsedTimeInSec() > 120 && !scn->is_waiting_for_user())
+		if (timer.getElapsedTimeInSec() > 15 && !scn->is_waiting_for_user())
 		{
 			scn->end_level();
+			renderer->core(2).background_color.setConstant(0);
+			renderer->core(1).background_color.setConstant(0);
 		}
 
+		//menu.shutdown();
+		//ImGui_ImplGlfwGL3_Shutdown();
+		//ImGui::DestroyContext();
 #ifdef __APPLE__
 		static bool first_time_hack = true;
 		if (first_time_hack)

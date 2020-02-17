@@ -7,7 +7,7 @@ project(Engine3DIGL)
 #option(LIBIGL_WITH_COMISO            "Use CoMiso"                   ON)
 #option(LIBIGL_WITH_OPENGL            "Use OpenGL"                   ON)
 #option(LIBIGL_WITH_OPENGL_GLFW       "Use GLFW"                     ON)
-#option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    ON)
+#option(LIBIGL_WITH_OPENGL_GLFW_IMGUI "Use ImGui"                    OFF)
 #option(LIBIGL_WITH_PNG               "Use PNG"                      ON)
 
 ### End
