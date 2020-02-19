@@ -25,7 +25,8 @@ static void glfw_error_callback(int error, const char *description)
 	fputs(description, stderr);
 }
 
-void drawText(const char *text, int length, int x, int y) {
+void drawText(const char *text, int length, int x, int y)
+{
 	//glMatrixMode(GL_PROJECTION);
 }
 
@@ -245,7 +246,7 @@ bool Display::launch_rendering(bool loop)
 
 	glfwGetWindowSize(window, &windowWidth, &windowHeight);
 	renderer->post_resize(window, windowWidth, windowHeight);
-	igl::opengl::glfw::Viewer* scn = renderer->scn;
+	igl::opengl::glfw::Viewer *scn = renderer->scn;
 	std::stringstream l1;
 	l1 << "Score 20";
 	scn->data().add_label(Eigen::Vector3d(5, 2, -2), l1.str());
@@ -267,13 +268,14 @@ bool Display::launch_rendering(bool loop)
 
 		// Customize the menu
 		double doubleVariable = 0.1f; // Shared between two menus
-		
+
 		//ImGui_ImplGlfwGL3_NewFrame();
 		double tic = igl::get_seconds();
-		renderer->UpdateCamera();
+		renderer->UpdateCamera(scn->right_core);
 		renderer->draw(window);
 
-		for (int i = 0; i <= 4; i++) {
+		for (int i = 0; i <= 4; i++)
+		{
 			double t = 0.25 * igl::get_seconds();
 			scn->data_list[i].MyRotate2(Eigen::AngleAxisf(t * 2. * igl::PI, Eigen::Vector3f(0, 1, 0)));
 			scn->data_list[i].MyTranslate(Eigen::Vector3f(0, 0.125 * cos(2. * igl::PI * t), 0));
@@ -407,12 +409,10 @@ bool Display::launch_rendering(bool loop)
 		//menu.init(renderer);
 		//menu.draw_example();
 		//menu.pre_draw();
-		
+
 		//menu.post_draw();
 		//
-//igl::opengl::glfw::imgui::ImGuiMenu menu;
-		
-		
+		//igl::opengl::glfw::imgui::ImGuiMenu menu;
 
 		//viewer.data().add_label(Eigen::Vector3d(0, 0, 0), "Score: ");
 		//menu.draw_text(Eigen::Vector3d(10, 10, 0), Eigen::Vector3d(0, 1, 0), "Hi", Eigen::Vector4f(0, 0, 0.043, 0));
@@ -445,13 +445,13 @@ bool Display::launch_rendering(bool loop)
 		if (getIsAnimating())
 		{
 			ccd_step(scn, rndr->GetMyScene()->selected_data_index);
-			//rndr->UpdateCamera();
+			//rndr->UpdateCamera(scn->right_core);
 		}
 
-		if (timer.getElapsedTimeInSec() > 15 && !scn->is_waiting_for_user())
+		if (timer.getElapsedTimeInSec() > 12 && !scn->is_waiting_for_user())
 		{
 			scn->end_level();
-			renderer->core(2).background_color.setConstant(0);
+			renderer->core(scn->right_core).background_color.setConstant(0);
 			renderer->core(1).background_color.setConstant(0);
 		}
 

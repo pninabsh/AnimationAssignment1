@@ -65,17 +65,14 @@ IGL_INLINE void Renderer::draw(GLFWwindow *_window)
 		for (auto &mesh : scn->data_list)
 		{
 			mesh.slide();
-			if (mesh.is_visible & core.id)
+			if (mesh.is_visible/* & core.id*/)
 			{
 				core.draw(scn->MakeTrans(), mesh);
 			}
 		}
 	}
 	//UpdateCamera();
-	/*for (int i = 0; i <= 4; i++) {
-		scn->data_list[i].MyRotate(Eigen::Vector3f(1, 0, 0), 0.1f);
-		scn->data_list[i].MyRotate(Eigen::Vector3f(0, 1, 0), 0.1f);
-	}*/
+
 }
 
 void Renderer::SetScene(igl::opengl::glfw::Viewer *viewer)
@@ -97,75 +94,40 @@ Eigen::Vector3d Renderer::getCoordinates(igl::opengl::ViewerData link, bool upLi
 	return Eigen::Vector3d(mulVector(0), mulVector(1), mulVector(2));
 }
 
-void Renderer::UpdateCamera() {
-	//Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
-	//core(2).camera_up = N;
-	/*Eigen::RowVector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 30) /*+ Eigen::RowVector3f(0,0,30);*/
-	//core(2).camera_eye = E;
-
-	/*Eigen::Vector3f top = scn->data(14).getTranslation();
-	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
-	//TR = TR + Eigen::RowVector3f(0, -3, 0);
-	core(2).camera_base_translation = Eigen::RowVector3f(0, 4, 0);
-	core(2).camera_translation = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));*/
-	//core(2).camera_translation = Eigen::Vector3f(0, -5, -10);
-	//core(2).camera_up = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
-	//core(2).camera_zoom = 0.85;
-	//core(2).camera_eye = TR;
-
-	/*Eigen::Matrix3f rota = scn->CalParentsRotationMatrixes(scn->snake_head);
-	// TODO - play with yTheta in order to fix the camera_eye
-	core(right_view).camera_up = rota * Eigen::Vector3f(0, 0, 1);
-	core(right_view).camera_eye = rota * Eigen::Vector3f(0, -2.09, 0);
-	Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->CalcParentsTrans(scn->snake_head)).col(3).head(3); //A.col(1);
-	Eigen::Vector3f a = (scn->CalParentsRotationMatrixes(scn->snake_head).matrix().col(1) * -0.83);*/
-
-
-	//TR += a;
-
-	//core(2).camera_translation = TR;
-
-	/*Eigen::Vector3f top = scn->data(14).getTranslation();
-	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
-	Eigen::Vector3f N = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, 0, 1);
-	core(2).camera_up = N;
-	Eigen::Vector3f E = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, -2.09, 0);
-	core(2).camera_eye = E;
-
-	//Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->data_list[14].MakeTrans().col(3).head(3));//A.col(1);
-	Eigen::Vector3f TR = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
-	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
-	/*Eigen::Vector3f a = (scn->data_list[14].MakeTrans().col(1) * -0.83);
-	TR += a;*/
-	//core(2).camera_translation = TR;
-
-	/*Eigen::Vector3f top = scn->data(14).getTranslation();
-	Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
-	Eigen::Vector3f N = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, 0, 1);
-	core(2).camera_up = N;
-	Eigen::Vector3f E = scn->data(14).getRotation().matrix() * Eigen::Vector3f(0, -2.09, 0);
-	core(2).camera_eye = E;
-
-	//Eigen::RowVector3f TR = -(scn->MakeTrans() * scn->data_list[14].MakeTrans().col(3).head(3));//A.col(1);*/
-	//Eigen::Vector3f TR = Eigen::Vector3f(top_scene(0), top_scene(1), top_scene(2));
-	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
-	/*Eigen::Vector3f a = (scn->data_list[14].MakeTrans().col(1) * -0.83);
-	TR += a;*/
-	//core(2).camera_translation = TR;
+void Renderer::UpdateCamera(int right_core) {
 	Eigen::Vector3d top = getCoordinates(scn->data_list[14], true);
 	//Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
 	Eigen::Vector4f top_scene = scn->MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
 	Eigen::Matrix3f rota = scn->data(14).getRotationOfParents();
 	// TODO - play wiendth yTheta in order to fix the camera_eye
-	core(2).camera_up = rota * Eigen::Vector3f(0, 0, 1);
-	core(2).camera_eye = rota * Eigen::Vector3f(0, -2.09, 0);
+	core(right_core).camera_up = rota * Eigen::Vector3f(0, 0, 1);
+	core(right_core).camera_eye = rota * Eigen::Vector3f(0, -2.09, 0);
 	Eigen::Vector3f TR = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));
 	Eigen::Vector3f a = (scn->data(14).getRotationOfParents().col(1) * -2);
 	TR += a;
-	core(2).camera_translation = Eigen::Vector3f(TR(0), TR(1), TR(2));
-	core(2).camera_zoom = 0.5;
+	core(right_core).camera_translation = Eigen::Vector3f(TR(0), TR(1), TR(2));
+	core(right_core).camera_zoom = 0.5;
 }
 
+void Renderer::Locate_Camera(int right_core) {
+	Eigen::Vector3d top = getCoordinates(scn->data_list[14], true);
+	//Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::Vector4f top_scene = scn->MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
+	Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
+	core(right_core).camera_up = N;
+	Eigen::Vector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, -2.09, 0);
+	core(right_core).camera_eye = Eigen::Vector3f(0, 0, 30) + E;
+	//Eigen::RowVector4f TR = -(scn->MakeTrans() * scn->data(14).getTranslationOfParents()).col(3).head(3);//A.col(1);
+	Eigen::Vector3f TR = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
+	//Eigen::Vector4f a = (scn->data(14).getRotationOfParents().col(1) * -0.83);
+	//TR += a;
+	Eigen::Vector3f a = (scn->data(14).getRotationOfParents().col(1) * -2);
+	TR += a;
+	core(right_core).camera_translation = Eigen::Vector3f(TR(0), TR(1), TR(2));
+	core(right_core).camera_zoom = 0.5;
+
+}
 
 IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer *viewer)
 {
@@ -176,6 +138,7 @@ IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer *viewer)
 	core().viewport = Eigen::Vector4f(0, 0, 500, 800);
 	left_view = core_list[0].id;
 	right_view = append_core(Eigen::Vector4f(640, 0, 500, 800));
+	viewer->right_core = right_view;
 	/*Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
 	core(right_view).camera_up = N;
 	Eigen::RowVector3f E = scn->data(0).getRotation() * Eigen::Vector3f(0, 1, 0);
@@ -195,29 +158,12 @@ IGL_INLINE void Renderer::init(igl::opengl::glfw::Viewer *viewer)
 	/*core(right_view).camera_base_translation = Eigen::RowVector3f(0, 0, -5);
 	//Eigen::RowVector3f TR = scn->data(14).getTranslation(); //A.col(1);
 	Eigen::RowVector3f TR = scn->data(14).getTranslation();
-	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
-
-
+	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0)
 
 
 	core(right_view).camera_translation = TR;*/
 	//core(right_view).camera_eye = TR;
-	Eigen::Vector3d top = getCoordinates(scn->data_list[14], true);
-	//Eigen::Vector4f top_scene = scn->MakeTrans() * scn->data(14).MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
-	Eigen::Vector4f top_scene = scn->MakeTrans() * Eigen::Vector4f(top(0), top(1), top(2), 1);
-	Eigen::RowVector3f N = scn->data(14).getRotation() * Eigen::Vector3f(0, 0, 1);
-	core(right_view).camera_up = N;
-	Eigen::Vector3f E = scn->data(14).getRotation() * Eigen::Vector3f(0, -2.09, 0);
-	core(right_view).camera_eye = Eigen::Vector3f(0,0,30) + E;
-	//Eigen::RowVector4f TR = -(scn->MakeTrans() * scn->data(14).getTranslationOfParents()).col(3).head(3);//A.col(1);
-	Eigen::Vector3f TR = Eigen::Vector3f(-top_scene(0), -top_scene(1), -top_scene(2));
-	//TR = TR + Eigen::RowVector3f(0, -((0.91) + (9 * 1.6)), 0);
-	//Eigen::Vector4f a = (scn->data(14).getRotationOfParents().col(1) * -0.83);
-	//TR += a;
-	Eigen::Vector3f a = (scn->data(14).getRotationOfParents().col(1) * -2);
-	TR += a;
-	core(right_view).camera_translation =  Eigen::Vector3f(TR(0), TR(1), TR(2));
-	core(right_view).camera_zoom = 0.5;
+	Locate_Camera(right_view);
 
 	for (size_t i = 0; i < scn->data_list.size(); i++) {
 		core().toggle(scn->data(i).show_faces);
@@ -298,11 +244,11 @@ hitObject Renderer::picking_help(double newx, double newy, int core_id)
 
 hitObject Renderer::Picking(double newx, double newy){
 	hitObject object1 = picking_help(newx, newy, 1);
-	hitObject object2 = picking_help(newx, newy, 2);
-	if (object1.found) {
+	//hitObject object2 = picking_help(newx, newy, 2);
+	/*if (object1.found) {
 		return object1;
-	}
-	return object2;
+	}*/
+	return object1;
 }
 
 IGL_INLINE void Renderer::resize(GLFWwindow *window, int w, int h)

@@ -4,34 +4,33 @@
 #include "IK_solver.h"
 #include <tutorial\sandBox\MyRenderer.h>
 #include <tutorial\sandBox\inputManager.h>
-//#include "ImGui/ImGuiMenu.h"
 #include <igl/png/readPNG.h>
 using namespace igl::opengl;
+
 
 using namespace igl::png;
 using namespace igl;
 using namespace std;
 
-Display *disp = NULL;
+Display* disp = NULL;
 MyRenderer renderer;
 std::vector<ViewerData> save_data_list;
+int old_score;
 Eigen::Matrix<unsigned char, Eigen::Dynamic, Eigen::Dynamic> R, G, B, A;
 
-void MyViewer::create_bounding_box()
-{
+void MyViewer::create_bounding_box() {
 	igl::AABB<Eigen::MatrixXd, 3> tree;
 	tree.init(this->data_list[0].V, this->data_list[0].F);
 	init_simplify_data_structures_list();
 
-	for (int i = 0; i < simplifyDataObjectsList->size(); i++)
-	{
+	for (int i = 0; i < simplifyDataObjectsList->size(); i++) {
 		tree.init(simplifyDataObjectsList->at(i).V, simplifyDataObjectsList->at(i).F);
 		this->data_list[i].kd_tree = tree;
 	}
 }
 
-void fail_load_resource(string &sphere_path, string &yCylinder_path, string &cube_path,
-						string &catch_sound_path, string &hit_sound_path, string &end_level_sound_path)
+void fail_load_resource(string& sphere_path, string& yCylinder_path, string& cube_path,
+	string& catch_sound_path, string& hit_sound_path, string& end_level_sound_path)
 {
 	cout << "cannot open or read all needed line from configuration file! loading from default mesh paths instead..." << endl;
 	sphere_path = "C:/Dev/EngineIGLnew/tutorial/data/sphere.obj";
@@ -42,7 +41,7 @@ void fail_load_resource(string &sphere_path, string &yCylinder_path, string &cub
 	end_level_sound_path = "C:/Dev/EngineIGLnew/tutorial/data/end_level.wav";
 }
 
-bool attempt_load_resource(string &mesh_path, ifstream &configuration_file)
+bool attempt_load_resource(string& mesh_path, ifstream& configuration_file)
 {
 	if (configuration_file.good())
 	{
@@ -51,6 +50,7 @@ bool attempt_load_resource(string &mesh_path, ifstream &configuration_file)
 	}
 	return false;
 }
+
 
 void MyViewer::load_configuration()
 {
@@ -66,12 +66,15 @@ void MyViewer::load_configuration()
 
 	if (configuration_file.fail())
 	{
-		fail_load_resource(sphere_path, yCylinder_path, cube_path, catch_sound_path, hit_sound_path, end_level_sound_path);
+		fail_load_resource(sphere_path, yCylinder_path, cube_path,catch_sound_path,hit_sound_path, end_level_sound_path);
 	}
 	else
 	{
 		cout << "loading resources from configuration file..." << endl;
-		bool isAllResourcesLoaded = attempt_load_resource(sphere_path, configuration_file) && attempt_load_resource(yCylinder_path, configuration_file) && attempt_load_resource(cube_path, configuration_file) && attempt_load_resource(catch_sound_path, configuration_file) && attempt_load_resource(hit_sound_path, configuration_file) && attempt_load_resource(end_level_sound_path, configuration_file);
+		bool isAllResourcesLoaded = attempt_load_resource(sphere_path, configuration_file) && attempt_load_resource(yCylinder_path, configuration_file)
+			&& attempt_load_resource(cube_path, configuration_file)
+			&& attempt_load_resource(catch_sound_path, configuration_file) && attempt_load_resource(hit_sound_path, configuration_file)
+			&& attempt_load_resource(end_level_sound_path, configuration_file);
 
 		if (!isAllResourcesLoaded)
 		{
@@ -81,13 +84,11 @@ void MyViewer::load_configuration()
 
 	this->sound_manager.configureSoundPaths(catch_sound_path, hit_sound_path, end_level_sound_path);
 	//readPNG("snaketexture2.jpg", R, G, B, A);
-	for (int i = 0; i < 5; i++)
-	{
+	for (int i = 0; i < 5; i++) {
 		load_mesh_from_file(sphere_path);
 	}
 
-	for (int i = 0; i < 10; i++)
-	{
+	for (int i = 0; i < 10; i++) {
 		load_mesh_from_file(yCylinder_path);
 	}
 	cout << "loading done!" << endl;
@@ -147,8 +148,7 @@ void MyViewer::organize_spheres_on_board1()
 
 	data_list[4].MyTranslate(Eigen::Vector3f(-9, 5, 0));
 	data_list[4].setSpeed(Eigen::Vector3f(0.07f, 0, 0));
-	for (int i = 0; i < 5; i++)
-	{
+	for (int i = 0; i < 5; i++) {
 		data_list[i].set_visible(true);
 	}
 }
@@ -169,45 +169,38 @@ void MyViewer::organize_spheres_on_board2()
 
 	data_list[4].MyTranslate(Eigen::Vector3f(-5, 5, 0));
 	data_list[4].setSpeed(Eigen::Vector3f(0.09f, 0, 0));
-	for (int i = 0; i < 5; i++)
-	{
+	for (int i = 0; i < 5; i++) {
 		data_list[i].set_visible(true);
 	}
 }
 
-void MyViewer::organize_snake()
-{
+void MyViewer::organize_snake() {
 	links_numbers->clear();
 	parent_links_indices->clear();
-	//label_color =
+	//label_color = 
 
-	for (int i = 5; i <= 14; i++)
-	{
+
+	for (int i = 5; i <= 14; i++) {
 		data_list[i].show_texture = true;
 		data_list[i].set_texture(R, G, B);
 	}
-
-	for (int i = 6; i <= 14; i++)
-	{
+	
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].SetParent(&(data_list[i - 1]));
 	}
 
 	data_list[5].SetCenterOfRotation(Eigen::Vector3f(0, -2, 0));
 	data_list[5].MyTranslate(Eigen::Vector3f(0, -6, 0));
-	for (int i = 6; i <= 14; i++)
-	{
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].SetCenterOfRotation(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 6; i <= 14; i++)
-	{
+	for (int i = 6; i <= 14; i++) {
 		data_list[i].MyTranslate(Eigen::Vector3f(0, 0.8, 0));
 	}
-	for (int i = 5; i < data_list.size(); i++)
-	{
+	for (int i = 5; i < data_list.size(); i++) {
 		links_numbers->push_back(i);
 
-		if (i != 14)
-		{
+		if (i != 14) {
 			parent_links_indices->push_back(links_numbers->at(links_numbers->size() - 1));
 		}
 	}
@@ -216,52 +209,60 @@ void MyViewer::organize_snake()
 	data_list[5].set_colors(color);
 }
 
-void MyViewer::create_level()
-{
-	if (level % 2 == 1)
-	{
+void  MyViewer::create_level() {
+	if (level % 2 == 1) {
 		organize_spheres_on_board1();
 	}
-	else
-	{
+	else {
 		organize_spheres_on_board2();
 	}
 	organize_snake();
 	create_bounding_box();
 	timer.start();
+
 }
 
-void MyViewer::level_reset(bool to_level_up)
-{
-	if (waiting_for_user_answer)
-	{
+void MyViewer::level_reset(bool to_level_up) {
+	if (waiting_for_user_answer) {
 		waiting_for_user_answer = false;
 
-		if (to_level_up)
-		{
+		if (to_level_up) {
 			level++;
 		}
+		else {
+			score = old_score;
+		}
 
-		for (int i = 0; i < data_list.size(); i++)
-		{
+		for (int i = 0; i < data_list.size(); i++) {
 			data_list[i].reset();
 			save_data_list[i].reset();
 		}
-		renderer.core(2).background_color << 0.3f, 0.3f, 0.5f, 1.0f;
+		renderer.core(right_core).background_color << 0.3f, 0.3f, 0.5f, 1.0f;
 		renderer.core(1).background_color << 0.3f, 0.3f, 0.5f, 1.0f;
+		reset();
 		data_list = save_data_list;
+		old_score = score;
 		//MyRenderer _r;
 		//renderer.init(this);
 		//renderer.my_init(this);
 		//disp->SetRenderer(&renderer);
-		//renderer.Locate_Camera();
 		//disp->launch_rendering(true);
+		renderer.erase_core(1);
 		create_level();
+		renderer.callback_post_resize = [&](int w, int h) {
+			renderer.core(1).viewport = Eigen::Vector4f(0, 0, w / 2, h);
+			renderer.core(right_core).viewport = Eigen::Vector4f(w / 2, 0, w - (w / 2), h);
+			return true;
+		};
+		renderer.init(this);
+		renderer.my_init(this);
+		disp->SetRenderer(&renderer);
+		disp->launch_rendering(true);
+		//renderer.Locate_Camera();
 	}
 }
 
-void MyViewer::end_level()
-{
+void MyViewer::end_level() {
 	stop_IK_solver_animation();
 	timer.stop();
 	sound_manager.play_end_level();
@@ -271,15 +272,12 @@ void MyViewer::end_level()
 	waiting_for_user_answer = true;
 }
 
-bool MyViewer::is_waiting_for_user()
-{
+bool MyViewer::is_waiting_for_user() {
 	return waiting_for_user_answer;
 }
 
-void MyViewer::Initialize_scene()
-{
-	if (disp == NULL)
-	{
+void MyViewer::Initialize_scene() {
+	if (disp == NULL) {
 		disp = new Display(1200, 1000, "Welcome");
 	}
 	//MyRenderer _renderer;
@@ -287,6 +285,7 @@ void MyViewer::Initialize_scene()
 	bool show_demo_window = true;
 	load_configuration();
 	save_data_list = data_list;
+	old_score = score;
 	create_level();
 	init_simplify_data_structures_list();
 	Init(*disp);
@@ -301,3 +300,4 @@ void MyViewer::Initialize_scene()
 	disp->launch_rendering(true);
 	//delete disp;
 }
+

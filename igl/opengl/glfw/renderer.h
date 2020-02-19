@@ -12,29 +12,29 @@ struct hitObject {
 	float distance;
 };
 
-class Renderer
+class Renderer 
 {
 public:
 	Renderer();
 	~Renderer();
-	IGL_INLINE void draw(GLFWwindow* window);
+	IGL_INLINE void draw( GLFWwindow* window);
 	IGL_INLINE void init(igl::opengl::glfw::Viewer* scn);
 	double xold, yold, xrel, yrel;
 	//IGL_INLINE bool key_pressed(unsigned int unicode_key, int modifiers);
 
 		// Returns **true** if action should be cancelled.
 	std::function<bool()> callback_init;
-	std::function<bool(GLFWwindow * window)> callback_pre_draw;
-	std::function<bool(GLFWwindow * window)> callback_post_draw;
-	std::function<bool(GLFWwindow * window, int button, int modifier)> callback_mouse_down;
-	std::function<bool(GLFWwindow * window, int button, int modifier)> callback_mouse_up;
-	std::function<bool(GLFWwindow * window, int mouse_x, int mouse_y)> callback_mouse_move;
-	std::function<bool(GLFWwindow * window, float delta_y)> callback_mouse_scroll;
-	std::function<bool(GLFWwindow * window, unsigned int key, int modifiers)> callback_key_pressed;
+	std::function<bool(GLFWwindow* window)> callback_pre_draw;
+	std::function<bool(GLFWwindow* window)> callback_post_draw;
+	std::function<bool(GLFWwindow* window, int button, int modifier)> callback_mouse_down;
+	std::function<bool(GLFWwindow* window, int button, int modifier)> callback_mouse_up;
+	std::function<bool(GLFWwindow* window, int mouse_x, int mouse_y)> callback_mouse_move;
+	std::function<bool(GLFWwindow* window, float delta_y)> callback_mouse_scroll;
+	std::function<bool(GLFWwindow* window, unsigned int key, int modifiers)> callback_key_pressed;
 	std::function<bool(int w, int h)> callback_post_resize;
 	// THESE SHOULD BE DEPRECATED:
 	std::function<bool(unsigned int key, int modifiers)> callback_key_down;
-	std::function<bool(GLFWwindow * window, unsigned int key, int modifiers)> callback_key_up;
+	std::function<bool(GLFWwindow* window, unsigned int key, int modifiers)> callback_key_up;
 	// Pointers to per-callback data
 	void* callback_init_data;
 	void* callback_pre_draw_data;
@@ -87,10 +87,11 @@ public:
 	// Callbacks
 	hitObject Picking(double x, double y);
 	hitObject picking_help(double newx, double newy, int core_id);
-	void UpdateCamera();
+	void UpdateCamera(int right_core);
+	void Locate_Camera(int right_core);
 	Eigen::Vector3d getCoordinates(igl::opengl::ViewerData link, bool upLink);
 	IGL_INLINE bool key_pressed(unsigned int unicode_key, int modifier);
-	IGL_INLINE void resize(GLFWwindow* window, int w, int h); // explicitly set window size
+	IGL_INLINE void resize(GLFWwindow* window,int w, int h); // explicitly set window size
 	IGL_INLINE void post_resize(GLFWwindow* window, int w, int h); // external resize due to user interaction
 	void SetScene(igl::opengl::glfw::Viewer* scn);
 	void UpdatePosition(double xpos, double ypos);
@@ -110,7 +111,7 @@ public:
 	std::vector<igl::opengl::ViewerCore> core_list;
 private:
 	// Stores all the viewing options
-
+	
 	size_t selected_core_index;
 	int next_core_id;
 	float highdpi;

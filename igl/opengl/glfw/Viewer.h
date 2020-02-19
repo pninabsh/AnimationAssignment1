@@ -127,9 +127,9 @@ public:
 
     size_t selected_data_index;
     int next_data_id;
-
-
-    
+	std::vector<ViewerPlugin*> plugins;
+	int user_input = 0;
+	int right_core = 2;
 
     // List of registered plugins
 //    std::vector<ViewerPlugin*> plugins;
